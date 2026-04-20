@@ -27,9 +27,9 @@
 
 ## ⚡ Quick Decision Map
 
-| Question | Look At |
-|---|---|
-| Is Copilot useful? | **T1:** % Acceptance + Count |
-| Are devs advancing? | **T1:** Agent Adoption |
-| Is the spend justified? | **T2:** Request Efficiency + Premium Requests |
-| Why are numbers off? | **T3:** Interactions, LoC, Generation Count |
+| Question | Look At | What Good Looks Like |
+|---|---|---|
+| Is Copilot useful? | **T1:** % Acceptance + Count | Acceptance 20–35%, Count trending up |
+| Are devs advancing? | **T1:** Agent Adoption | Increasing month-over-month |
+| Is the spend justified? | **T2:** Request Efficiency + Premium Requests | High efficiency (>10 LoC/request), no outlier spend (watch 1,700+) |
+| Why are numbers off? | **T3:** Interactions, LoC, Generation Count | Interactions not excessively high, LoC Added close to LoC Suggested, Generation Count paired with healthy acceptance rate |
