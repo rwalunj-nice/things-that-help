@@ -34,7 +34,7 @@
 | Agent Adoption | 98.0% |
 | Agent Contribution | 91.8% |
 
-> **Note**: Premium Requests column not visible in current Power BI view. Suggestion Efficiency (LoC Added ÷ Code Gen) used as ROI proxy throughout this analysis.
+> **Note**: Premium Requests now captured from PREMIUM REQUESTS BY USER section (49 users, total 25,338.45 premium requests). See CRQC file for full per-user Req Eff analysis. Team Req Eff = 8.9 avg.
 
 ---
 
@@ -57,7 +57,7 @@
 |---|---|---|---|---|---|---|---|---|---|---|
 | 1 | amol-salunkhe | Amol Salunkhe | Swapnil Zade | 283 | 28,911 | 2,284 | 18 | 815 | 2.2% | 35.47 |
 | 2 | mshnayderman | Mikhail Shnayderman | Alon Vax | 162 | 22,268 | 2,567 | 1 | 309 | 0.3% | 72.06 |
-| 3 | nice-harshada | Harshada Bagane | Vaibhao Mahore | 92 | 17,600 | 2,379 | 29 | 1,480 | 2.0% | 11.89 |
+| 3 | nice-harshada | Harshada Bagane | Vaibhao Mahore | 927 | 17,600 | 2,379 | 29 | 1,480 | 2.0% | 11.89 |
 | 4 | dhanshree-jagtap-nice | Dhanshree Jagtap | Govind Somani | 284 | 35,646 | 3,800 | 51 | 475 | 10.7% | 75.04 |
 | 5 | rizeq-abu-madeghem | Rizeq Abu Madeghem | Tomer Daniel | 627 | 13,006 | 4,140 | 5 | 554 | 0.9% | 23.48 |
 | 6 | Prathmesh-Ranadive | Prathmesh Ranadive | Swapnil Zade | 61 | 9,489 | 1,249 | 562 | 703 | 79.9% | 13.50 |
@@ -98,10 +98,13 @@
 | 41 | abhijeetk268 | Abhijeet Kolhe | Swapnil Zade | 15 | 173 | 22 | 4 | 23 | 17.4% | 7.52 |
 | 42 | kbajaj-nice | Kaushal Bajaj | Susovan Samal | 0 | 5 | 42 | 7 | 40 | 17.5% | 0.13 |
 | 43 | mshivarkar | Mohan Shivarkar | Swapnil Zade | 73 | 28 | 89 | 18 | 30 | 60.0% | 0.93 |
-| 44 | SwapnilNice | Swapnil Zade | Rahul Walunj | 263 | 3,140 | 34 | 4 | 99 | 4.0% | 31.72 |
-| 45 | ssamal-nice | Susovan Samal | Rahul Walunj | 2 | 38 | 65 | 1 | 12 | 8.3% | 3.17 |
-| 46 | thakraln | Nishtha Thakral | Susovan Samal | 65 | 0 | 103 | 0 | 16 | 0.0% | 0.00 |
-| 47 | dannycadima | Danny Cadima Molina | Swapnil Zade | 3 | 1 | 76 | 1 | 26 | 3.8% | 0.04 |
+| 44 | sachinfuse-nice | Sachin Fuse | Govind Somani | 273 | 2,074 | 1,727 | 4 | 226 | 1.8% | 9.18 |
+| 45 | ShivrajNice | Shivraj Bahirat | Govind Somani | 47 | 361 | 2,092 | 14 | 121 | 11.6% | 2.98 |
+| 46 | sgite-wfm | Shubham Gite | Susovan Samal | 25 | 271 | 472 | 140 | 247 | 56.7% | 1.10 |
+| 47 | SwapnilNice | Swapnil Zade | Rahul Walunj | 263 | 3,140 | 34 | 4 | 99 | 4.0% | 31.72 |
+| 48 | ssamal-nice | Susovan Samal | Rahul Walunj | 26 | 38 | 65 | 1 | 12 | 8.3% | 3.17 |
+| 49 | thakraln | Nishtha Thakral | Susovan Samal | 65 | 0 | 103 | 0 | 16 | 0.0% | 0.00 |
+| 50 | dannycadima | Danny Cadima Molina | Swapnil Zade | 3 | 1 | 76 | 1 | 26 | 3.8% | 0.04 |
 
 > **Managers excluded from developer tiering**: Swapnil Zade (SwapnilNice), Susovan Samal (ssamal-nice) — tracked separately below.
 
@@ -130,8 +133,8 @@ Tier A again. 22,268 LoC with near-zero acceptance (0.3%) = pure agent workflow.
 ### 🌟 Harshada Bagane (`nice-harshada`)
 | Int | LoC Added | % Accept | SuggEff |
 |---|---|---|---|
-| 92 | **17,600** | 2.0% | 11.89 |
-**NEW user. Tier A on debut.** 17,600 LoC with only 92 interactions — extraordinarily efficient. 2% acceptance confirms Agent-First. SuggEff 11.89 is moderate, reflecting 1,480 Code Gen events. Strong agent user from Vaibhao Mahore's team.
+| 927 | **17,600** | 2.0% | 11.89 |
+**NEW user. Tier A on debut.** 17,600 LoC from 927 interactions (corrected from initial misread of 92). 2% acceptance confirms Agent-First. SuggEff 11.89 is moderate, reflecting 1,480 Code Gen events. Strong agent user from Vaibhao Mahore's team.
 
 ### 🌟 Rizeq Abu Madeghem (`rizeq-abu-madeghem`)
 | Int | LoC Added | % Accept | SuggEff |

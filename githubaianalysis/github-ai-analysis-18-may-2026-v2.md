@@ -3,7 +3,8 @@
 > **Framework**: v2 Workflow-Aware (Agent-First / Hybrid / Inline-First)  
 > **Product**: WFM Integrations | **Team**: All | **R&D VP**: WFM  
 > **Analysis Date**: May 18, 2026 | **Data Synced**: May 17, 2026 10:30 PM  
-> **Total Users**: 55 (50 active Copilot users)
+> **Total Users**: 55 (50 active Copilot users)  
+> **Revision**: v2 — Full scroll verification. 3 new active users added (Sachin Fuse, Shivraj Bahirat, Shubham Gite). nice-harshada Int corrected 92→927. Total team LoC confirmed 225,648.
 
 ---
 
@@ -27,7 +28,7 @@
 | dhanshree-jagtap-nice | Dhanshree Jagtap | 284 | 35,646 | 10.7% | 75.04 | 🌟 A |
 | amol-salunkhe | Amol Salunkhe | 283 | 28,911 | 2.2% | 35.47 | 🌟 A |
 | mshnayderman | Mikhail Shnayderman | 162 | 22,268 | 0.3% | 72.06 | 🌟 A |
-| nice-harshada | Harshada Bagane | 92 | 17,600 | 2.0% | 11.89 | 🌟 A |
+| nice-harshada | Harshada Bagane | 927 | 17,600 | 2.0% | 11.89 | 🌟 A |
 | rizeq-abu-madeghem | Rizeq Abu Madeghem | 627 | 13,006 | 0.9% | 23.48 | 🌟 A |
 | tomotvos | Tom Otvos | 68 | 5,061 | 0.0% | 51.12 | 🌟 A |
 | rpawar-nice | Ritesh Pawar | 60 | 8,658 | 5.9% | 72.76 | 👍 B |
@@ -37,6 +38,7 @@
 | SwapnilNice | Swapnil Zade | 263 | 3,140 | 4.0% | 31.72 | Manager |
 | Kranti-nice | Kranti Kaple | 323 | 7,076 | 1.8% | 13.87 | 👍 B |
 | suhas-kakde | Suhas Kakde | 165 | 1,639 | 1.8% | 7.45 | 👌 C |
+| sachinfuse-nice | Sachin Fuse | 273 | 2,074 | 1.8% | 9.18 | 👌 C |
 | jayesh-rai | Jayesh Rai | 73 | 862 | 2.7% | 7.77 | 🟠 D |
 | dsuraj25 | Suraj Dubey | 11 | 491 | 0.0% | 16.37 | 🟠 D |
 | thakraln | Nishtha Thakral | 65 | 0 | 0.0% | 0.00 | 🔴 E |
@@ -78,7 +80,8 @@
 | pdevle | Pratik Devle | 30 | 370 | 6.6% | 6.07 | 🟠 D |
 | prashasti-jain | Prashasti Jain | 24 | 837 | 10.0% | 27.90 | 🟠 D |
 | pratikpawar12 | Pratik Pawar | 98 | 250 | 4.3% | 2.14 | 🟠 D |
-| ssamal-nice | Susovan Samal | 2 | 38 | 8.3% | 3.17 | Manager |
+| ShivrajNice | Shivraj Bahirat | 47 | 361 | 11.6% | 2.98 | 🟠 D |
+| ssamal-nice | Susovan Samal | 26 | 38 | 8.3% | 3.17 | Manager |
 
 ### Hybrid Tier Benchmarks
 | Signal | Condition |
@@ -105,6 +108,7 @@
 | trunalgawade | Trunal Gawade | 100 | 302 | 23.7% | 1.32 | 🟠 D |
 | mshivarkar | Mohan Shivarkar | 73 | 28 | **60.0%** | 0.93 | 🔴 E |
 | kbajaj-nice | Kaushal Bajaj | 0 | 5 | 17.5% | 0.13 | 🔴 E |
+| sgite-wfm | Shubham Gite | 25 | 271 | **56.7%** | 1.10 | 🔴 E |
 
 ### Inline-First Tier Benchmarks
 | Signal | Condition |
@@ -133,11 +137,11 @@
 
 | Workflow | Count | Total LoC | % of LoC |
 |---|---|---|---|
-| Agent-First | 17 | 121,661 | 53.9% |
-| Hybrid | 18 | 45,821 | 20.3% |
-| Inline-First | 10 | 20,195 | 9.0% |
-| Managers | 3 | 6,318 | 2.8% |
-| Inactive/Excluded | 7 | — | — |
-| **Total Active** | **48** | **193,995** | **86%** |
+| Agent-First | 18 | ~153,301 | 67.9% |
+| Hybrid | 19 | ~50,803 | 22.5% |
+| Inline-First | 11 | ~20,466 | 9.1% |
+| Managers | 2 | 3,178 | 1.4% |
+| Inactive/Excluded | 11 | — | — |
+| **Total Confirmed** | **55** | **225,648** | **100%** |
 
-> **Key insight**: This team is overwhelmingly Agent-First (53.9% of LoC from 17 users). The expansion to 55 users has brought in heavy agent users (Dhanshree Jagtap, Harshada Bagane, Rizeq, Tom Otvos). Classic inline acceptance rates (20–35%) are now a minority pattern.
+> **Key insight**: Team total LoC is 225,648 (confirmed from Power BI totals row). Agent-First pattern dominates at ~68% of output. Three new active users added in this revision: Sachin Fuse (Agent-First, 2,074 LoC), Shivraj Bahirat (Hybrid, 361 LoC), Shubham Gite (Inline-First, 271 LoC). Six users confirmed truly inactive (no Copilot engagement): ak-nice-2025, mohitbaghelnice, prinice251, rajivranjannice, ssnikam, prashant-shete.

@@ -3,7 +3,8 @@
 > **Framework**: Role Context + Momentum Score  
 > **Product**: WFM Integrations | **Team**: All | **R&D VP**: WFM  
 > **Analysis Date**: May 18, 2026 | **Data Synced**: May 17, 2026 10:30 PM  
-> **Prior Period Reference**: May 11, 2026
+> **Prior Period Reference**: May 11, 2026  
+> **Revision**: v2 — Full scroll verification. 3 new active users added (Sachin Fuse, Shivraj Bahirat, Shubham Gite). 6 new inactive users documented. nice-harshada Int corrected 92→927. ssamal-nice Int corrected 2→26.
 
 ---
 
@@ -85,8 +86,13 @@ Users from Swapnil Zade + Susovan Samal's direct teams (May 11 reference availab
 | Kaushal Bajaj | 3* | 5 | +2 | ~+67% | 📈 Rising |
 | Mohan Shivarkar | 88* | 28 | −60 | −68% | 📉 Declining |
 | Nishtha Thakral | 100* | 0 | −100 | −100% | 📉 Declining |
+| Sachin Fuse | N/A (new) | 2,074 | — | — | 🆕 New |
+| Shivraj Bahirat | N/A (new) | 361 | — | — | 🆕 New |
+| Shubham Gite | N/A (new) | 271 | — | — | 🆕 New |
 
 > *LoC values marked with * are approximate references from the May 11 analysis. The May 11 report covered 33 users; exact per-user LoC is from that period's cumulative data.
+>
+> **Inactive users added in revision** (zero Copilot engagement — not in momentum table): ak-nice-2025 (Anand Krishnaswamy), mohitbaghelnice (Mohit Baghel), prashant-shete (Non-CX Engineering Member), prinice251 (Priscila Torrico), rajivranjannice (Non-CX Engineering Member), ssnikam (Sanket Nikam).
 
 ---
 
@@ -95,7 +101,7 @@ Users from Swapnil Zade + Susovan Samal's direct teams (May 11 reference availab
 | Label | Count | Key Names |
 |---|---|---|
 | 💥 **Breakout** (>+100%) | 10 | Chris Haun, Ritesh Pawar, Abhishek Hole, Tushar Patil, Jayesh Rai, Prashasti Jain, Shreedevi Patil, Suraj Dubey, Pratik Pawar, Abhijeet Kolhe |
-| 🆕 **New** (no prior) | 12 | Dhanshree Jagtap, Harshada Bagane, Rizeq, Tom Otvos, Yogita, Kranti, Govind Somani, Ana Sarzosa, Jyoti, Anjali, Megha, Sohan |
+| 🆕 **New** (no prior) | 15 | Dhanshree Jagtap, Harshada Bagane, Rizeq, Tom Otvos, Yogita, Kranti, Govind Somani, Ana Sarzosa, Jyoti, Anjali, Megha, Sohan, Sachin Fuse, Shivraj Bahirat, Shubham Gite |
 | 📈 **Rising** (+25–100%) | 17 | Amol, Mikhail, Prathmesh, Matt, Nilesh, Shraddha, Vyankatesh, Moad, Vitthal, Sourabh, Luis, Pradnyesh, Suhas, Shridhar, Trunal, Kaushal |
 | 🟡 **Stable** (−25 to +25%) | 2 | Amulya Kale, Pratik Devle |
 | 📉 **Declining** (<−60%) | 2 | Mohan Shivarkar, Nishtha Thakral |
@@ -163,6 +169,9 @@ Users from Swapnil Zade + Susovan Samal's direct teams (May 11 reference availab
 | Mohan Shivarkar | Developer | Inline-First | E | 📉 Declining | +1 | **E** |
 | Nishtha Thakral | Developer | Agent-First | E | 📉 Declining | 0 | **E** |
 | Danny Cadima Molina | Developer | Agent-First | E | — | FB | **E** |
+| Sachin Fuse | Developer | Agent-First | C | 🆕 New | FB | **C** |
+| Shivraj Bahirat | Developer | Hybrid | D | 🆕 New | FB | **D** |
+| Shubham Gite | Developer | Inline-First | D | 🆕 New | FB | **D** |
 | Swapnil Zade | Manager | Agent-First | — | 📈 Rising | — | **Manager** |
 | Susovan Samal | Manager | Hybrid | — | — | — | **Manager** |
 
@@ -189,7 +198,7 @@ The following Tier D users have Breakout momentum (>+100%) and are eligible for 
 | Manager | Login | LoC | Int | Pattern |
 |---|---|---|---|---|
 | Swapnil Zade | SwapnilNice | 3,140 | 263 | Active Agent-First user |
-| Susovan Samal | ssamal-nice | 38 | 2 | Minimal — expected for manager role |
+| Susovan Samal | ssamal-nice | 38 | 26 | Minimal — expected for manager role |
 
 ---
 
