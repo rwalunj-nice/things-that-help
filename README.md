@@ -1,4 +1,4 @@
-# copilot-projects
+# Things That Help
 
 A collection of resources, frameworks, and guides for measuring and maximizing the impact of **GitHub Copilot** across your organization.
 
