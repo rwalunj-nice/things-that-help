@@ -40,6 +40,15 @@ A collection of resources, frameworks, and guides for measuring and maximizing t
 | [github-ai-analysis-18-may-2026-CRQC.md](githubaianalysis/aianalysisreport/github-ai-analysis-18-may-2026-CRQC.md) | May 18, 2026 | CRQC |
 | [github-ai-analysis-18may-lowusers.md](githubaianalysis/aianalysisreport/github-ai-analysis-18may-lowusers.md) | May 18, 2026 | Low Users Focus |
 
+#### June 2026
+
+| Report | Date | Variant |
+|---|---|---|
+| [github-ai-analysis-3-june-2026.md](githubaianalysis/aianalysisreport/github-ai-analysis-3-june-2026.md) | June 3, 2026 | Standard (v1) |
+| [github-ai-analysis-3-june-2026-v2.md](githubaianalysis/aianalysisreport/github-ai-analysis-3-june-2026-v2.md) | June 3, 2026 | v2 (Workflow-Aware) |
+| [github-ai-analysis-3-june-2026-role-momentum.md](githubaianalysis/aianalysisreport/github-ai-analysis-3-june-2026-role-momentum.md) | June 3, 2026 | Role + Momentum |
+| [github-ai-analysis-3-june-2026-CRQC.md](githubaianalysis/aianalysisreport/github-ai-analysis-3-june-2026-CRQC.md) | June 3, 2026 | CRQC |
+
 ---
 
 ## 🚀 Getting Started

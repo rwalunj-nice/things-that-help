@@ -15,7 +15,7 @@ These users are excluded from all Copilot usage analyses. They are not scored, t
 | Rizeq Abu Madeghem | rizeq-abu-madeghem | Ignored |
 | Harshada Bagane | nice-harshada | Ignored |
 | Yogita Dhanwate | yogitadhanwate | Ignored |
-| Ana Sarzosa | luisalvatierra | Ignored |
+| Ana Sarzosa | AnaSarzosa | Ignored |
 | Sachin Fuse | sachinfuse-nice | Ignored |
 | Anjali Sherikar | anjali-sherikar | Ignored |
 | Shivraj Bahirat | ShivrajNice | Ignored |
