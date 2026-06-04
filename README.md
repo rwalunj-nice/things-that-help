@@ -49,6 +49,18 @@ A collection of resources, frameworks, and guides for measuring and maximizing t
 | [github-ai-analysis-3-june-2026-role-momentum.md](githubaianalysis/aianalysisreport/github-ai-analysis-3-june-2026-role-momentum.md) | June 3, 2026 | Role + Momentum |
 | [github-ai-analysis-3-june-2026-CRQC.md](githubaianalysis/aianalysisreport/github-ai-analysis-3-june-2026-CRQC.md) | June 3, 2026 | CRQC |
 
+#### Q2 2026 Progression Tracking
+
+Multi-period checkpoint analysis showing how each user evolved through Q2 2026 (April 20 → June 3). Tracks checkpoint-to-checkpoint progression with window deltas, daily rates, and pattern classifications.
+
+| Report | Type | Description |
+|---|---|---|
+| [github-ai-analysis-v2-3-june-2026.md](githubaianalysis/aianalysisreport/github-ai-analysis-v2-3-june-2026.md) | Multi-Period | Checkpoint-to-checkpoint LoC progression (v1 Standard) |
+| [github-ai-analysis-v2-3-june-2026-v2.md](githubaianalysis/aianalysisreport/github-ai-analysis-v2-3-june-2026-v2.md) | Multi-Period | Workflow evolution tracking (v2 Workflow-Aware) |
+| [github-ai-analysis-v2-3-june-2026-role-momentum.md](githubaianalysis/aianalysisreport/github-ai-analysis-v2-3-june-2026-role-momentum.md) | Multi-Period | Multi-window momentum analysis |
+| [github-ai-analysis-v2-3-june-2026-CRQC.md](githubaianalysis/aianalysisreport/github-ai-analysis-v2-3-june-2026-CRQC.md) | Multi-Period | C+R score evolution |
+| [github-ai-analysis-v2-3-june-2026-summary.md](githubaianalysis/aianalysisreport/github-ai-analysis-v2-3-june-2026-summary.md) | Summary | Cross-framework insights and pattern classification |
+
 ---
 
 ## 🚀 Getting Started
