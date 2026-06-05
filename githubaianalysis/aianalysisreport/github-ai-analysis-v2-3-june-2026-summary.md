@@ -2,7 +2,9 @@
 > **Period**: Q2 2026 (April 1 – June 3, 2026)  
 > **Checkpoints**: 6 snapshots (Apr 20, 23, 28, May 11, 18, Jun 3)  
 > **Active Users**: 37  
-> **Frameworks**: v1 Standard, v2 Workflow-Aware, Role+Momentum, CRQC  
+> **Frameworks**: v1 Standard, v2 Workflow-Aware, Role+Momentum, CRQC
+
+> **Note**: This file only considers Github Copilot stats. Claude analysis not included in this version currently. 
 
 ---
 
