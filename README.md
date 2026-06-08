@@ -48,6 +48,13 @@ A collection of resources, frameworks, and guides for measuring and maximizing t
 | [github-ai-analysis-3-june-2026-v2.md](githubaianalysis/aianalysisreport/github-ai-analysis-3-june-2026-v2.md) | June 3, 2026 | v2 (Workflow-Aware) |
 | [github-ai-analysis-3-june-2026-role-momentum.md](githubaianalysis/aianalysisreport/github-ai-analysis-3-june-2026-role-momentum.md) | June 3, 2026 | Role + Momentum |
 | [github-ai-analysis-3-june-2026-CRQC.md](githubaianalysis/aianalysisreport/github-ai-analysis-3-june-2026-CRQC.md) | June 3, 2026 | CRQC |
+| [github-ai-analysis-3-june-2026-summary.md](githubaianalysis/aianalysisreport/github-ai-analysis-3-june-2026-summary.md) | June 3, 2026 | Cross-Framework Summary |
+| [low-ai-usage-analysis-5-june-2026.md](githubaianalysis/aianalysisreport/low-ai-usage-analysis-5-june-2026.md) | June 5, 2026 | Low-Usage Focus |
+| [github-ai-analysis-8-june-2026.md](githubaianalysis/aianalysisreport/github-ai-analysis-8-june-2026.md) | June 8, 2026 | Standard (v1) |
+| [github-ai-analysis-8-june-2026-v2.md](githubaianalysis/aianalysisreport/github-ai-analysis-8-june-2026-v2.md) | June 8, 2026 | v2 (Workflow-Aware) |
+| [github-ai-analysis-8-june-2026-role-momentum.md](githubaianalysis/aianalysisreport/github-ai-analysis-8-june-2026-role-momentum.md) | June 8, 2026 | Role + Momentum |
+| [github-ai-analysis-8-june-2026-CRQC.md](githubaianalysis/aianalysisreport/github-ai-analysis-8-june-2026-CRQC.md) | June 8, 2026 | CRQC |
+| [github-ai-analysis-8-june-2026-summary.md](githubaianalysis/aianalysisreport/github-ai-analysis-8-june-2026-summary.md) | June 8, 2026 | Cross-Framework Summary |
 
 #### Q2 2026 Progression Tracking
 
