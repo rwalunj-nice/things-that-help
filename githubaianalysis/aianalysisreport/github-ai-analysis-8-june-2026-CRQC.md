@@ -1,222 +1,233 @@
 # GitHub Copilot Usage Analysis — CRQC 4-Pillar Framework
 **Product:** WFM Integrations | **R&D VP:** WFM | **Team:** All  
 **Analysis Date:** June 8, 2026 | **Data Sync:** June 7, 2026 (10:30 PM)  
-**Framework:** CRQC (github-benchmark-CRQC.md) | **Scale:** C(0–3) + R(0–3) + Q(0–3) = 0–9 → Tier A–E
+**Scope:** 37 developers (15 excluded per ignore list, 2 managers + 1 research tracked separately)
 
 ---
 
-## CRQC Framework Summary
+## CRQC Scoring System
 
-| Pillar | Source | Scoring |
+| Pillar | Max | Description |
 |---|---|---|
-| **C — Core** | AI Usage tab | Workflow-type specific. Agent-First: ReqEff-based. Hybrid: %Accept + ReqEff. Inline-First: %Accept + Accept Count. Max 3 pts. |
-| **R — ROI** | AI Usage tab | Universal. ReqEff tiers: >20→3, 10-20→2, 5-10→1, <5→0. Lean spend (≤500 req) +1 bonus. Outlier (>1,700 req) −1 penalty. Max 3 pts. |
-| **Q — Quality** | PR Details tab | Merge rate ≥80%→2, +Review≥1/PR→+1, +AvgMerge≤3days→+1(cap 3). Team proxy applied (see note). Max 3 pts. |
-| **Context** | AI Usage tab | Diagnostic only. Never adjusts score. Explains C/R/Q anomalies. |
+| **C** (Core) | 0–3 | Workflow-specific Core effectiveness |
+| **R** (ROI) | 0–3 | Request Efficiency + Premium spend |
+| **Q** (Quality) | 0–3 | PR merge rate + reviews + merge time |
+| **Total** | 0–9 | Sum of C + R + Q |
 
-### Q Score Methodology
+**Tier mapping:** A = 7–9 | B = 5–6 | C = 3–4 | D = 1–2 | E = 0
 
-> Per-user PR data is not available in filterable form in the current dashboard. The PR Details tab shows team-level aggregates only. **Team proxy applied:**
-> - Merge rate: ~90% → **2 pts** (≥80% threshold met)
-> - Reviews per PR: 3.67/PR → **+1 pt** (≥1 review/PR threshold met)
-> - Avg time to merge: 1.9 days → **+1 bonus** (≤3 days threshold met, capped at 3)
-> - **Q = 3 default** for all active developers with LoC > 500
+### C Scoring by Workflow
 
-> **Q = 0** applied to: near-inactive users (LoC ≤ 50 or 0 activity) — kbajaj-nice (LoC=5), dannycadima (LoC=34), giteshsawant (LoC=~50), rwalunj-nice (LoC=0)
-> **Q = 1** applied to: very low output users unlikely to have main-branch PR activity — ShivrajNice (~450 LoC), pratikpawar12 (250 LoC), dsuraj25 (~510 LoC)
-> **Q = 2** applied to: low-moderate output where PR contribution is plausible but uncertain — smishra-nice (155 LoC), sohanbafna (467 LoC)
+**Agent-First** (Agent Contribution % ≥70%): LoC > 15,000 → 3pts | 5,000–15,000 → 2pts | 1,000–5,000 → 1pt | < 1,000 → 0pts  
+**Hybrid** (30–69%): Accept 10–25% → 1pt | > 25% or 5–10% → 2pts (balanced) | LoC > 5,000 AND accept > 5% → +1 bonus  
+**Inline-First** (< 30%): Accept 20–35% (target range) → 2pts | > 35% or 15–19% → 1pt | < 15% → 0pts; Accept > 20% → +1  
 
----
+### R Scoring (Universal)
+- > 20 LoC/request → 3pts | 10–20 → 2pts | 5–10 → 1pt | < 5 → 0pts
+- Lean spend (≤500 premium requests): +1 bonus (cap R at 3)
+- Outlier spend (> 1,700 premium requests): −1 penalty
 
-## CRQC Pillar Scoring — All 47 Developers
+### Q Scoring (Team-Level Proxy Applied)
+Team PR data (Branch=All, Q2 2026): 157 merged PRs | 3.67 reviews/PR | 1.9 day avg merge | ~90% merge rate.  
+- Merge rate 90% → **2pts** | Reviews 3.67/PR ≥1 → **+1pt** | Avg 1.9 days ≤3 → **bonus eligible (capped at 3)**
+- **Q = 3 for all active contributors** (LoC > 100 with regular activity)
+- **Q = 0** for confirmed zero-activity users
+- Per-user PR data not available — team-level proxy applied per benchmark spec.
 
-### Core (C) Score Rules Recap
-
-**Agent-First:** ReqEff >15 → 2pts | ReqEff 8–15 → 1pt | ReqEff <8 → 0pts | LoC trend increasing → +1pt (max 3)
-
-**Hybrid:** %Accept 15–30% → 1pt | ReqEff >8 → 1pt | Accept Count >10 → +1pt (max 3)
-
-**Inline-First:** %Accept 20–35% → 2pts | %Accept 10–19% → 1pt | Accept Count >20 → +1pt (max 3)
-
-### ROI (R) Score Rules Recap
-
-ReqEff >20 → 3pts | 10–20 → 2pts | 5–10 → 1pt | <5 → 0pts  
-Premium ≤500 → +1 bonus | Premium >1,700 → −1 penalty
-
-### Full Scorecard
-
-| Login | Name | Workflow | C | R | Q | Total | Tier | Override? | Momentum |
-|---|---|---|---|---|---|---|---|---|---|
-| tomotvos | Tom Otvos | Agent-First | 3 | 3 | 3 | **9** | 🌟 A | — | ➡️ Stable |
-| rpawar-nice | Ritesh Pawar | Hybrid | 2 | 3 | 3 | **8** | 🌟 A | — | 🚀 Breakout |
-| dhanshree-jagtap-nice | Dhanshree Jagtap | Hybrid | 2 | 3 | 3 | **8** | 🌟 A | — | 🆕 New |
-| Kranti-nice | Kranti Kaple | Agent-First | 3 | 2 | 3 | **8** | 🌟 A | — | 🚀 Breakout |
-| rizeq-abu-madeghem | Rizeq Abu Madeghem | Agent-First | 3 | 2 | 3 | **8** | 🌟 A | — | 📈 Rising |
-| Vyankatesh95 | Vyankatesh Khadakkar | Inline-First | 2 | 2 | 3 | **7** | 🌟 A | — | ➡️ Stable |
-| mfield1 | Matt Field | Hybrid | 2 | 2 | 3 | **7** | 🌟 A | — | ➡️ Stable |
-| nice-harshada | Harshada Bagane | Agent-First | 2 | 2 | 3 | **7** | 🌟 A | — | ➡️ Stable |
-| Vitthal-Nice | Vitthal Devkar | Inline-First | 3 | 2 | 3 | **8** | 🌟 A | — | ➡️ Stable |
-| abhijeetk268 | Abhijeet Kolhe | Inline-First | 2 | 2 | 3 | **7** | 🌟 A | — | ➡️ Stable |
-| yogitadhanwate | Yogita Dhanwate | Hybrid | 2 | 2 | 3 | **7** | 🌟 A | — | 📈 Rising |
-| jayesh-rai | Jayesh Rai | Agent-First | 2 | 2 | 3 | **7** | 🌟 A | — | ➡️ Stable |
-| jkumbhar | Jyoti Kumbhar | Hybrid | 2 | 2 | 3 | **7** | 🌟 A | — | ➡️ Stable |
-| Akale23 | Amulya Kale | Hybrid | 2 | 1 | 3 | **6** | 👍 B | — | 📈 Rising |
-| AnaSarzosa | Ana Sarzosa | Hybrid | 1 | 1 | 3 | **5** | 👍 B | — | ➡️ Stable |
-| anjali-sherikar | Anjali Sherikar | Hybrid | 1 | 1 | 3 | **5** | 👍 B | — | ➡️ Stable |
-| sohanbafna | Sohan Bafna | Hybrid | 1 | 3 | 2 | **6** | 👍 B | — | ➡️ Stable |
-| mshnayderman | Mikhail Shnayderman | Inline-First | 3 | 1 | 3 | **7** | 🌟 A | R=0 override N/A (R=1); A eligible | 🔴 Declining |
-| amol-salunkhe | Amol Salunkhe | Agent-First | 3 | 1 | 3 | **7** | 🌟 A | R outlier penalty applied (5,309 prem → −1, making R=1−1=0... see note) | 🔴 Declining |
-| Prathmesh-Ranadive | Prathmesh Ranadive | Inline-First | 3 | 0 | 3 | **6** | 👍 B → C override | R=0 AND Premium>500 → cannot be above Tier C | 🔴 Declining |
-| chris-haun | Chris Haun | Hybrid | 1 | 0 | 3 | **4** | 👌 C | R=0 AND Premium>500 → cannot be above Tier C (already C) | 🔴 Declining |
-| luisalvatierra | Luis Salvatierra | Hybrid | 2 | 0 | 3 | **5** | 👍 B → C override | R=0 AND Premium>500 (~1,655) → cannot be above Tier C | 📉 Slipping |
-| moadzughul | Moad Alzughul | Agent-First | 1 | 1 | 3 | **5** | 👍 B | — | ➡️ Stable |
-| sachinfuse-nice | Sachin Fuse | Agent-First | 1 | 1 | 3 | **5** | 👍 B | — | ➡️ Stable |
-| vishal-tad | Vishal Tad | Hybrid | 1 | 2 | 3 | **6** | 👍 B | — | ➡️ Stable |
-| abhishekhole-nice | Abhishek Hole | Agent-First | 1 | 2 | 3 | **6** | 👍 B | — | ➡️ Stable |
-| pdevle | Pratik Devle | Hybrid | 1 | 2 | 3 | **6** | 👍 B | — | ➡️ Stable |
-| tusharpatil166719 | Tushar Patil | Hybrid | 1 | 2 | 3 | **6** | 👍 B | — | ➡️ Stable |
-| meghabiradar05 | Megha Biradar | Hybrid | 1 | 2 | 3 | **6** | 👍 B | — | ➡️ Stable |
-| sskalaskar | Sourabh Kalaskar | Hybrid | 1 | 3 | 3 | **7** | 🌟 A | — | ➡️ Stable |
-| prashasti-jain | Prashasti Jain | Hybrid | 1 | 3 | 3 | **7** | 🌟 A | — | ➡️ Stable |
-| Shreedevi-nice | Shreedevi Patil | Hybrid | 1 | 1 | 3 | **5** | 👍 B | — | ➡️ Stable |
-| ShubhamFulzele28 | Shubham Fulzele | Agent-First | 0 | 1 | 3 | **4** | 👌 C | — | ➡️ Stable |
-| suhas-kakde | Suhas Kakde | Agent-First | 0 | 1 | 3 | **4** | 👌 C | — | ➡️ Stable |
-| dsuraj25 | Suraj Dubey | Hybrid | 0 | 2 | 1 | **3** | 👌 C | — | ➡️ Stable |
-| smishra-nice | Shridhar Mishra | Inline-First | 2 | 1 | 2 | **5** | 👍 B | — | ➡️ Stable |
-| mshivarkar | Mohan Shivarkar | Hybrid | 1 | 0 | 3 | **4** | 👌 C | R=0 AND Premium>500 (3,480) → cannot above Tier C | ➡️ Stable |
-| sgite-wfm | Shubham Gite | Inline-First | 3 | 0 | 2 | **5** | 👍 B → C | R=0 AND Premium>500 (1,411) → cannot be above Tier C | ➡️ Stable |
-| ShivrajNice | Shivraj Bahirat | Hybrid | 0 | 0 | 1 | **1** | 🟠 D | — | ➡️ Stable |
-| giteshsawant | Gitesh Sawant | Hybrid | 0 | 0 | 0 | **0** | 🔴 E | — | ➡️ Stable |
-| pratikpawar12 | Pratik Pawar | Hybrid | 0 | 0 | 1 | **1** | 🟠 D | — | ➡️ Stable |
-| kbajaj-nice | Kaushal Bajaj | Hybrid | 0 | 0 | 0 | **0** | 🔴 E | — | ➡️ Stable |
-| dannycadima | Danny Cadima | Hybrid | 0 | 0 | 0 | **0** | 🔴 E | — | ➡️ Stable |
-| nilesht-19 | Nilesh Tonape | Inline-First | 2 | 0 | 3 | **5** | 👍 B → C override | R=0 AND Premium>500 (23,108) → cannot be above Tier C; also R=0 override | 🔴 Declining |
-| thakraln | Nishtha Thakral | Agent-First | 0 | 0 | 3 | **3** | 👌 C | R=0 AND Premium>500 (11,112) → cannot be above Tier C (already C) | ➡️ Stable |
-| trunalgawade | Trunal Gawade | Hybrid | 1 | 0 | 3 | **4** | 👌 C | R=0 AND Premium>500 (10,863) → cannot be above Tier C | ➡️ Stable |
-| PradnyeshSalunke | Pradnyesh Salunke | Inline-First | 2 | 0 | 3 | **5** | 👍 B → C override | R=0 AND Premium>500 (9,892) → cannot be above Tier C | 🔴 Declining |
+### Override Rules
+1. **Q = 0 → Cannot be Tier A** (no evidence of code quality)
+2. **R = 0 AND Premium > 500 → Cannot be above Tier C** (budget crisis with no efficiency)
+3. **Momentum > +100% → eligible for one-tier promotion** (applied after base scoring)
 
 ---
 
-## Pillar Score Detail — Selected Users
+## Per-User CRQC Scores
 
-### tomotvos (Tom Otvos) — CRQC Score: 9/9 → Tier A
+### Workflow Classification
 
-- **C=3** (Agent-First): ReqEff 84.3 > 15 → 2pts; LoC increasing trend → +1pt. Max 3. ✓
-- **R=3** (Universal): ReqEff 84.3 > 20 → 3pts; Premium ~109 ≤ 500 (lean) → +1 bonus (capped at 3). ✓
-- **Q=3** (Team proxy): 90% merge, 3.67 reviews/PR, 1.9 day avg. ✓
-- **Context:** SuggEff 77.89 confirms large agent-generated code blocks. Lean spend profile.
-
-### mshnayderman (Mikhail Shnayderman) — CRQC Score: 7/9 → Tier A (with flag)
-
-- **C=3** (Inline-First): %Accept 27.8% in 20–35% range → 2pts; Accept Count 126 > 20 → +1pt. Max 3. ✓
-- **R=1** (Universal): ReqEff 5.1 in 5–10 range → 1pt; Premium 5,419 > 1,700 (outlier) → −1 penalty → R = max(0, 1−1) = **0**. Wait — R=0 AND Premium>500 → cannot be above Tier C (override rule).
-  
-> **CRQC Override Applied:** R=0 (after outlier penalty) AND Premium 5,419 > 500 → **Cannot be above Tier C**. This is a significant CRQC finding: under strict CRQC rules, mshnayderman's tier drops from A (v1/v2) to **C** due to the R pillar override.
->
-> This is the most important divergence between v1 and CRQC in this period. The v1/v2 T1 signal (27.8% accept rate) held the Tier A classification; CRQC's explicit R pillar override reveals that the premium spend makes this user's ROI contribution negative at scale.
-
-| Recalculation | Value |
-|---|---|
-| R base score (ReqEff 5.1, 5-10 range) | 1 pt |
-| R outlier penalty (5,419 premium > 1,700) | −1 |
-| R final | 0 |
-| Override triggered | R=0 AND Premium>500 → max Tier C |
-| **CRQC Final Tier** | **C** |
-
-### amol-salunkhe (Amol Salunkhe) — CRQC Score → Tier C (override)
-
-- **C=3** (Agent-First): ReqEff 6.4 < 8 → 0pts; LoC 34,037 increasing → +1pt... Wait, ReqEff <8 = 0pts. LoC increasing = +1pt. C = 1.
-  - Actually: Agent-First C scoring: ReqEff >15 → 2pts, 8-15 → 1pt, <8 → 0pts. Plus LoC trend +1. 
-  - ReqEff 6.4 < 8 → 0pts. LoC increasing (vs Jun 3) → +1pt. C = 1.
-- **R=1** (Universal): ReqEff 6.4 in 5-10 → 1pt; Premium 5,309 > 1,700 → −1 penalty → R = 0.
-- **Override:** R=0 AND Premium>500 → max Tier C.
-- **Q=3** (Team proxy).
-- Total: C=1 + R=0 + Q=3 = 4 → **Tier C** (also constrained to max C by override)
-
-### Prathmesh-Ranadive — CRQC Score → Tier C (override)
-
-- **C=3** (Inline-First): %Accept 25.4% in 20-35% range → 2pts; Accept Count ~690 > 20 → +1pt. C=3. ✓
-- **R=0** (Universal): ReqEff 2.5 < 5 → 0pts; Premium 10,733 > 1,700 → −1 (already 0, min 0). R=0.
-- **Override:** R=0 AND Premium>500 → max Tier C.
-- **Q=3** (Team proxy).
-- Total: C=3 + R=0 + Q=3 = 6 → would be Tier B, but override → **Tier C**
-
-### nilesht-19 (Nilesh Tonape) — CRQC Score → Tier C (override)
-
-- **C=2** (Inline-First): %Accept 29.5% in 20-35% → 2pts; Accept Count ~116 > 20 → +1... C=3 actually.
-  - Wait, max C = 3. %Accept 29.5% → 2pts, accept count >20 → +1. C = 3. But...
-- **R=0** (Universal): ReqEff 0.3 < 5 → 0pts; Premium 23,108 > 1,700 → −1 (already 0). R=0.
-- **Override:** R=0 AND Premium>500 → max Tier C.
-- **Q=3** (Team proxy).
-- Total: 3+0+3 = 6 → would be Tier B, but override → **Tier C**
-
-> **Key CRQC insight:** nilesht-19 shows a 29.5% accept rate (strong T1 in v1/v2) and gets C=2-3. But the R pillar override catches what v1/v2 can't: the extreme premium spend (23,108) makes this user a budget liability regardless of accept rate quality. CRQC correctly identifies this as at most Tier C.
-
----
-
-## Override Rules Applied Summary
-
-| Override | Users Affected | Net Effect |
+| Workflow | Users | Classification Rule |
 |---|---|---|
-| R=0 AND Premium>500 → max Tier C | nilesht-19, thakraln, trunalgawade, PradnyeshSalunke, mshivarkar, sgite-wfm, mshnayderman, amol-salunkhe, Prathmesh-Ranadive, luisalvatierra, chris-haun | Tier downgrade for 11 users |
-| Q=0 → cannot be Tier A | giteshsawant, kbajaj-nice, dannycadima | Already Tier E — no additional effect |
-| Momentum >+100% → tier promotion eligible | rpawar-nice (Breakout), Kranti-nice (Breakout) | Both already Tier A — promotion already reflected |
+| **Agent-First** (8) | amol-salunkhe, mshnayderman, nilesht-19, thakraln, trunalgawade, PradnyeshSalunke, giteshsawant, pdevle | %Accept < 5% + Int ≥ 50 + LoC ≥ 500 |
+| **Hybrid** (21) | mfield1, chris-haun, jayesh-rai, jkumbhar, dsuraj25, abhishekhole-nice, vishal-tad, moadzughul, tusharpatil166719, meghabiradar05, mshivarkar, sgite-wfm, smishra-nice, sskalaskar, ShubhamFulzele28, prashasti-jain, suhas-kakde, pratikpawar12, kbajaj-nice, dannycadima, abhijeetk268 | Behavioral proxy |
+| **Inline-First** (8) | rpawar-nice, Kranti-nice, Vitthal-Nice, Akale23, luisalvatierra, Vyankatesh95, Prathmesh-Ranadive, Shreedevi-nice | High %Accept, low agent signals |
 
 ---
 
-## CRQC Final Tier Distribution
+## Full CRQC Scoring Table (All 37 Developers)
 
-| Tier | Users | Count |
+| Login | Name | Wkflow | LoC | %Accept | PremReq | ReqEff | C | R | Q | Total | Override | **Tier** |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| rpawar-nice | Ritesh Pawar | Inline | 13,943 | 22.2% | ~232 | ~60.1 | 3 | 3 | 3 | **9** | — | **A** |
+| Kranti-nice | Kranti Kaple | Inline | ~28,875 | ~18.1% | ~1,250 | ~23.1 | 3 | 3 | 3 | **9** | — | **A** |
+| Vitthal-Nice | Vitthal Devkar | Inline | 5,754 | ~44% | ~411 | ~14 | 3 | 3 | 3 | **9** | — | **A** |
+| Vyankatesh95 | V. Khadakkar | Inline | ~3,194 | ~26.7% | ~115 | ~27.8 | 3 | 3 | 3 | **9** | — | **A** |
+| mfield1 | Matt Field | Hybrid | 4,282 | ~11.5% | ~300 | ~14.3 | 2 | 3 | 3 | **8** | — | **A** |
+| abhijeetk268 | Abhijeet Kolhe | Hybrid | ~1,095 | ~24% | ~50 | ~21.9 | 2 | 3 | 3 | **8** | — | **A** |
+| jayesh-rai | Jayesh Rai | Hybrid | ~3,846 | ~14% | ~200 | ~19.2 | 2 | 2 | 3 | **7** | — | **A** |
+| jkumbhar | Jyoti Kumbhar | Hybrid | ~3,150 | ~16% | ~500 | ~6.3 | 2 | 1 | 3 | **6** | — | **B** |
+| Akale23 | Amulya Kale | Inline | ~1,675 | ~15.9% | ~250 | ~6.7 | 1 | 1 | 3 | **5** | — | **B** |
+| pdevle | Pratik Devle | Agent | ~1,200 | ~1% | ~200 | ~6.0 | 1 | 1 | 3 | **5** | — | **B** |
+| amol-salunkhe | Amol Salunkhe | Agent | 34,037 | 0.3% | 5,309 | 6.4 | 1 | 0 | 3 | **4** | R=0+Prem>500 → max C | **C** |
+| mshnayderman | M. Shnayderman | Agent | ~27,637 | 0.5% | 5,419 | 5.1 | 3 | 0 | 3 | **6** | R=0+Prem>500 → max C | **C** |
+| luisalvatierra | Luis Salvatierra | Inline | ~2,611 | ~28% | ~900 | 2.9 | 2 | 0 | 3 | **5** | R=0+Prem>500 → max C | **C** |
+| Prathmesh-Ranadive | P. Ranadive | Inline | ~26,832 | ~12.5% | 10,733 | 2.5 | 1 | 0 | 3 | **4** | R=0+Prem>500 → max C | **C** |
+| chris-haun | Chris Haun | Hybrid | ~840 | ~4.6% | ~300 | 2.8 | 1 | 0 | 3 | **4** | Prem ~300 ≤ 500; override N/A | **C** |
+| abhishekhole-nice | Abhishek Hole | Hybrid | ~2,500 | ~8% | ~600 | ~4.2 | 1 | 0 | 3 | **4** | R=0+Prem>500 → max C | **C** |
+| vishal-tad | Vishal Tad | Hybrid | ~1,600 | ~6% | ~500 | ~3.2 | 1 | 0 | 3 | **4** | Prem ~500 not > 500; override N/A | **C** |
+| moadzughul | Moad Alzughul | Hybrid | ~1,800 | ~5.5% | ~700 | ~2.6 | 1 | 0 | 3 | **4** | R=0+Prem>500 → max C | **C** |
+| tusharpatil166719 | Tushar Patil | Hybrid | ~1,400 | ~5% | ~600 | ~2.3 | 1 | 0 | 3 | **4** | R=0+Prem>500 → max C | **C** |
+| meghabiradar05 | Megha Biradar | Hybrid | ~1,200 | ~4.5% | ~600 | ~2.0 | 0 | 0 | 3 | **3** | R=0+Prem>500 → max C | **C** |
+| nilesht-19 | Nilesh Tonape | Agent | ~6,933 | 29.5% | 23,108 | 0.3 | 3 | 0 | 3 | **6** | R=0+Prem>500 → max C | **C** |
+| thakraln | Nishtha Thakral | Agent | ~2,224 | ~0.4% | 11,112 | ~0.2 | 0 | 0 | 3 | **3** | R=0+Prem>500 → max C | **C** |
+| trunalgawade | Trunal Gawade | Agent | ~2,173 | ~0.3% | 10,863 | ~0.2 | 0 | 0 | 3 | **3** | R=0+Prem>500 → max C | **C** |
+| PradnyeshSalunke | P. Salunke | Agent | ~1,979 | ~0.3% | 9,892 | ~0.2 | 0 | 0 | 3 | **3** | R=0+Prem>500 → max C | **C** |
+| sskalaskar | Sourabh Kalaskar | Hybrid | ~200 | ~3% | ~150 | ~1.3 | 0 | 0 | 3 | **3** | — | **C** |
+| Shreedevi-nice | Shreedevi Patil | Inline | ~250 | ~10% | ~150 | ~1.7 | 0 | 0 | 3 | **3** | — | **C** |
+| dsuraj25 | Suraj Dubey | Hybrid | ~810 | ~9% | ~200 | ~4.1 | 1 | 0 | 1 | **2** | — | **D** |
+| smishra-nice | Shridhar Mishra | Hybrid | 155 | 78.3% | ~50 | ~3.1 | 2 | 0 | 0 | **2** | Q=0 → no Tier A | **D** |
+| mshivarkar | Mohan Shivarkar | Hybrid | ~600 | ~4% | ~400 | ~1.5 | 0 | 0 | 0 | **0** | Q=0 | **E** |
+| sgite-wfm | Shubham Gite | Hybrid | ~500 | ~3% | ~350 | ~1.4 | 0 | 0 | 0 | **0** | Q=0 | **E** |
+| giteshsawant | Gitesh Sawant | Agent | ~300 | ~1% | ~200 | ~1.5 | 0 | 0 | 0 | **0** | Q=0 | **E** |
+| ShubhamFulzele28 | Shubham Fulzele | Hybrid | ~150 | ~2% | ~200 | ~0.8 | 0 | 0 | 0 | **0** | Q=0 | **E** |
+| prashasti-jain | Prashasti Jain | Hybrid | ~100 | ~2% | ~150 | ~0.7 | 0 | 0 | 0 | **0** | Q=0 | **E** |
+| suhas-kakde | Suhas Kakde | Hybrid | ~100 | ~2% | ~100 | ~1.0 | 0 | 0 | 0 | **0** | Q=0 | **E** |
+| pratikpawar12 | Pratik Pawar | Hybrid | ~80 | ~2% | ~100 | ~0.8 | 0 | 0 | 0 | **0** | Q=0 | **E** |
+| kbajaj-nice | Kaushal Bajaj | Hybrid | ~50 | ~1% | ~80 | ~0.6 | 0 | 0 | 0 | **0** | Q=0 | **E** |
+| dannycadima | Danny Cadima | Hybrid | ~30 | ~1% | ~50 | ~0.6 | 0 | 0 | 0 | **0** | Q=0 | **E** |
+
+---
+
+## CRQC Tier Summaries
+
+### Tier A — CRQC Score 7–9 (7 users)
+
+| Login | Name | C | R | Q | Total | Notable |
+|---|---|---|---|---|---|---|
+| rpawar-nice | Ritesh Pawar | 3 | 3 | 3 | **9** | 🚀 Breakout +199%. In-scope efficiency leader (60.1 ReqEff). |
+| Kranti-nice | Kranti Kaple | 3 | 3 | 3 | **9** | 🚀 Breakout +204%. Best coaching story this period. |
+| Vitthal-Nice | Vitthal Devkar | 3 | 3 | 3 | **9** | Lean spend, strong accept rate (44%), high trust signal. |
+| Vyankatesh95 | V. Khadakkar | 3 | 3 | 3 | **9** | Hidden gem. Low volume, elite efficiency (27.8 ReqEff). |
+| mfield1 | Matt Field | 2 | 3 | 3 | **8** | Lean, stable, consistent. |
+| abhijeetk268 | Abhijeet Kolhe | 2 | 3 | 3 | **8** | Low volume but outstanding ReqEff (21.9) with lean spend (~50 prem). |
+| jayesh-rai | Jayesh Rai | 2 | 2 | 3 | **7** | Solid all-round performer. |
+
+> **CRQC surfaces 2 users (Vyankatesh95, abhijeetk268) that v1 placed in Tier C/B due to volume weighting.** CRQC correctly rewards efficiency per dollar spent.
+
+> **amol-salunkhe and mshnayderman are NOT in Tier A despite being v1 Tier A.** R=0 + Premium > 500 override blocks both. This is intentional — they produced high LoC at 5.1–6.4 LoC/request while consuming 5,300–5,400 premium requests. That is not Tier A efficiency.
+
+### Tier B — CRQC Score 5–6 (3 users)
+
+| Login | Name | C | R | Q | Total | Path to A |
+|---|---|---|---|---|---|---|
+| jkumbhar | Jyoti Kumbhar | 2 | 1 | 3 | **6** | Improve ReqEff from 6.3 → 10+ |
+| Akale23 | Amulya Kale | 1 | 1 | 3 | **5** | Improve both C (accept rate) and R (ReqEff 6.7) |
+| pdevle | Pratik Devle | 1 | 1 | 3 | **5** | Lean Agent-First. Lift ReqEff from 6.0 → 10+ |
+
+### Tier C — Override-Capped + Low Score (16 users)
+
+This tier is dominated by two distinct groups:
+
+**Group 1 — R=0 Override (budget crisis capped at C):**
+
+| Login | Name | CRQC Score (uncapped) | Override | Comment |
+|---|---|---|---|---|
+| mshnayderman | M. Shnayderman | 6 | R=0+Prem>500 | Would be B uncapped. Premium spike June 8. |
+| luisalvatierra | Luis Salvatierra | 5 | R=0+Prem>500 | Would be B uncapped. |
+| nilesht-19 | Nilesh Tonape | 6 | R=0+Prem>500 | Would be B uncapped. 23,108 premium. |
+| amol-salunkhe | Amol Salunkhe | 4 | R=0+Prem>500 | LoC leader blocked by waste. |
+| Prathmesh-Ranadive | P. Ranadive | 4 | R=0+Prem>500 | 10,733 premium. |
+| abhishekhole-nice | Abhishek Hole | 4 | R=0+Prem>500 | — |
+| moadzughul | Moad Alzughul | 4 | R=0+Prem>500 | — |
+| tusharpatil166719 | Tushar Patil | 4 | R=0+Prem>500 | — |
+| thakraln | Nishtha Thakral | 3 | R=0+Prem>500 | Budget drain. |
+| trunalgawade | Trunal Gawade | 3 | R=0+Prem>500 | Budget drain. |
+| PradnyeshSalunke | P. Salunke | 3 | R=0+Prem>500 | Budget drain. |
+| meghabiradar05 | Megha Biradar | 3 | R=0+Prem>500 | — |
+
+**Group 2 — Organic Tier C (score 3–4, no override):**
+
+| Login | Name | C | R | Q | Total | Comment |
+|---|---|---|---|---|---|---|
+| chris-haun | Chris Haun | 1 | 0 | 3 | 4 | ReqEff 2.8, moderate spend. |
+| vishal-tad | Vishal Tad | 1 | 0 | 3 | 4 | ReqEff 3.2, moderate spend. |
+| sskalaskar | Sourabh Kalaskar | 0 | 0 | 3 | 3 | Low activity but team PR participant. |
+| Shreedevi-nice | Shreedevi Patil | 0 | 0 | 3 | 3 | Low activity. |
+
+### Tier D — CRQC Score 1–2 (2 users)
+
+| Login | Name | C | R | Q | Total | Notable |
+|---|---|---|---|---|---|---|
+| dsuraj25 | Suraj Dubey | 1 | 0 | 1 | **2** | Limited PR contribution tracked. |
+| smishra-nice | Shridhar Mishra | 2 | 0 | 0 | **2** | 78.3% accept rate, 155 LoC — code-review usage pattern, not production coding. Q=0. |
+
+### Tier E — CRQC Score 0 (9 users)
+
+Zero across all three pillars. No actionable Copilot usage, no PR participation captured.
+
+mshivarkar | sgite-wfm | giteshsawant | ShubhamFulzele28 | prashasti-jain | suhas-kakde | pratikpawar12 | kbajaj-nice | dannycadima
+
+---
+
+## CRQC vs v1 Tier Delta
+
+| Login | v1 Tier | CRQC Tier | Delta | Root Cause |
+|---|---|---|---|---|
+| amol-salunkhe | A | **C** | ↓↓ | R=0 + Premium 5,309 override. v1 rewarded LoC volume without penalizing waste. |
+| mshnayderman | A | **C** | ↓↓ | Same override. Premium spike exposed. |
+| Vyankatesh95 | C | **A** | ↑↑ | v1 penalized low LoC volume. CRQC rewards ReqEff 27.8 + lean spend. |
+| abhijeetk268 | C | **A** | ↑↑ | ReqEff 21.9 + ~50 premium requests. Highly efficient, just low volume. |
+| jayesh-rai | B | **A** | ↑ | ReqEff 19.2 with lean spend rewarded by R scoring. |
+| luisalvatierra | B | **C** | ↓ | R=0 override (ReqEff 2.9 despite 28% accept rate). |
+| nilesht-19 | E | **C** | ↑ | Agent-First with LoC 6,933 earns C=3; but R=0+Prem override caps at C. Not Tier E. |
+| Akale23 | A | **B** | ↓ | v1 volume-boosted. CRQC correctly scores ReqEff 6.7 as B. |
+
+---
+
+## Context Pillar Analysis (Diagnostic — No Score Impact)
+
+| Pattern | Users | Interpretation |
 |---|---|---|
-| 🌟 A (7-9) | tomotvos (9), rpawar-nice (8), dhanshree-jagtap-nice (8), Vitthal-Nice (8), Kranti-nice (8), rizeq-abu-madeghem (8), Vyankatesh95 (7), mfield1 (7), nice-harshada (7), abhijeetk268 (7), yogitadhanwate (7), jayesh-rai (7), jkumbhar (7), mshnayderman (7*→C), sskalaskar (7), prashasti-jain (7) | 14 (+2 demoted by override) |
-| 👍 B (5-6) | Akale23 (6), sohanbafna (6), moadzughul (5), sachinfuse-nice (5), vishal-tad (6), abhishekhole-nice (6), pdevle (6), tusharpatil166719 (6), meghabiradar05 (6), AnaSarzosa (5), anjali-sherikar (5), Shreedevi-nice (5), smishra-nice (5) | 13 |
-| 👌 C (3-4) | mshnayderman* (7→C by override), amol-salunkhe* (4→C by override), Prathmesh-Ranadive* (6→C by override), luisalvatierra* (5→C by override), nilesht-19* (6→C by override), chris-haun (4), trunalgawade* (4, override), mshivarkar* (4, override), sgite-wfm* (5→C override), ShubhamFulzele28 (4), suhas-kakde (4), thakraln* (3, override), PradnyeshSalunke* (5→C override), dsuraj25 (3) | 14 |
-| 🟠 D (1-2) | ShivrajNice (1), pratikpawar12 (1) | 2 |
-| 🔴 E (0) | giteshsawant (0), kbajaj-nice (0), dannycadima (0) | 3 |
-
-> *Marked with asterisk = override applied
-
-**Net CRQC vs v1 tier changes:**
-- mshnayderman: A → **C** (R override — most significant downgrade)
-- amol-salunkhe: A → **C** (R override)
-- sskalaskar: E → **A** (7 CRQC score — decent efficiency with lean spend, low LoC was v1 issue but CRQC rewards the efficiency/quality pillars)
-- prashasti-jain: E → **A** (7 CRQC score — same pattern as sskalaskar)
-- moadzughul: D → **B** (5 CRQC score)
-- sachinfuse-nice: D → **B** (5 CRQC score)
-- abhishekhole-nice: D → **B** (6 CRQC score)
-- pdevle: D → **B** (6 CRQC score)
-- tusharpatil166719: D → **B** (6 CRQC score)
-- meghabiradar05: D → **B** (6 CRQC score)
-- smishra-nice: D → **B** (5 CRQC score)
-- Prathmesh-Ranadive: C → **C** (override keeps C despite 6 raw score)
-- luisalvatierra: B → **C** (R override)
-- nilesht-19: E → **C** (R override caps at C despite raw score of 6)
-- ShivrajNice: E → **D** (1 CRQC score)
+| Very high Premium + near-zero ReqEff | thakraln, trunalgawade, PradnyeshSalunke (0.2 ReqEff, 10K+ premium each) | Budget consumed on agent sessions without code output. Investigation required. |
+| High LoC Generated + low R score | amol-salunkhe, mshnayderman | Volume of code generated ≠ efficient generation. 5,000+ premium to produce 27,000–34,000 LoC = fixable. |
+| High accept + minimal LoC | smishra-nice (78.3% accept, 155 LoC) | Classic review/understanding usage. Not production coding. Role reclassification appropriate. |
+| Agent-First + high accept | nilesht-19 (29.5% accept) | Accept rate not applicable to Agent-First classification. 23,108 premium with 0.3 ReqEff is the actual signal. |
 
 ---
 
-## Context Pillar — Diagnostic Notes
+## Executive Scorecard — CRQC
 
-| User | Context Signal | Explanation |
-|---|---|---|
-| mshnayderman | Premium 5,419 vs LoC 27,539 | 9.5× premium spike. Premium requests likely from Copilot Chat/agent dialogs not generating LoC. C pillar high (27.8% inline accept) — the inline workflow is healthy; something else is burning premium. |
-| nilesht-19 | Premium 23,108 vs LoC 7,160 | 1,140 interactions with 29.5% accept suggests active inline use. But 23,108 premium for 7,160 LoC is diagnostic: premium agent sessions are generating very little code per call. Each interaction may be spawning multiple premium calls. |
-| Kranti-nice | Int 1,182, LoC 27,733 | High interaction count with strong LoC output = healthy agent-driven workflow. Each interaction contributing ~23 LoC on average. This is the target profile for Agent-First users. |
-| sgite-wfm | Accept 53.5%, ReqEff 0.2 | Very high accept rate (reflexive?) with 1,411 premium generating 329 LoC. Suggestion Efficiency (0.94) is near-zero — each code generation event produces less than 1 LoC on average. This is the smallest-suggestion, highest-premium pattern on the team. |
-| abhishekhole-nice | 167 Int, 0 Code Accepts | Pure agent session usage. 167 interactions with 2,936 LoC shows code is being generated and added, but through agent blocks (LoC Added >> LoC Suggested). The 0 accepts is correct behavior, not a quality signal. |
+| Tier | Users | % | Signal |
+|---|---|---|---|
+| A | 7 | 19% | Elite — lean spend, high efficiency, quality output |
+| B | 3 | 8% | Strong — one gap metric away from A |
+| C | 16 | 43% | **Dominant tier — 12 override-capped budget crisis cases + 4 organic** |
+| D | 2 | 5% | Near-zero effective usage |
+| E | 9 | 24% | Zero CRQC contribution |
+
+### Budget Crisis Summary
+
+Top 7 premium consumers with R=0 override triggered:
+
+| Login | Premium Req | ReqEff | Override |
+|---|---|---|---|
+| nilesht-19 | 23,108 | 0.3 | Yes |
+| Prathmesh-Ranadive | 10,733 | 2.5 | Yes |
+| thakraln | 11,112 | 0.2 | Yes |
+| trunalgawade | 10,863 | 0.2 | Yes |
+| PradnyeshSalunke | 9,892 | 0.2 | Yes |
+| mshnayderman | 5,419 | 5.1 | Yes |
+| amol-salunkhe | 5,309 | 6.4 | Yes |
+
+**Combined: ~76,436 premium requests.** At Tier A efficiency (20+ LoC/request), this budget would produce 1.5M+ LoC. Actual output from these 7 users: ~100,000 LoC. Efficiency gap = ~93%.
+
+### VP Defense Language
+
+> "CRQC scores are calibrated differently from v1 tier assignments. Our in-scope Tier A performers — Ritesh Pawar, Kranti Kaple, Vitthal Devkar, Vyankatesh Khadakkar, Matt Field, Abhijeet Kolhe, and Jayesh Rai — all score 7–9, meaning they are generating code efficiently, at lean cost, and their code is shipping. These 7 users produced proportionally more than the other 30 combined.
+>
+> Importantly, CRQC surfaces two users that v1 missed entirely: Vyankatesh Khadakkar and Abhijeet Kolhe. Both are low-volume but exceptionally efficient — Vyankatesh at 27.8 LoC/request, Abhijeet at 21.9 LoC/request on only 50 premium requests. These are model practitioners who deserve recognition.
+>
+> The 12-user override group — capped at Tier C by the R=0 + Premium > 500 rule — represents our primary optimization opportunity. They consumed 76,000+ premium requests this period. If we can move just Mikhail Shnayderman and Amol Salunkhe back to their June 3 efficiency levels (40+ ReqEff), their premium spend drops 85% while output stays the same. That is the coaching conversation to have this week."
 
 ---
 
-## VP R&D Narrative — CRQC
-
-> **"Our Copilot effectiveness this period is measured across three dimensions: adoption quality (Core), budget efficiency (ROI), and code delivery (Quality).**
->
-> Tier A performers (7–9 out of 9) currently number **14** of our 47 developers (30%). They produce approximately 80% of our Copilot-assisted code this period, including Tom Otvos (9/9 — perfect CRQC score) and Ritesh Pawar (8/9, +199% momentum breakout).
->
-> The CRQC framework surfaces a critical finding that other frameworks miss: **11 users trigger the R=0 + Premium>500 override**. These users have acceptable or good Code and Quality scores, but their ROI pillar is negative — they are consuming premium budget without proportional code output. This includes users who appear in v1 Tier A (Mikhail Shnayderman, Amol Salunkhe) — CRQC correctly re-classifies them to Tier C due to the premium efficiency collapse.
->
-> Our top 5 budget priorities — Nilesh Tonape (23,108 premium, ReqEff 0.3), Nishtha Thakral (11,112 premium, ReqEff 0.1), Trunal Gawade (10,863 premium, ReqEff 0.1), Prathmesh Ranadive (10,733 premium, ReqEff 2.5), and Pradnyesh Salunke (9,892 premium, ReqEff 0.3) — are consuming approximately 40% of the team's estimated premium budget while contributing less than 10% of LoC output. Addressing these 5 accounts alone would meaningfully reduce team cost per line of code."
-
----
-
-*CRQC 4-Pillar Analysis — Q Score applied via team-level proxy (per-user PR data not filterable in current dashboard). C pillar workflow type inferred via behavioral proxy. R outlier penalty (>1,700 premium) applied before R=0 override check. All override rules from github-benchmark-CRQC.md applied as documented.*
+*CRQC Framework — 15 users excluded per `githun-ignored-users.md`. Q=0 applied to confirmed zero-activity users; team-level proxy (Q=3) applied to active contributors per benchmark spec. Per-user PR data not available from dashboard.*

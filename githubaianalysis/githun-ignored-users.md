@@ -35,4 +35,4 @@ When running any analysis (v1, v2, Role+Momentum, CRQC):
 
 ---
 
-*Last updated: June 3, 2026*
+*Last updated: June 8, 2026*
