@@ -1,0 +1,113 @@
+%% AWS resource ownership graph
+%% Which service writes / reads which AWS resource (post Verint-flow correction)
+flowchart LR
+    classDef java fill:#fde68a,stroke:#92400e,color:#000
+    classDef csharp fill:#bfdbfe,stroke:#1e40af,color:#000
+    classDef store fill:#d1fae5,stroke:#065f46,color:#000
+    classDef ext fill:#fee2e2,stroke:#991b1b,color:#000
+
+    STC[StreamConsumer Java]:::java
+    SA[StateAggregator Java]:::java
+    IR[IntervalReader Java]:::java
+    VP[VerintPublisher Java]:::java
+    SC[StateCollector C#]:::csharp
+    SP[StatePublisher C#]:::csharp
+    IA[IntervalAggregator C#]:::csharp
+    IP[IntervalPublisher C#]:::csharp
+    ES[EtlScheduler C#]:::csharp
+    WC[WfmConfig C#]:::csharp
+
+    KO[(Kinesis Orchestration)]:::store
+    KW[(Kinesis WFM State)]:::store
+    QSA[(SQS SA Queue)]:::store
+    QIR[(SQS IR Queue<br/>prefixed signals)]:::store
+    QIRSA[(SQS IR_SA_QUEUE.fifo)]:::store
+    QVP[(SqsVerintPublishQueue)]:::store
+    QIP[(SqsPublishQueue)]:::store
+    QEXT[(SQS external<br/>batch-completion)]:::store
+    R[(Redis sorted sets<br/>ac/cs/acdfo/csdfo/as<br/>:inflight)]:::store
+    D[(DynamoDB<br/>aggregated facts)]:::store
+    S3I[(S3 interval bucket<br/>verint/ verintadherence/<br/>iexsftp/ cxonewfm/)]:::store
+    AUR[(Aurora MySQL<br/>tbl_409_tenant_status<br/>tbl_409_iex_config<br/>External_GetAllTenantData<br/>Interval_GetSftpConnectionsByTenantStack)]:::store
+    DW[(Per-cluster SQL Server DW)]:::store
+    SM[(Secrets Manager)]:::store
+    S3C[(S3 ic-certs)]:::store
+    CW[(CloudWatch)]:::store
+
+    EXT_ACD[ACD / DFO]:::ext
+    EXT_V[Verint REST<br/>per tenant]:::ext
+    EXT_IEXR[IEX ASCWS REST<br/>real-time]:::ext
+    EXT_IEXS[IEX SFTP<br/>per tenant]:::ext
+    EXT_CX[External CxOne<br/>pickup]:::ext
+
+    %% Inbound
+    EXT_ACD --> KO
+
+    %% Real-time pipeline
+    KO --> STC
+    KO --> SC
+    STC -->|ZADD| R
+    STC --> QSA
+    STC --> QIR
+    QSA --> SA
+    R --> SA
+    SA -->|PutItem| D
+    SC -->|publish| KW
+    KW --> SP
+    SP --> EXT_IEXR
+
+    %% Interval-reader
+    QIR --> IR
+    R --> IR
+    IR --> QIRSA
+    IR --> QEXT
+    QIRSA -.-> SA
+
+    %% Historic-interval pipeline
+    ES -->|Interval_GetClusters / Update| AUR
+    ES -->|IC_GetETLData| DW
+    ES -->|POST IntervalRequest| IA
+    D -->|DynamoConnector read| IA
+    IA -->|PutObject 4 prefixes| S3I
+
+    %% File-drop dispatch
+    S3I -->|S3 event verint/*| QVP
+    S3I -->|S3 event iexsftp/*| QIP
+    S3I -.-> EXT_CX
+
+    QVP --> VP
+    S3I -->|GetObject| VP
+    AUR -->|External_GetAllTenantData| VP
+    VP -->|POST| EXT_V
+
+    QIP --> IP
+    S3I -->|GetObject| IP
+    AUR -->|Interval_GetSftpConnectionsByTenantStack| IP
+    IP -->|SFTP| EXT_IEXS
+
+    %% Config
+    WC --> AUR
+
+    %% Shared services
+    SM -.creds.-> WC
+    SM -.creds.-> ES
+    SM -.creds.-> IA
+    SM -.creds.-> VP
+    SM -.creds.-> IP
+    S3C -.TLS.-> SC
+    S3C -.TLS.-> SP
+    S3C -.TLS.-> IA
+    S3C -.TLS.-> IP
+    S3C -.TLS.-> ES
+    S3C -.TLS.-> WC
+
+    STC -.metrics.-> CW
+    SA -.metrics.-> CW
+    IR -.metrics.-> CW
+    VP -.metrics.-> CW
+    SC -.metrics.-> CW
+    SP -.metrics.-> CW
+    IA -.metrics.-> CW
+    IP -.metrics.-> CW
+    ES -.metrics.-> CW
+    WC -.metrics.-> CW

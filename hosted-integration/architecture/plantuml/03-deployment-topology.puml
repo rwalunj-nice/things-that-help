@@ -1,0 +1,59 @@
+@startuml WFM-Deployment-Topology
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Deployment.puml
+
+title NICE WFM Integration Platform - Deployment Topology
+
+Deployment_Node(jenkins, "Jenkins", "CI/CD") {
+    Container(jenkinsfile, "Jenkinsfile pipeline", "Groovy", "Builds Docker images, deploys CloudFormation")
+}
+
+Deployment_Node(aws, "AWS Cloud") {
+
+    Deployment_Node(us_west_2, "us-west-2 (Dev / Staging)") {
+        Deployment_Node(ecs_dev, "ECS Fargate Cluster") {
+            Container(srv_dev, "11 microservices", "Docker / .NET / Java", "256MB-1GB tasks")
+        }
+        ContainerDb(rds_dev, "Aurora MySQL", "Aurora", "Dev / Staging DB")
+        ContainerDb(redis_dev, "ElastiCache", "Redis cluster", "Buffer + locks")
+        ContainerDb(dynamo_dev, "DynamoDB", "On-demand", "Aggregated facts")
+        Container(kinesis_dev, "Kinesis Streams", "Multi-shard", "Orchestration + WFM State")
+        Container(sqs_dev, "SQS Queues", "Standard + DLQ", "SA, IR, Queue/Agent Reports")
+    }
+
+    Deployment_Node(prod_regions, "Production - Multiple Regions") {
+
+        Deployment_Node(na2, "NA2 (us-east-1 region)") {
+            Container(srv_na2, "11 microservices", "Docker", "Per-region deployment")
+        }
+
+        Deployment_Node(na3, "NA3 (us-west-2 region)") {
+            Container(srv_na3, "11 microservices", "Docker", "Per-region deployment")
+        }
+
+        Deployment_Node(uk2, "UK2 (eu-west-2 region)") {
+            Container(srv_uk2, "11 microservices", "Docker", "Per-region deployment")
+        }
+
+        Deployment_Node(za1, "ZA1 (af-south-1 region)") {
+            Container(srv_za1, "11 microservices", "Docker", "Per-region deployment")
+        }
+    }
+
+    Deployment_Node(shared_aws, "Shared AWS Services") {
+        ContainerDb(sm, "Secrets Manager", "encrypted", "DB creds, TLS keys")
+        Container(s3, "S3", "ic-certs-*", "TLS certificates")
+        Container(cw, "CloudWatch", "Logs + Metrics + Alarms", "Per-service log group")
+        Container(sns, "SNS", "cloudwatch-bmc-info", "Alarm notifications")
+    }
+}
+
+Rel(jenkinsfile, ecs_dev, "Deploys via CloudFormation")
+Rel(jenkinsfile, prod_regions, "Deploys per region")
+
+Rel(srv_dev, sm, "GetSecretValue")
+Rel(srv_dev, s3, "Fetch TLS at startup")
+Rel(srv_dev, cw, "Logs + metrics")
+Rel(cw, sns, "Alarm trigger")
+
+SHOW_LEGEND()
+@enduml

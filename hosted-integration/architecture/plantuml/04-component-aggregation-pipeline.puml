@@ -1,0 +1,65 @@
+@startuml WFM-Aggregation-Component
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Component.puml
+
+title NICE WFM Integration Platform - Aggregation Pipeline (Component view)
+
+Container_Boundary(streamc, "StreamConsumer (Java)") {
+    Component(stc_app, "NiceWfmConsumerApplication", "Spring Boot main")
+    Component(stc_kcl, "KCL ShardWorker", "Per-shard reader")
+    Component(stc_proc_session, "AgentSessionRecordProcessor", "Session events")
+    Component(stc_proc_contact, "AgentContactRecordProcessor", "Contact events")
+    Component(stc_proc_skill, "ContactSkillRecordProcessor", "Skill events")
+    Component(stc_proc_custom, "CustomFieldsRecordProcessor", "Custom fields")
+    Component(stc_proc_dfo, "ContactDFORecordProcessor", "DFO events")
+}
+
+Container_Boundary(stateag, "StateAggregator (Java)") {
+    Component(sa_app, "StateAggregatorApplication", "Spring Boot main + beans")
+    Component(sa_listener, "SQSQueueListener", "JMS-style SQS listener")
+    Component(sa_session, "AgentSessionAggregatorService", "Aggregate sessions")
+    Component(sa_contact, "AgentContactAggregatorService", "Aggregate contacts")
+    Component(sa_skill, "ContactSkillAggregatorService", "Aggregate skills")
+    Component(sa_dfo1, "DFOAgentContactAggregatorService", "DFO agents")
+    Component(sa_dfo2, "DFOContactFactAggregatorService", "DFO facts")
+    Component(sa_activity, "AgentActivityAggregatorService", "Activity rollup")
+    Component(sa_dynamo_h, "DynamoHelper", "Build PutItemRequest")
+    Component(sa_dynamo_i, "DynamoInserter", "Execute writes")
+    Component(sa_purge, "ASInFlightPurgeScheduler", "Stale Redis cleanup")
+    Component(sa_health, "HealthCheckController", "Health endpoint")
+}
+
+ContainerDb(redis, "Redis", "Buffer")
+ContainerDb(sqs_sa, "SQS SA queue", "Notifications")
+ContainerDb(dynamo, "DynamoDB", "Aggregated facts")
+
+Rel(stc_app, stc_kcl, "registers")
+Rel(stc_kcl, stc_proc_session, "dispatches")
+Rel(stc_kcl, stc_proc_contact, "dispatches")
+Rel(stc_kcl, stc_proc_skill, "dispatches")
+Rel(stc_kcl, stc_proc_custom, "dispatches")
+Rel(stc_kcl, stc_proc_dfo, "dispatches")
+
+Rel(stc_proc_session, redis, "write event")
+Rel(stc_proc_session, sqs_sa, "notify")
+Rel(stc_proc_contact, redis, "write event")
+Rel(stc_proc_contact, sqs_sa, "notify")
+
+Rel(sqs_sa, sa_listener, "deliver")
+Rel(sa_listener, redis, "fetch event")
+Rel(sa_listener, sa_session, "route")
+Rel(sa_listener, sa_contact, "route")
+Rel(sa_listener, sa_skill, "route")
+Rel(sa_listener, sa_dfo1, "route")
+Rel(sa_listener, sa_dfo2, "route")
+Rel(sa_listener, sa_activity, "route")
+
+Rel(sa_session, sa_dynamo_h, "build")
+Rel(sa_contact, sa_dynamo_h, "build")
+Rel(sa_skill, sa_dynamo_h, "build")
+Rel(sa_dynamo_h, sa_dynamo_i, "PutItemRequest")
+Rel(sa_dynamo_i, dynamo, "PutItem")
+
+Rel(sa_purge, redis, "scan + delete")
+
+SHOW_LEGEND()
+@enduml

@@ -1,0 +1,41 @@
+%% Real-time agent state event flow
+%% ACD/DFO event -> StateAggregator (DynamoDB) -> Verint
+%% Parallel path: StateCollector -> StatePublisher -> IEX
+sequenceDiagram
+    autonumber
+    participant ACD as ACD / DFO
+    participant KO as Kinesis<br/>Orch Stream
+    participant SC as StateCollector<br/>(C#)
+    participant KW as Kinesis<br/>WFM State
+    participant SP as StatePublisher<br/>(C#)
+    participant IEX as IEX (ASCWS)
+    participant STC as StreamConsumer<br/>(Java)
+    participant R as Redis<br/>(Redisson)
+    participant Q as SQS SA queue
+    participant SA as StateAggregator<br/>(Java)
+    participant D as DynamoDB
+    participant VP as VerintPublisher<br/>(Java, scheduled)
+    participant V as Verint WFM
+
+    ACD->>KO: orchestration event
+    par C# transform path
+        KO->>SC: KCL read shard record
+        SC->>SC: OrchestrationParser.parse()
+        SC->>SC: OrchestrationEventProcessor.transform()
+        SC->>KW: publish WFM-centric event
+        KW->>SP: KCL read
+        SP->>IEX: POST /ascws (agent state)
+    and Java aggregation path
+        KO->>STC: KCL read shard record
+        STC->>STC: route to RecordProcessor by event type
+        STC->>R: write event (Redisson cluster)
+        STC->>Q: send SQS notification
+        Q->>SA: JMS deliver
+        SA->>R: fetch event (MASTER_SLAVE client)
+        SA->>SA: route to *AggregatorService
+        SA->>D: PutItem (DynamoInserter)
+    end
+
+    Note over VP: Scheduled (cron)
+    VP->>D: Query aggregated rows
+    VP->>V: POST queue + agent reports
