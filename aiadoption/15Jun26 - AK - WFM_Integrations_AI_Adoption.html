@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>IEX Core PI-2 — AI Usage & Epic Delivery Report</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #f7f7f5; color: #1a1a1a; font-size: 15px; line-height: 1.6; }
+  .page { max-width: 960px; margin: 0 auto; padding: 40px 32px; }
+
+  .report-header { border-bottom: 2px solid #1a1a1a; padding-bottom: 20px; margin-bottom: 36px; }
+  .report-header .eyebrow { font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; color: #888; margin-bottom: 8px; }
+  .report-header h1 { font-size: 26px; font-weight: 600; line-height: 1.2; }
+  .report-header .meta { font-size: 13px; color: #666; margin-top: 8px; }
+
+  .section-label { font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: #888; margin-bottom: 12px; font-weight: 500; }
+
+  .summary-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 36px; }
+  .stat-card { background: #fff; border: 1px solid #e5e5e0; border-radius: 10px; padding: 16px 18px; }
+  .stat-card .label { font-size: 12px; color: #888; margin-bottom: 6px; }
+  .stat-card .value { font-size: 26px; font-weight: 600; line-height: 1; }
+  .stat-card .sub { font-size: 12px; color: #888; margin-top: 4px; }
+  .stat-card.alert { border-left: 3px solid #e24b4a; }
+  .stat-card.warn { border-left: 3px solid #ef9f27; }
+  .stat-card.good { border-left: 3px solid #1D9E75; }
+
+  .chart-section { background: #fff; border: 1px solid #e5e5e0; border-radius: 10px; padding: 24px; margin-bottom: 24px; }
+  .chart-section h2 { font-size: 15px; font-weight: 600; margin-bottom: 4px; }
+  .chart-section .chart-sub { font-size: 12px; color: #888; margin-bottom: 20px; }
+
+  .findings { margin-bottom: 36px; }
+  .finding-card { background: #fff; border: 1px solid #e5e5e0; border-radius: 10px; padding: 20px 22px; margin-bottom: 12px; display: grid; grid-template-columns: 28px 1fr; gap: 14px; align-items: start; }
+  .finding-card.critical { border-left: 3px solid #e24b4a; }
+  .finding-card.warning { border-left: 3px solid #ef9f27; }
+  .finding-card.positive { border-left: 3px solid #1D9E75; }
+  .finding-icon { width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700; flex-shrink: 0; margin-top: 2px; }
+  .finding-icon.critical { background: #fcebeb; color: #a32d2d; }
+  .finding-icon.warning { background: #faeeda; color: #854f0b; }
+  .finding-icon.positive { background: #E1F5EE; color: #0F6E56; }
+  .finding-body h3 { font-size: 14px; font-weight: 600; margin-bottom: 4px; }
+  .finding-body p { font-size: 13px; color: #555; line-height: 1.55; }
+  .finding-body .team-tag { display: inline-block; background: #f0f0ec; border-radius: 4px; font-size: 11px; padding: 2px 7px; margin-right: 4px; margin-top: 6px; color: #555; font-weight: 500; }
+
+  .team-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; margin-bottom: 36px; }
+  .team-card { background: #fff; border: 1px solid #e5e5e0; border-radius: 10px; padding: 18px 20px; }
+  .team-card h3 { font-size: 14px; font-weight: 600; margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
+  .badge { font-size: 10px; padding: 2px 8px; border-radius: 20px; font-weight: 500; }
+  .badge.green { background: #E1F5EE; color: #0F6E56; }
+  .badge.amber { background: #faeeda; color: #854f0b; }
+  .badge.red { background: #fcebeb; color: #a32d2d; }
+  .badge.gray { background: #f0f0ec; color: #5F5E5A; }
+  .team-row { display: flex; justify-content: space-between; align-items: center; padding: 5px 0; border-bottom: 0.5px solid #f0f0ec; font-size: 13px; }
+  .team-row:last-child { border-bottom: none; }
+  .team-row .metric-label { color: #888; }
+  .team-row .metric-val { font-weight: 500; }
+  .trend-arrow { font-size: 13px; }
+
+  .sprint-table-wrap { overflow-x: auto; margin-bottom: 36px; }
+  table { width: 100%; border-collapse: collapse; font-size: 13px; background: #fff; border-radius: 10px; overflow: hidden; border: 1px solid #e5e5e0; }
+  thead tr { background: #f7f7f5; }
+  th { text-align: left; padding: 10px 14px; font-size: 11px; letter-spacing: 0.07em; text-transform: uppercase; color: #888; font-weight: 500; border-bottom: 1px solid #e5e5e0; }
+  td { padding: 10px 14px; border-bottom: 0.5px solid #f0f0ec; color: #333; }
+  tr:last-child td { border-bottom: none; }
+  tr:hover td { background: #fafaf8; }
+  .cell-red { color: #a32d2d; font-weight: 600; }
+  .cell-amber { color: #854f0b; font-weight: 600; }
+  .cell-green { color: #0F6E56; font-weight: 600; }
+  .cell-gray { color: #aaa; }
+
+  .correlation-box { background: #fff; border: 1px solid #e5e5e0; border-radius: 10px; padding: 24px; margin-bottom: 24px; }
+  .correlation-box h2 { font-size: 15px; font-weight: 600; margin-bottom: 16px; }
+
+  .verdict { background: #f7f7f5; border-left: 4px solid #1D9E75; border-radius: 0 10px 10px 0; padding: 16px 20px; margin-bottom: 36px; }
+  .verdict h2 { font-size: 14px; font-weight: 600; margin-bottom: 6px; }
+  .verdict p { font-size: 13px; color: #555; line-height: 1.6; }
+
+  .chart-legend { display: flex; gap: 16px; flex-wrap: wrap; font-size: 12px; color: #666; margin-bottom: 12px; }
+  .chart-legend span { display: flex; align-items: center; gap: 5px; }
+  .swatch { width: 10px; height: 10px; border-radius: 2px; display: inline-block; }
+
+  footer { font-size: 11px; color: #bbb; border-top: 1px solid #e5e5e0; padding-top: 16px; margin-top: 8px; }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="report-header">
+    <div class="eyebrow">Management Report · IEX Core Teams</div>
+    <h1>AI Usage & Epic Delivery — PI-2 Correlation Analysis</h1>
+    <div class="meta">PI.WFM.2026.2 · Sprints S1–S4 · Generated June 14, 2026 · Sprint S4 is current (in-flight)</div>
+  </div>
+
+  <div class="section-label">PI-2 at a glance</div>
+  <div class="summary-grid">
+    <div class="stat-card warn">
+      <div class="label">AI usage S4 (planned)</div>
+      <div class="value">80%</div>
+      <div class="sub">↓ from 97% in S2 peak</div>
+    </div>
+    <div class="stat-card alert">
+      <div class="label">AI SP delivered S4</div>
+      <div class="value">1%</div>
+      <div class="sub">vs 97% in S2 — collapse</div>
+    </div>
+    <div class="stat-card good">
+      <div class="label">Epics closed (PI to date)</div>
+      <div class="value">8</div>
+      <div class="sub">of 21 committed (38%)</div>
+    </div>
+    <div class="stat-card alert">
+      <div class="label">Teams with 0 epics closed</div>
+      <div class="value">2</div>
+      <div class="sub">Eureka & Titans (0%)</div>
+    </div>
+  </div>
+
+  <div class="section-label">Sprint-over-sprint data — IEX Core teams</div>
+  <div class="sprint-table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Sprint</th>
+          <th>SP w/ AI</th>
+          <th>SP completed</th>
+          <th>% AI SP delivered</th>
+          <th>Trend</th>
+          <th>Note</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>S1</strong> (Apr 9–30)</td>
+          <td>28</td>
+          <td>33</td>
+          <td class="cell-amber">85%</td>
+          <td class="trend-arrow">—</td>
+          <td class="cell-gray">Baseline</td>
+        </tr>
+        <tr>
+          <td><strong>S2</strong> (Apr 30–May 20)</td>
+          <td>341</td>
+          <td>350</td>
+          <td class="cell-green">97%</td>
+          <td class="trend-arrow cell-green">↑ +12pp</td>
+          <td>Strong adoption ramp</td>
+        </tr>
+        <tr>
+          <td><strong>S3</strong> (May 21–Jun 10)</td>
+          <td>153</td>
+          <td>209</td>
+          <td class="cell-amber">73%</td>
+          <td class="trend-arrow cell-red">↓ −24pp</td>
+          <td>Volume & rate drop</td>
+        </tr>
+        <tr>
+          <td><strong>S4</strong> (Jun 11–Jul 1) <em>in-flight</em></td>
+          <td>1</td>
+          <td>7</td>
+          <td class="cell-red">1%</td>
+          <td class="trend-arrow cell-red">↓ −72pp</td>
+          <td class="cell-red">Critical regression</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="section-label">AI usage vs. epic delivery correlation</div>
+  <div class="chart-section">
+    <h2>% AI story points delivered vs. cumulative epics closed — S1 to S4</h2>
+    <div class="chart-sub">IEX Core Teams aggregate. S4 epics = 0 closed so far (in-flight sprint).</div>
+    <div class="chart-legend">
+      <span><span class="swatch" style="background:#378ADD;"></span>% AI SP delivered (left axis)</span>
+      <span><span class="swatch" style="background:#1D9E75; border: 1.5px dashed #1D9E75; background: none;"></span>Epics closed cumulative (right axis)</span>
+    </div>
+    <div style="position: relative; width: 100%; height: 260px;">
+      <canvas id="corrChart" role="img" aria-label="Dual-axis chart showing AI SP delivery rate and cumulative epics closed across S1-S4. AI rate peaks at 97% in S2 then collapses to 1% in S4. Epics grow from 0 to 8 across S1-S3 then stall.">
+        AI delivery: S1 85%, S2 97%, S3 73%, S4 1%. Cumulative epics: S1 0, S2 5, S3 8, S4 8.
+      </canvas>
+    </div>
+  </div>
+
+  <div class="correlation-box">
+    <h2>Correlation verdict</h2>
+    <p style="font-size:13px; color:#555; line-height:1.65;">
+      <strong>S1→S2:</strong> AI usage jumped from 85% → 97% and epics closed surged (0 → 5). Strong positive signal — AI ramp-up correlated directly with delivery acceleration.<br><br>
+      <strong>S2→S3:</strong> AI rate dropped 24pp (97% → 73%) and epic closures slowed significantly (5 → 8, only 3 more). Moderate negative signal.<br><br>
+      <strong>S3→S4:</strong> AI SP delivery has collapsed to 1% with zero epics closed so far. The correlation is stark — this is not a sprint-end lag issue, it is a behavioral regression in AI tool usage that is almost certainly impacting throughput. <strong>The pattern is directionally consistent across all sprints: when AI usage drops, delivery drops.</strong>
+    </p>
+  </div>
+
+  <div class="section-label">Team-level findings requiring attention</div>
+  <div class="findings">
+
+    <div class="finding-card critical">
+      <div class="finding-icon critical">!</div>
+      <div class="finding-body">
+        <h3>Horizon: AI usage abandoned in S4</h3>
+        <p>Horizon had the strongest PI start — 100% AI SP delivery in S3 — but shows 0 issues, 0 SP with AI label, and NaN% in S4. This is a complete stop, not a gradual decline. Either the team stopped labeling AI work or stopped using AI tools entirely. 6 of 6 committed epics were closed through S3, so delivery was real — but S4 trajectory is untracked and at risk.</p>
+        <span class="team-tag">Horizon</span><span class="team-tag badge red">S4: 0% AI SP</span>
+      </div>
+    </div>
+
+    <div class="finding-card critical">
+      <div class="finding-icon critical">!</div>
+      <div class="finding-body">
+        <h3>Titans: 0% AI SP delivered in S4, 0 epics closed all PI</h3>
+        <p>Titans has never closed an epic this PI (0 of 3 committed, 0%). In S4 they show NaN% AI usage (0 SP labeled with AI). In S2–S3 they were at 92–100% AI SP delivery, so the regression is recent and sharp. With 0 epics closed and AI engagement gone dark, this team needs immediate investigation — is the epic scope bloated, are stories not being closed out, or is there a dependency block?</p>
+        <span class="team-tag">Titans</span><span class="team-tag badge red">0 epics this PI</span><span class="team-tag badge red">S4: NaN (0 AI SP)</span>
+      </div>
+    </div>
+
+    <div class="finding-card critical">
+      <div class="finding-icon critical">!</div>
+      <div class="finding-body">
+        <h3>Eureka: 0 epics closed despite high AI usage through S3</h3>
+        <p>Eureka reached 100% AI SP delivery in S2 and 81% in S3 — strong adoption. Yet they have closed 0 of 8 committed epics across the entire PI. This is the most concerning data point: AI usage is not translating into epic closure. Stories may be completing but epics are not being driven to done. This is a planning or scoping problem — epics are likely too large, or acceptance criteria are not being met, or epics lack a clear close-out plan.</p>
+        <span class="team-tag">Eureka</span><span class="team-tag badge red">0/8 epics (0%)</span><span class="team-tag badge amber">AI adoption healthy through S3</span>
+      </div>
+    </div>
+
+    <div class="finding-card warning">
+      <div class="finding-icon warning">~</div>
+      <div class="finding-body">
+        <h3>IEX-Sustaining: AI usage near zero, no epics in scope</h3>
+        <p>IEX-Sustaining shows 0% AI SP delivery in S1 and S3, with no epics committed in the PI plan. While sustaining work is often reactive and harder to label with AI, the team had 3 SP in S1 and 33 SP in S3 — none with AI labels. This team appears disengaged from the AI-first initiative entirely. If sustaining work is ongoing, there is no visibility into whether AI is being used for support, bug analysis, or root-cause work.</p>
+        <span class="team-tag">IEX-Sustaining</span><span class="team-tag badge amber">0% AI SP</span>
+      </div>
+    </div>
+
+    <div class="finding-card warning">
+      <div class="finding-icon warning">~</div>
+      <div class="finding-body">
+        <h3>Odyssey: Inconsistent AI usage, 50% epic delivery</h3>
+        <p>Odyssey shows volatile AI SP delivery: 100% in S1, dropping to 91% in S2, collapsing to 56% in S3, and 0% in S4 so far. They have closed 2 of 4 committed epics (50%), which is the second-best delivery rate in the group. However the S4 drop to 0% AI SP with no epics closed yet is a warning — they are mid-sprint with no AI-labeled activity.</p>
+        <span class="team-tag">Odyssey</span><span class="team-tag badge amber">50% epics</span><span class="team-tag badge red">S4: 0% AI SP</span>
+      </div>
+    </div>
+
+    <div class="finding-card positive">
+      <div class="finding-icon positive">✓</div>
+      <div class="finding-body">
+        <h3>Horizon: Best epic delivery in PI (100%)</h3>
+        <p>Through S3, Horizon closed all 6 of 6 committed epics — the only team at 100% delivery. Their AI usage was strong (100% SP delivery in S3). The S4 drop-off is a concern but should be viewed in context: they may have simply completed their PI scope early. Confirm whether they have new S4 commitments or are in a cool-down period.</p>
+        <span class="team-tag">Horizon</span><span class="team-tag badge green">6/6 epics (100%)</span>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="section-label">Team scorecard — full PI-2 view</div>
+  <div class="team-grid">
+
+    <div class="team-card">
+      <h3>Eureka <span class="badge red">0% epics</span></h3>
+      <div class="team-row"><span class="metric-label">Epics closed / committed</span><span class="metric-val cell-red">0 / 8</span></div>
+      <div class="team-row"><span class="metric-label">% epics delivered</span><span class="metric-val cell-red">0%</span></div>
+      <div class="team-row"><span class="metric-label">AI SP delivery S1→S3</span><span class="metric-val">93% → 100% → 81%</span></div>
+      <div class="team-row"><span class="metric-label">AI SP delivery S4</span><span class="metric-val cell-red">1%</span></div>
+      <div class="team-row"><span class="metric-label">Key risk</span><span class="metric-val cell-amber">Epic scope / close-out</span></div>
+    </div>
+
+    <div class="team-card">
+      <h3>Horizon <span class="badge green">100% epics</span></h3>
+      <div class="team-row"><span class="metric-label">Epics closed / committed</span><span class="metric-val cell-green">6 / 6</span></div>
+      <div class="team-row"><span class="metric-label">% epics delivered</span><span class="metric-val cell-green">100%</span></div>
+      <div class="team-row"><span class="metric-label">AI SP delivery S1→S3</span><span class="metric-val">N/A → 98% → 100%</span></div>
+      <div class="team-row"><span class="metric-label">AI SP delivery S4</span><span class="metric-val cell-red">NaN (0 AI SP)</span></div>
+      <div class="team-row"><span class="metric-label">Key risk</span><span class="metric-val cell-amber">S4 tracking gap</span></div>
+    </div>
+
+    <div class="team-card">
+      <h3>Titans <span class="badge red">0% epics</span></h3>
+      <div class="team-row"><span class="metric-label">Epics closed / committed</span><span class="metric-val cell-red">0 / 3</span></div>
+      <div class="team-row"><span class="metric-label">% epics delivered</span><span class="metric-val cell-red">0%</span></div>
+      <div class="team-row"><span class="metric-label">AI SP delivery S1→S3</span><span class="metric-val">92% → 100% → 94%</span></div>
+      <div class="team-row"><span class="metric-label">AI SP delivery S4</span><span class="metric-val cell-red">NaN (0 AI SP)</span></div>
+      <div class="team-row"><span class="metric-label">Key risk</span><span class="metric-val cell-red">Epic delivery + AI dropout</span></div>
+    </div>
+
+    <div class="team-card">
+      <h3>Odyssey <span class="badge amber">50% epics</span></h3>
+      <div class="team-row"><span class="metric-label">Epics closed / committed</span><span class="metric-val cell-amber">2 / 4</span></div>
+      <div class="team-row"><span class="metric-label">% epics delivered</span><span class="metric-val cell-amber">50%</span></div>
+      <div class="team-row"><span class="metric-label">AI SP delivery S1→S3</span><span class="metric-val">100% → 91% → 56%</span></div>
+      <div class="team-row"><span class="metric-label">AI SP delivery S4</span><span class="metric-val cell-red">0%</span></div>
+      <div class="team-row"><span class="metric-label">Key risk</span><span class="metric-val cell-amber">Declining AI cadence</span></div>
+    </div>
+
+  </div>
+
+  <div class="verdict">
+    <h2>Summary for management</h2>
+    <p>The correlation between AI usage and epic delivery is directionally positive across PI-2: the sprint with the highest AI SP delivery rate (S2, 97%) also saw the highest burst of epic closures (5 epics). The current S4 collapse to 1% AI SP delivered — with zero epics closed so far — continues that pattern in the wrong direction.</p>
+    <p style="margin-top: 10px;">The three highest-priority items: <strong>(1)</strong> Eureka has used AI well but cannot close epics — investigate epic sizing and definition of done. <strong>(2)</strong> Titans has used AI well but closed zero epics all PI and has gone dark on AI in S4 — this team needs a 1:1 this week. <strong>(3)</strong> The S4 AI usage collapse is not isolated to one team — it's a systemic drop across Horizon, Titans, Odyssey, and Eureka simultaneously, which suggests a tooling issue, a labeling gap, or a behavioral regression that needs a direct conversation with all teams before the sprint ends.</p>
+  </div>
+
+  <footer>Source data: eazyBI reports — IEX Core Epics with Agentic AI, IEX Core Agentic AI Sprint Usage Report, IEX Core Agentic AI Usage per Sprint Trend. PI.WFM.2026.2 · June 14, 2026.</footer>
+
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<script>
+const isDark = matchMedia('(prefers-color-scheme: dark)').matches;
+const gridColor = isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.06)';
+const tickColor = isDark ? '#aaa' : '#888';
+
+new Chart(document.getElementById('corrChart'), {
+  type: 'bar',
+  data: {
+    labels: ['S1 (Apr 9-30)', 'S2 (Apr 30-May 20)', 'S3 (May 21-Jun 10)', 'S4 (Jun 11-Jul 1) ↻'],
+    datasets: [
+      {
+        type: 'bar',
+        label: '% AI SP delivered',
+        data: [85, 97, 73, 1],
+        backgroundColor: ['#85B7EB','#378ADD','#85B7EB','#E24B4A'],
+        borderColor: ['#378ADD','#185FA5','#378ADD','#A32D2D'],
+        borderWidth: 1,
+        yAxisID: 'y',
+        order: 2
+      },
+      {
+        type: 'line',
+        label: 'Epics closed (cumulative)',
+        data: [0, 5, 8, 8],
+        borderColor: '#1D9E75',
+        backgroundColor: 'transparent',
+        borderWidth: 2.5,
+        borderDash: [6, 3],
+        pointBackgroundColor: '#1D9E75',
+        pointRadius: 5,
+        yAxisID: 'y2',
+        order: 1
+      }
+    ]
+  },
+  options: {
+    responsive: true,
+    maintainAspectRatio: false,
+    interaction: { mode: 'index', intersect: false },
+    plugins: {
+      legend: { display: false },
+      tooltip: {
+        callbacks: {
+          label: (ctx) => {
+            if (ctx.datasetIndex === 0) return ' AI SP delivered: ' + ctx.parsed.y + '%';
+            return ' Epics closed (cumulative): ' + ctx.parsed.y;
+          }
+        }
+      }
+    },
+    scales: {
+      x: {
+        ticks: { color: tickColor, font: { size: 11 }, autoSkip: false },
+        grid: { color: gridColor }
+      },
+      y: {
+        position: 'left',
+        min: 0, max: 110,
+        ticks: {
+          color: tickColor, font: { size: 11 },
+          callback: (v) => v + '%'
+        },
+        grid: { color: gridColor },
+        title: { display: true, text: '% AI SP delivered', color: tickColor, font: { size: 11 } }
+      },
+      y2: {
+        position: 'right',
+        min: 0, max: 12,
+        ticks: {
+          color: '#1D9E75', font: { size: 11 },
+          stepSize: 2,
+          callback: (v) => Math.round(v)
+        },
+        grid: { drawOnChartArea: false },
+        title: { display: true, text: 'Epics closed', color: '#1D9E75', font: { size: 11 } }
+      }
+    }
+  }
+});
+</script>
+</body>
+</html>
