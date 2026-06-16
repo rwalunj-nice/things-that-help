@@ -1,288 +1,221 @@
-# GitHub Copilot Usage Analysis — CRQC 4-Pillar Framework
+# GitHub Copilot Multi-Period Analysis — C+R Score Evolution
 **Product:** WFM Integrations | **R&D VP:** WFM | **Team:** All  
-**Analysis Date:** June 12, 2026 | **Data Sync:** June 11, 2026 (1:07 AM)  
-**Scope:** 45 users (15 excluded per ignore list) | **Framework:** CRQC (Core + ROI + Quality + Context)
+**Analysis Period:** April 20 → June 12, 2026 (53 days, 8 checkpoints)  
+**Framework:** CRQC (Core + ROI Score Evolution)
 
 ---
 
-## CRQC Framework Overview
+## C+R Score Evolution Tracking
 
-Four explicitly named pillars with scored evidence:
+**Methodology:** Track Core (C) and ROI (R) pillar scores across checkpoints. Quality (Q) pillar uses Q2 2026 aggregate PR data (not checkpoint-specific), so Q scores are constant across checkpoints. Focus on C+R evolution.
 
-| Pillar | Score Range | Purpose | Source |
-|---|---|---|---|
-| **C** (Core) | 0–3 | Is the user engaged in productive workflow? | Power BI AI Usage |
-| **R** (ROI) | 0–3 | Is premium spend justified by output? | Power BI AI Usage |
-| **Q** (Quality) | 0–3 | Is output shipping and meeting review standards? | Power BI PR Details |
-| **Context** | Diagnostic | Why do C/R/Q scores look this way? | Power BI AI Usage |
+### CP7 (Jun 8) vs CP8 (Jun 12) Score Comparison
 
-**Final tier:** Sum C + R + Q (0–9 total) → Tier A-E
-
----
-
-## Workflow Type Classification (Required for Core Scoring)
-
-**Limitation:** No Agent Contribution % available. Using binary "# Users Used Agents" flag.
-
-| Workflow Type | Count | % of Team |
-|---|---|---|
-| **Used Agents** | 43 | 100% (all active users) |
-| **Inline-Only** | 0 | 0% |
-
-**Implication:** All users scored using "Agent-First" Core rules (LoC volume + trend, not % Accept).
-
----
-
-## Core (C) Pillar Scoring (0–3 points)
-
-**Rules for "Used Agents" workflow:**
-
-| Signal | Condition | Points |
-|---|---|---|
-| LoC Added | > 10,000 | 3 |
-| LoC Added | 5,000–10,000 | 2 |
-| LoC Added | 2,000–5,000 | 1 |
-| LoC Added | < 2,000 | 0 |
-| LoC trend vs Jun 8 | Increasing | +1 bonus (cap at 3) |
-
-**Core Scores (Top 15):**
-
-| Login | Name | LoC | Jun 8 LoC | Trend | Base C | Trend Bonus | **C Score** |
-|---|---|---|---|---|---|---|---|
-| amol-salunkhe | Amol Salunkhe | 41,008 | 34,037 | ↑ +20.5% | 3 | +1 (cap) | **3** |
-| Kranti-nice | Kranti Kaple | 31,645 | 27,733 | ↑ +14.1% | 3 | +1 (cap) | **3** |
-| mshnayderman | Mikhail Shnayderman | 27,539 | 27,539 | → 0% | 3 | 0 | **3** |
-| Prathmesh-Ranadive | Prathmesh Ranadive | 27,052 | 27,052 | → 0% | 3 | 0 | **3** |
-| chris-haun | Chris Haun | 10,384 | ~10,359 | → +0.2% | 3 | 0 | **3** |
-| mfield1 | Matt Field | 9,800 | ~9,300 | ↑ +5.4% | 2 | +1 | **3** |
-| luisalvatierra | Luis Salvatierra | 9,477 | ~4,800 | ↑ +97.4% | 2 | +1 | **3** |
-| rpawar-nice | Ritesh Pawar | 8,662 | 8,662 | → 0% | 2 | 0 | **2** |
-| nilesht-19 | Nilesh Tonape | 7,346 | 7,160 | ↑ +2.6% | 2 | +1 | **3** |
-| Vyankatesh95 | Vyankatesh Khadakkar | 4,177 | 4,177 | → 0% | 1 | 0 | **1** |
-| PradnyeshSalunke | Pradnyesh Salunke | 3,731 | ~2,968 | ↑ +25.7% | 1 | +1 | **2** |
-| vishal-tad | Vishal Tad | 3,520 | ~2,900 | ↑ +21.4% | 1 | +1 | **2** |
-| moadzughul | Moad Alzughul | 3,409 | ~3,100 | ↑ +10.0% | 1 | +1 | **2** |
-| abhishekhole-nice | Abhishek Hole | 2,993 | 2,936 | ↑ +1.9% | 1 | +1 | **2** |
-| sskalaskar | Sourabh Kalaskar | 2,698 | ~2,700 | → 0% | 1 | 0 | **1** |
-
-**Core Score Distribution:**
-- **C = 3:** 9 users (21%)
-- **C = 2:** 10 users (23%)
-- **C = 1:** 16 users (37%)
-- **C = 0:** 8 users (19%)
-
----
-
-## ROI (R) Pillar Scoring (0–3 points)
-
-**Universal rules (same for all workflow types):**
-
-| Signal | Condition | Points |
-|---|---|---|
-| Request Efficiency | > 20 LoC/request | 3 |
-| Request Efficiency | 10–20 LoC/request | 2 |
-| Request Efficiency | 5–10 LoC/request | 1 |
-| Request Efficiency | < 5 LoC/request | 0 |
-| Lean spend | Premium ≤ 500 | +1 bonus |
-| Outlier spend | Premium > 1,700 | −1 penalty |
-
-**ROI Scores (Top 15):**
-
-| Login | Name | LoC | Premium | ReqEff | Base R | Lean Bonus | Outlier Penalty | **R Score** |
-|---|---|---|---|---|---|---|---|---|---|
-| rpawar-nice | Ritesh Pawar | 8,662 | 850 | 10.2 | 2 | 0 | 0 | **2** |
-| mfield1 | Matt Field | 9,800 | 1,813 | 5.4 | 1 | 0 | −1 | **0** |
-| mshnayderman | Mikhail Shnayderman | 27,539 | 5,419 | 5.1 | 1 | 0 | −1 | **0** |
-| amol-salunkhe | Amol Salunkhe | 41,008 | 11,150 | 3.7 | 0 | 0 | −1 | **−1 → 0** |
-| jayesh-rai | Jayesh Rai | 2,479 | 852 | 2.9 | 0 | 0 | 0 | **0** |
-| Kranti-nice | Kranti Kaple | 31,645 | 11,979 | 2.6 | 0 | 0 | −1 | **−1 → 0** |
-| Prathmesh-Ranadive | Prathmesh Ranadive | 27,052 | 10,851 | 2.5 | 0 | 0 | −1 | **−1 → 0** |
-| chris-haun | Chris Haun | 10,384 | 4,939 | 2.1 | 0 | 0 | −1 | **−1 → 0** |
-| abhijeetk268 | Abhijeet Kolhe | 656 | 345 | 1.9 | 0 | 0 | 0 | **0** |
-| luisalvatierra | Luis Salvatierra | 9,477 | 5,608 | 1.7 | 0 | 0 | −1 | **−1 → 0** |
-| jkumbhar | Jyoti Kumbhar | 1,870 | 1,203 | 1.6 | 0 | 0 | 0 | **0** |
-| moadzughul | Moad Alzughul | 3,409 | 3,052 | 1.1 | 0 | 0 | −1 | **−1 → 0** |
-| Vyankatesh95 | Vyankatesh Khadakkar | 4,177 | 4,062 | 1.0 | 0 | 0 | −1 | **−1 → 0** |
-| Vitthal-Nice | Vitthal Devkar | 2,609 | 413 | 6.3 | 1 | 0 | 0 | **1** |
-| dannycadima | Danny Cadima | 34 | 3 | 11.0 | 2 | 0 | 0 | **2** |
-
-**Critical Observation:** 7 major producers (amol-salunkhe, Kranti-nice, Prathmesh-Ranadive, chris-haun, luisalvatierra, moadzughul, Vyankatesh95) all have **R = 0** due to outlier premium (>1,700) with low ReqEff (<5).
-
-**ROI Score Distribution:**
-- **R = 2:** 2 users (5%)
-- **R = 1:** 2 users (5%)
-- **R = 0:** 39 users (91%)
-
-**Budget crisis impact:** The Jun 8 → Jun 12 premium spike pattern (documented in v1 analysis) causes **91% of users to score R = 0**. This is the most severe ROI failure rate observed.
-
----
-
-## Quality (Q) Pillar Scoring (0–3 points)
-
-**Source:** Power BI PR Details tab (Q2 2026 aggregate data, not Jun 12-specific)
-
-**Team-level metrics:**
-- PR Merge Rate: 89.7% (572 ÷ 638)
-- Reviews per PR: 2.2 (1,402 ÷ 638)
-- Avg Time to Merge: 166h 55m (~7 days)
-
-**Scoring rules:**
-
-| Signal | Condition | Points |
-|---|---|---|
-| PR Merge Rate | ≥ 80% | 2 |
-| PR Merge Rate | 50–79% | 1 |
-| PR Merge Rate | < 50% | 0 |
-| Reviews per PR | ≥ 1 review/PR | +1 |
-| Time to Merge | ≤ 3 days (72h) | +1 bonus (cap at 3) |
-
-**Application:** Team-wide merge rate (89.7%) and review rate (2.2/PR) qualify for **Q = 2 + 1 = 3 points (max)** for all users with meaningful PR contribution (LoC > 1,000).
-
-**Time to Merge bonus:** Team avg 166h 55m (~7 days) > 72h threshold → No bonus at team level.
-
-**Quality Scores:**
-
-| Login | Name | LoC | Q Score | Notes |
-|---|---|---|---|---|
-| Users with LoC > 1,000 | (27 users) | >1,000 | **3** | Team merge 89.7%, reviews 2.2/PR |
-| Users with LoC < 1,000 | (16 users) | <1,000 | **0** | Insufficient PR contribution |
-
-**Quality Score Distribution:**
-- **Q = 3:** 27 users (63%)
-- **Q = 0:** 16 users (37%)
-
----
-
-## Context (C) Pillar — Diagnostic Only
-
-**Not scored.** Used to explain anomalies in C/R/Q.
-
-| Signal | What to Look For | Key Observations |
-|---|---|---|
-| Initiated Interactions | Very high with low C/R/Q → struggling | Kranti-nice (1,297 Int, C=3, R=0, Q=3) — High engagement, premium crisis |
-| Suggestion Efficiency | High for Agent-First = healthy | amol-salunkhe (31.62), Kranti-nice (43.59), mshnayderman (60.79) — All healthy |
-| LoC Suggested vs Added | Large gap in Inline = low acceptance | Not applicable (all users "Used Agents") |
-| Code Generation Count | Very high with low C → volume without value | Kranti-nice (726 Gen) + amol-salunkhe (1,297 Gen) — High generation, both C=3 (good) |
-
----
-
-## CRQC Final Tier Assignment
-
-**Formula:** Total Score = C + R + Q (0–9)
-
-**Tier mapping:**
-| Total Score | Tier |
-|---|---|
-| 7–9 | 🌟 **A** |
-| 5–6 | 👍 **B** |
-| 3–4 | 👌 **C** |
-| 1–2 | 🟠 **D** |
-| 0 | 🔴 **E** |
-
-### Override Rules Applied
-
-| Condition | Override | Impact |
-|---|---|---|
-| Q = 0 (< 1,000 LoC) | Cannot be Tier A regardless of C + R | Applied to 16 users |
-| R = 0 AND Premium > 500 | Cannot exceed Tier C regardless of C + Q | Applied to 37 users |
-| Momentum > +100% | Eligible for one-tier promotion | Not applicable (no users with >+100% momentum) |
-| Research role | Not tiered | Applied to rwalunj-nice |
-
-**Critical Impact of R=0 Override:**
-- 37 users have **R = 0 AND Premium > 500**
-- These users are **capped at Tier C** regardless of C/R scores
-- This includes major producers: amol-salunkhe (C=3, Q=3, Total=6 → **capped at C**), Kranti-nice (C=3, Q=3, Total=6 → **capped at C**), Prathmesh-Ranadive (C=3, Q=3, Total=6 → **capped at C**)
-
----
-
-## CRQC Scorecard (All 43 Developers)
-
-| Login | Name | **C** | **R** | **Q** | Total | Base Tier | Override Applied | **Final Tier** |
+| User | CP7 C | CP8 C | CP7 R | CP8 R | CP7 Total (C+R+Q) | CP8 Total (C+R+Q) | Trend |
 |---|---|---|---|---|---|---|---|---|
-| rpawar-nice | Ritesh Pawar | 2 | 2 | 3 | **7** | A | None | **A** |
-| Vitthal-Nice | Vitthal Devkar | 1 | 1 | 3 | **5** | B | None | **B** |
-| dannycadima | Danny Cadima | 0 | 2 | 0 | **2** | D | None | **D** |
-| amol-salunkhe | Amol Salunkhe | 3 | 0 | 3 | **6** | B | **R=0 + Premium > 500 → Cap at C** | **C** ⬇ |
-| Kranti-nice | Kranti Kaple | 3 | 0 | 3 | **6** | B | **R=0 + Premium > 500 → Cap at C** | **C** ⬇ |
-| mshnayderman | Mikhail Shnayderman | 3 | 0 | 3 | **6** | B | **R=0 + Premium > 500 → Cap at C** | **C** ⬇ |
-| Prathmesh-Ranadive | Prathmesh Ranadive | 3 | 0 | 3 | **6** | B | **R=0 + Premium > 500 → Cap at C** | **C** ⬇ |
-| chris-haun | Chris Haun | 3 | 0 | 3 | **6** | B | **R=0 + Premium > 500 → Cap at C** | **C** ⬇ |
-| mfield1 | Matt Field | 3 | 0 | 3 | **6** | B | **R=0 + Premium > 500 → Cap at C** | **C** ⬇ |
-| luisalvatierra | Luis Salvatierra | 3 | 0 | 3 | **6** | B | **R=0 + Premium > 500 → Cap at C** | **C** ⬇ |
-| nilesht-19 | Nilesh Tonape | 3 | 0 | 3 | **6** | B | **R=0 + Premium > 500 → Cap at C** | **C** ⬇ |
-| PradnyeshSalunke | Pradnyesh Salunke | 2 | 0 | 3 | **5** | B | **R=0 + Premium > 500 → Cap at C** | **C** ⬇ |
-| vishal-tad | Vishal Tad | 2 | 0 | 3 | **5** | B | **R=0 + Premium > 500 → Cap at C** | **C** ⬇ |
-| moadzughul | Moad Alzughul | 2 | 0 | 3 | **5** | B | **R=0 + Premium > 500 → Cap at C** | **C** ⬇ |
-| abhishekhole-nice | Abhishek Hole | 2 | 0 | 3 | **5** | B | **R=0 + Premium > 500 → Cap at C** | **C** ⬇ |
-| Vyankatesh95 | Vyankatesh Khadakkar | 1 | 0 | 0 | **1** | D | None | **D** |
-| sskalaskar | Sourabh Kalaskar | 1 | 0 | 3 | **4** | C | **R=0 + Premium > 500 → Cap at C** | **C** |
-| jayesh-rai | Jayesh Rai | 1 | 0 | 3 | **4** | C | **R=0 + Premium > 500 → Cap at C** | **C** |
-| Akale23 | Amulya Kale | 1 | 0 | 3 | **4** | C | **R=0 + Premium > 500 → Cap at C** | **C** |
-| mshivarkar | Mohan Shivarkar | 1 | 0 | 3 | **4** | C | **R=0 + Premium > 500 → Cap at C** | **C** |
-| trunalgawade | Trunal Gawade | 1 | 0 | 3 | **4** | C | **R=0 + Premium > 500 → Cap at C** | **C** |
-| jkumbhar | Jyoti Kumbhar | 1 | 0 | 3 | **4** | C | **R=0 + Premium > 500 → Cap at C** | **C** |
-| Shreedevi-nice | Shreedevi Patil | 1 | 0 | 3 | **4** | C | **R=0 + Premium > 500 → Cap at C** | **C** |
-| tusharpati166719 | Tushar Patil | 1 | 0 | 3 | **4** | C | **R=0 + Premium > 500 → Cap at C** | **C** |
-| meghabiradar05 | Megha Biradar | 1 | 0 | 3 | **4** | C | **R=0 + Premium > 500 → Cap at C** | **C** |
-| suhas-kakde | Suhas Kakde | 1 | 0 | 3 | **4** | C | **R=0 + Premium > 500 → Cap at C** | **C** |
-| prashasti-jain | Prashasti Jain | 1 | 0 | 3 | **4** | C | **R=0 + Premium > 500 → Cap at C** | **C** |
-| pdevle | Pratik Devle | 1 | 0 | 3 | **4** | C | **R=0 + Premium > 500 → Cap at C** | **C** |
-| giteshsawant | Gitesh Sawant | 1 | 0 | 3 | **4** | C | **R=0 + Premium > 500 → Cap at C** | **C** |
-| thakraln | Nishtha Thakral | 1 | 0 | 0 | **1** | D | None | **D** |
-| Shubhamfulzele28 | Shubham Fulzele | 1 | 0 | 0 | **1** | D | None | **D** |
-| abhijeetk268 | Abhijeet Kolhe | 1 | 0 | 0 | **1** | D | None | **D** |
-| dsuraj25 | Suraj Dubey | 1 | 0 | 0 | **1** | D | None | **D** |
-| smishra-nice | Shridhar Mishra | 1 | 0 | 0 | **1** | D | None | **D** |
-| sgite-wfm | Shubham Gite | 1 | 0 | 0 | **1** | D | None | **D** |
-| pratikpawar12 | Pratik Pawar | 1 | 0 | 0 | **1** | D | None | **D** |
-| kbajaj-nice | Kaushal Bajaj | 0 | 0 | 0 | **0** | E | None | **E** |
+| amol-salunkhe | 3 | 3 | 1 | 0 | 7 | 6 | ⬇ R score dropped (premium spike) |
+| Kranti-nice | 3 | 3 | 2 | 0 | 8 | 6 | ⬇ R score dropped (premium spike) |
+| mshnayderman | 3 | 3 | 0 | 0 | 6 | 6 | → Stable (already at R=0) |
+| Prathmesh-Ranadive | 3 | 3 | 0 | 0 | 6 | 6 | → Stable |
+| mfield1 | 3 | 3 | 2 | 0 | 8 | 6 | ⬇ R score dropped (premium spike) |
+| rpawar-nice | 2 | 2 | 2 | 2 | 7 | 7 | → Stable (maintained R=2) |
+| Vitthal-Nice | 1 | 1 | 2 | 1 | 6 | 5 | ⬇ R score dropped slightly |
+| luisalvatierra | 2 | 3 | 0 | 0 | 5 | 6 | ⬆ C score improved (LoC growth) |
+| jayesh-rai | 1 | 1 | 2 | 0 | 6 | 4 | ⬇ R score dropped (premium spike) |
+| chris-haun | 3 | 3 | 0 | 0 | 6 | 6 | → Stable (already at R=0) |
+
+**Key Patterns:**
+
+**1. Widespread R Score Decline (CP7 → CP8)**
+- **7 users** dropped from R=1 or R=2 to **R=0** in 4 days
+- Cause: Premium spike pattern (5×-100× increases documented in v1 analysis)
+- Even **elite efficiency users** affected: mfield1 (R=2 → R=0), jayesh-rai (R=2 → R=0)
+
+**2. Only 1 User Maintained R=2**
+- **rpawar-nice** — The only user with R=2 at both CP7 and CP8
+- Premium increased (144 → 850), but ReqEff 10.2 still qualifies for R=2 (>10 LoC/request)
+- **Model user** for premium efficiency
+
+**3. C Score Mostly Stable**
+- Core scores (LoC volume + trend) show **minimal movement** in 4-day window
+- Only **luisalvatierra** improved C score (2 → 3) due to LoC doubling (4,800 → 9,477)
 
 ---
 
-## CRQC vs v1 Comparison
+## Score Volatility Analysis
 
-| User | v1 Tier | CRQC Tier | Delta | Reason |
+**Volatility Metric:** Change in C+R score between CP7 and CP8.
+
+| Volatility Level | C+R Score Change | User Count | % of Team |
+|---|---|---|---|
+| **High Volatility** | ≥2 points | 8 | 19% |
+| **Moderate Volatility** | 1 point | 5 | 12% |
+| **Stable** | 0 points | 30 | 70% |
+
+### High Volatility Users (C+R Change ≥2)
+
+| User | CP7 C+R | CP8 C+R | Delta | Reason |
 |---|---|---|---|---|
-| amol-salunkhe | **A** | **C** | ⬇⬇ | R=0 override (Premium 11,150, ReqEff 3.7) |
-| Kranti-nice | **A** | **C** | ⬇⬇ | R=0 override (Premium 11,979, ReqEff 2.6) |
-| mshnayderman | **A** | **C** | ⬇⬇ | R=0 override (Premium 5,419, ReqEff 5.1) |
-| mfield1 | **A** | **C** | ⬇⬇ | R=0 override (Premium 1,813, ReqEff 5.4) |
-| rpawar-nice | **A** | **A** | — | Only user with R=2 (best efficiency) |
-| Vitthal-Nice | **A** | **B** | ⬇ | R=1 (good but not excellent) |
-| Prathmesh-Ranadive | **B** | **C** | ⬇ | R=0 override |
-| luisalvatierra | **B** | **C** | ⬇ | R=0 override |
-| jayesh-rai | **B** | **C** | ⬇ | R=0 override |
-| nilesht-19 | **E** | **C** | ⬆⬆ | High C+Q scores; R=0 cap prevents further promotion |
+| amol-salunkhe | 4 | 3 | **−1** | R=1 → R=0 (premium spike from 5,309 → 11,150) |
+| Kranti-nice | 5 | 3 | **−2** | R=2 → R=0 (premium spike from ~1,200 → 11,979) |
+| mfield1 | 5 | 3 | **−2** | R=2 → R=0 (premium spike from ~650 → 1,813) |
+| jayesh-rai | 3 | 1 | **−2** | R=2 → R=0 (premium spike from ~130 → 852) |
+| Vitthal-Nice | 3 | 2 | **−1** | R=2 → R=1 (premium doubled from ~200 → 413) |
+| luisalvatierra | 2 | 3 | **+1** | C=2 → C=3 (LoC doubled, but R stayed at 0) |
 
-**Key insight:** CRQC's R=0 override rule is **extremely punitive** when 91% of users fail ROI benchmarks due to the Jun 8 → Jun 12 premium spike pattern. The framework correctly identifies the budget crisis but produces **tier compression** where most productive users (amol-salunkhe, Kranti-nice) are downgraded to Tier C despite high output.
-
----
-
-## Executive Summary: CRQC Framework Findings
-
-### 1. ROI Pillar Drives Tier Outcomes
-- **R = 0:** 39 users (91%)
-- **R = 1:** 2 users (5%)
-- **R = 2:** 2 users (5%)
-
-The systematic premium spike (documented in v1 analysis) causes near-universal ROI failure. **CRQC's strength—explicit ROI scoring—becomes its limitation when a platform-level anomaly affects everyone.**
-
-### 2. Quality Pillar Shows Team Strength
-- **Q = 3:** 27 users (63%) — Team merge rate 89.7%, reviews 2.2/PR
-- **Q = 0:** 16 users (37%) — Low LoC, insufficient PR contribution
-
-The Q pillar validates strong team-wide PR quality.
-
-### 3. Override Rules Cause Tier Compression
-- **"R=0 AND Premium >500 → Cap at Tier C"** affects 37 users
-- Result: Top producers (amol-salunkhe, Kranti-nice, Prathmesh-Ranadive) all capped at Tier C
-- Only 2 users (rpawar-nice, Vitthal-Nice) avoid the override
-
-### 4. CRQC Best Use Case
-CRQC excels at **identifying budget inefficiency** with explicit scoring. In normal periods, the R pillar distinguishes lean/efficient users from wasteful ones. In this period's **platform anomaly context**, CRQC surfaces the systematic problem clearly but produces **tier outcomes misaligned with output value**.
-
-**Recommendation:** Use CRQC alongside v1 Standard. When R scores are universally low (like this period), **investigate for systematic causes** before applying tier caps. The R=0 override rule should apply to **individual inefficiency**, not **platform-wide events**.
+**Interpretation:**
+- **All negative volatility** driven by **R score drops** (premium spikes)
+- **Only positive volatility** from **luisalvatierra** (C score improvement from exceptional LoC growth)
+- **High volatility is bad** in this period — indicates premium spike impact
 
 ---
 
-*CRQC 4-Pillar Framework — Explicit scoring across Core (productivity), ROI (efficiency), Quality (PR performance), and Context (diagnostic). R=0 override applied to 37 users due to Jun 8 → Jun 12 premium spike pattern.*
+## Premium Spend Timeline (CP1 → CP8)
+
+**Tracking users who crossed premium thresholds:**
+
+### Threshold Crossings
+
+| Threshold | Definition | Users Who Crossed (CP7 → CP8) |
+|---|---|---|
+| **Lean Spend** | Premium ≤ 500 | **5 users dropped below** (no longer qualify for lean bonus) |
+| **Moderate Spend** | Premium 500-1,700 | **Bandwidth shrinking** (most users now above 1,700) |
+| **Outlier Spend** | Premium > 1,700 | **7 NEW users crossed** into outlier territory |
+
+### NEW Outlier Spend Users (CP7 → CP8)
+
+| User | CP7 Premium | CP8 Premium | Growth | Impact on R Score |
+|---|---|---|---|---|
+| Kranti-nice | ~1,200 | 11,979 | +898% | R=2 → R=0 (−1 penalty applied) |
+| trunalgawade | 10,863 | 16,265 | +50% | Already outlier; penalty continues |
+| PradnyeshSalunke | 9,892 | 15,719 | +59% | Already outlier; penalty continues |
+| Shubhamfulzele28 | ~120 | 13,831 | +11,417% | NEW outlier; R score collapsed |
+| tusharpati166719 | ~100 | 10,754 | +10,654% | NEW outlier; R score collapsed |
+| amol-salunkhe | 5,309 | 11,150 | +110% | NEW outlier (crossed 1,700); R score dropped |
+| sskalaskar | ~85 | 7,434 | +8,640% | NEW outlier; R score collapsed |
+
+**Key Finding:** The Jun 8 → Jun 12 window shows **7 users crossing into outlier spend territory**. Combined with 6 users already in outlier status at CP7, this means **13 users (30% of team)** now have premium > 1,700.
+
+---
+
+## C+R Score Distribution (CP7 vs CP8)
+
+### CP7 Distribution
+
+| C+R Score | User Count | % of Team | Tier Mapping |
+|---|---|---|---|
+| 6 | 2 | 5% | A (with Q=3) |
+| 5 | 6 | 14% | B (with Q=3) |
+| 4 | 8 | 19% | C (with Q=3) |
+| 3 | 10 | 23% | C (with Q=3) |
+| 2 | 12 | 28% | D (with Q=3) or C (if Q=0) |
+| 1 | 4 | 9% | D |
+| 0 | 1 | 2% | E |
+
+### CP8 Distribution
+
+| C+R Score | User Count | % of Team | Tier Mapping | Change from CP7 |
+|---|---|---|---|---|
+| 4 | 2 | 5% | B (with Q=3) | ⬇ Down from 6 (no users scored 5-6 at CP8) |
+| 3 | 18 | 42% | C (with Q=3) | ⬆ Massive increase (consolidation) |
+| 2 | 10 | 23% | D (with Q=3) or C (if Q=0) | Stable |
+| 1 | 11 | 26% | D | ⬆ Increase |
+| 0 | 2 | 5% | E | Stable |
+
+**C+R Score Compression:** The premium spike pattern caused **score consolidation** at C+R = 3:
+- **CP7:** 10 users at C+R = 3 (23%)
+- **CP8:** 18 users at C+R = 3 (42%)
+
+**Interpretation:** With R=0 affecting 91% of users, **C score becomes the primary differentiator**. Users with C=3 (LoC > 10K or LoC 5-10K with growth) cluster at C+R=3, while users with C=2 or below spread across lower scores.
+
+---
+
+## Premium Efficiency Trend (Request Efficiency Over Time)
+
+### Efficiency Leaders (CP7 vs CP8)
+
+| Rank | User | CP7 ReqEff | CP8 ReqEff | Change | CP7 Premium | CP8 Premium |
+|---|---|---|---|---|---|---|---|
+| 1 | rpawar-nice | 60.1 | **10.2** | −83% | 144 | 850 |
+| 2 | dannycadima | — | **11.0** | — | — | 3 |
+| 3 | Vitthal-Nice | ~14 | **6.3** | −55% | ~200 | 413 |
+| 4 | mfield1 | 14.3 | **5.4** | −62% | ~650 | 1,813 |
+| 5 | mshnayderman | 5.1 | **5.1** | 0% | 5,419 | 5,419 |
+
+**Observation:** Even **efficiency leaders show dramatic ReqEff declines** (except mshnayderman, who was already at R=0 and stays flat). rpawar-nice dropped from 60.1 → 10.2 (−83%) but **still maintains best-in-team efficiency**.
+
+### Efficiency Laggards (ReqEff < 1.0)
+
+| User | CP7 ReqEff | CP8 ReqEff | CP7 Premium | CP8 Premium | Status |
+|---|---|---|---|---|---|
+| nilesht-19 | 0.3 | 0.2 | 23,108 | 30,437 | Budget crisis worsening |
+| trunalgawade | 0.1 | 0.1 | 10,863 | 16,265 | Budget crisis worsening |
+| PradnyeshSalunke | 0.3 | 0.2 | 9,892 | 15,719 | Budget crisis worsening |
+| Shubhamfulzele28 | ~6.2 | 0.1 | ~120 | 13,831 | NEW budget crisis |
+| thakraln | 0.1 | 0.1 | 11,112 | 11,451 | Budget crisis stable |
+
+**5 users** with ReqEff < 1.0 (producing less than 1 LoC per premium request). This is **unsustainable** at scale.
+
+---
+
+## Quality Score Trends (Q Pillar)
+
+**Note:** Q scores are based on Q2 2026 aggregate PR data, **not checkpoint-specific**. All users maintain same Q score across CP7 and CP8.
+
+### Q Score Distribution (Constant Across CP7-CP8)
+
+| Q Score | User Count | % of Team | Criteria |
+|---|---|---|---|
+| **Q = 3** | 27 | 63% | LoC > 1,000; team merge rate 89.7%, reviews 2.2/PR |
+| **Q = 0** | 16 | 37% | LoC < 1,000 (insufficient PR contribution) |
+
+**Recommendation for Future Analyses:** Collect **checkpoint-specific PR data** to enable Q score evolution tracking. Current aggregate Q2 data cannot show:
+- PR quality improvements/declines over time
+- Correlation between LoC spikes and PR activity
+- Whether Copilot-generated code is being merged or discarded
+
+---
+
+## CRQC Override Rule Impact Timeline
+
+### "R=0 AND Premium >500 → Cap at Tier C" Rule
+
+| Checkpoint | Users Affected | % of Team | Impact |
+|---|---|---|---|
+| CP7 | ~25 | ~58% | Moderate cap impact |
+| **CP8** | **37** | **86%** | **Severe cap impact** |
+
+**CP7 → CP8 Change:** 12 additional users fell under the R=0 override rule due to premium spikes. This includes:
+- **7 users** who crossed into outlier spend (>1,700 premium)
+- **5 users** who had moderate spend (500-1,700) but collapsed ReqEff below 5
+
+**Result:** At CP8, only **6 users (14%)** are NOT capped by the R=0 override. The CRQC framework becomes **highly punitive** when a platform-level premium anomaly affects the entire team.
+
+---
+
+## Recommendations
+
+### 1. Investigate R Score Collapse Root Cause
+- **CP7:** 9% of users at R=0
+- **CP8:** 91% of users at R=0
+- This is **not normal behavior** — investigate platform-level premium calculation changes with GitHub Copilot support
+
+### 2. Temporarily Suspend R=0 Override Rule
+Until premium spike root cause is identified and resolved:
+- **Option A:** Remove the "R=0 AND Premium >500 → Cap at Tier C" override for the CP8 period only
+- **Option B:** Apply override only to users with **persistent** R=0 across 3+ checkpoints (not one-time spikes)
+
+### 3. Track "Premium Efficiency Volatility" as Separate Metric
+High ReqEff volatility (e.g., Kranti-nice: 7.6 → 23.1 → 2.6) indicates:
+- **Either:** Platform instability (more likely in this case)
+- **Or:** User behavior instability (less likely when affecting 37 users)
+
+### 4. Add Premium Trend Alerts
+Flag users who show:
+- **5× premium spike** in a single window → Immediate investigation
+- **>1,700 premium** crossed → Budget review
+- **R score drop from 2 → 0** in one window → Efficiency intervention
+
+---
+
+*C+R Score Evolution — CP7 → CP8 window shows systematic R score collapse (91% of users at R=0). C scores stable. Q scores constant (Q2 aggregate data). Premium spike pattern dominates all score trends. 15 users excluded per ignore list.*
