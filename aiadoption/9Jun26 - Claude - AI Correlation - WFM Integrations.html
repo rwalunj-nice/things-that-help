@@ -142,10 +142,36 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .exec-card .ev{font-size:14px;font-weight:700;color:#fff;}
 .exec-card .ed{font-size:11px;margin-top:3px;opacity:.7;}
 
+/* SECTION 6 — Sprint Velocity & Health */
+.s6-layout{display:grid;grid-template-columns:2fr 1fr;gap:16px;align-items:start;}
+.s6-team-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:16px;}
+.s6tc{background:#fff;border-radius:10px;padding:14px 16px;border:1px solid var(--gb);box-shadow:0 1px 3px rgba(0,0,0,.05);}
+.s6tc.critical{border-left:3px solid var(--bad);}
+.s6tc.warning{border-left:3px solid var(--watch);}
+.s6tc.positive{border-left:3px solid var(--good);}
+.s6tc.monitor{border-left:3px solid var(--mod);}
+.s6tc .s6name{font-size:13px;font-weight:700;margin-bottom:2px;}
+.s6tc .s6sub{font-size:11px;color:var(--gray);margin-bottom:8px;}
+.s6tc .s6row{display:flex;justify-content:space-between;font-size:11.5px;margin-bottom:3px;}
+.s6tc .s6label{color:var(--gray);}
+.s6tc .s6val{font-weight:600;}
+.s6tc .s6finding{font-size:11px;color:#374151;line-height:1.55;margin-top:8px;padding-top:8px;border-top:1px solid #f1f5f9;}
+.quad-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;}
+.quad{border-radius:8px;padding:12px 14px;border:1px solid;}
+.quad.tl{background:#f0fdf4;border-color:#bbf7d0;}
+.quad.tr{background:#fff7ed;border-color:#fed7aa;}
+.quad.bl{background:#fefce8;border-color:#fde68a;}
+.quad.br{background:#fef2f2;border-color:#fecaca;}
+.quad .qt{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.7px;margin-bottom:4px;}
+.quad.tl .qt{color:var(--good);}.quad.tr .qt{color:var(--watch);}.quad.bl .qt{color:var(--mod);}.quad.br .qt{color:var(--bad);}
+.quad .qteams{font-size:12px;font-weight:600;color:#1e293b;margin-bottom:3px;}
+.quad .qdesc{font-size:11px;color:#475569;line-height:1.5;}
+
 @media(max-width:1000px){
   .trend-grid,.v-grid,.prog-cards{grid-template-columns:repeat(2,1fr);}
   .stat-row,.s1-grid{grid-template-columns:repeat(2,1fr);}
   .exec-grid{grid-template-columns:1fr;}
+  .s6-layout,.s6-team-grid{grid-template-columns:1fr;}
 }
 </style>
 </head>
@@ -308,6 +334,122 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
         <div class="ev">~143 SP to close in 6 days</div>
         <div class="ed">54% elapsed, 21% delivered. Torna, Sinhagad, Rajgad, Shivneri need acceleration.</div>
       </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ SECTION 6 ════════════════════════════════════════════════════════ -->
+<div class="sec">
+  <div class="sec-hdr"><div class="sec-num">6</div><div class="sec-title">Sprint Velocity &amp; Delivery Health — Power BI Sprint Charts (S188–S190)</div></div>
+  <div class="method">
+    <strong>Data source:</strong> Power BI CXone Sprints view — Story Points Committed vs Completed per sprint per team.
+    Sprint Health % = SP Completed ÷ SP Committed (with 1-day slack). Analysed separately from AI adoption metrics (Sections 1–5) to surface divergences between AI tool usage and actual sprint delivery pace.
+  </div>
+
+  <div class="s6-layout">
+    <div class="card">
+      <div style="font-size:12px;font-weight:700;color:#475569;margin-bottom:10px;">Sprint Health % — S188 → S189 → S190</div>
+      <div style="position:relative;height:220px;"><canvas id="s6HealthChart"></canvas></div>
+      <div style="display:flex;flex-wrap:wrap;gap:12px;margin-top:10px;font-size:11px;color:var(--gray);">
+        <span><span style="display:inline-block;width:18px;height:2px;background:#7F77DD;vertical-align:middle;margin-right:4px;"></span>Torna</span>
+        <span><span style="display:inline-block;width:18px;height:2px;background:#16a34a;border-bottom:2px dotted #16a34a;vertical-align:middle;margin-right:4px;"></span>Devgiri</span>
+        <span><span style="display:inline-block;width:18px;height:2px;background:#1e40af;vertical-align:middle;margin-right:4px;"></span>Sinhagad</span>
+        <span><span style="display:inline-block;width:18px;height:2px;background:#64748b;vertical-align:middle;margin-right:4px;"></span>Integrations</span>
+        <span><span style="display:inline-block;width:18px;height:2px;background:#dc2626;vertical-align:middle;margin-right:4px;"></span>Rajgad</span>
+        <span><span style="display:inline-block;width:18px;height:2px;background:#ea580c;border-bottom:2px dashed #ea580c;vertical-align:middle;margin-right:4px;"></span>Shivneri</span>
+      </div>
+    </div>
+
+    <div>
+      <div class="card" style="margin-bottom:12px;">
+        <div style="font-size:12px;font-weight:700;color:#475569;margin-bottom:10px;">AI Adoption × Sprint Health Quadrants</div>
+        <div class="quad-grid">
+          <div class="quad tl">
+            <div class="qt">✅ Aligned</div>
+            <div class="qteams">Sinhagad, Devgiri</div>
+            <div class="qdesc">High AI adoption + stable-to-growing sprint health. Both metrics moving in the same direction.</div>
+          </div>
+          <div class="quad tr">
+            <div class="qt">⚠ Diverging</div>
+            <div class="qteams">Torna</div>
+            <div class="qdesc">100% AI adoption but sprint health declining 80%→64%. AI not compensating for scope inflation.</div>
+          </div>
+          <div class="quad bl">
+            <div class="qt">~ Complex</div>
+            <div class="qteams">Integrations</div>
+            <div class="qdesc">Weak AI correlation, but sprint health improving independently. Work type mismatch with AI tooling.</div>
+          </div>
+          <div class="quad br">
+            <div class="qt">🔴 Critical</div>
+            <div class="qteams">Rajgad, Shivneri</div>
+            <div class="qdesc">Rajgad: S190 looked great (86%), S191 = 0 SP done. Shivneri: 100% AI but sprint health crashed to 9%.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div style="font-size:12px;font-weight:700;color:#475569;margin-bottom:8px;">Sprint Health Summary</div>
+        <table style="width:100%;border-collapse:collapse;font-size:11.5px;">
+          <tr style="border-bottom:1px solid #f1f5f9;">
+            <th style="text-align:left;padding:5px 6px;font-weight:600;color:var(--gray);font-size:11px;">Team</th>
+            <th style="text-align:center;padding:5px 6px;font-weight:600;color:var(--gray);font-size:11px;">S188</th>
+            <th style="text-align:center;padding:5px 6px;font-weight:600;color:var(--gray);font-size:11px;">S189</th>
+            <th style="text-align:center;padding:5px 6px;font-weight:600;color:var(--gray);font-size:11px;">S190</th>
+            <th style="text-align:center;padding:5px 6px;font-weight:600;color:var(--gray);font-size:11px;">Trend</th>
+          </tr>
+          <tr><td style="padding:5px 6px;font-weight:600">Torna</td><td style="text-align:center">80%</td><td style="text-align:center">77%</td><td style="text-align:center">64%</td><td style="text-align:center;color:var(--bad);font-weight:700">↓</td></tr>
+          <tr style="background:#f8fafc"><td style="padding:5px 6px;font-weight:600">Devgiri</td><td style="text-align:center;color:var(--gray)">—</td><td style="text-align:center">62%</td><td style="text-align:center;color:var(--good);font-weight:700">110%</td><td style="text-align:center;color:var(--good);font-weight:700">↑↑</td></tr>
+          <tr><td style="padding:5px 6px;font-weight:600">Sinhagad</td><td style="text-align:center">66%</td><td style="text-align:center">70%</td><td style="text-align:center">63%</td><td style="text-align:center;color:var(--gray)">~</td></tr>
+          <tr style="background:#f8fafc"><td style="padding:5px 6px;font-weight:600">Integrations</td><td style="text-align:center">56%</td><td style="text-align:center">63%</td><td style="text-align:center">68%</td><td style="text-align:center;color:var(--good);font-weight:700">↑</td></tr>
+          <tr><td style="padding:5px 6px;font-weight:600">Rajgad</td><td style="text-align:center">67%</td><td style="text-align:center">67%</td><td style="text-align:center">86%</td><td style="text-align:center;color:var(--good);font-weight:700">↑</td></tr>
+          <tr style="background:#f8fafc"><td style="padding:5px 6px;font-weight:600">Shivneri</td><td style="text-align:center">62%</td><td style="text-align:center;color:var(--bad);font-weight:700">9%</td><td style="text-align:center;color:var(--bad)">28%</td><td style="text-align:center;color:var(--bad);font-weight:700">↓↓</td></tr>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <div class="s6-team-grid">
+    <div class="s6tc monitor">
+      <div class="s6name">Torna</div><div class="s6sub">CXone Integrations</div>
+      <div class="s6row"><span class="s6label">Sprint health trend</span><span class="s6val" style="color:var(--bad)">80% → 77% → 64%</span></div>
+      <div class="s6row"><span class="s6label">AI adoption (r)</span><span class="s6val">0.87 — strong</span></div>
+      <div class="s6row"><span class="s6label">S190 committed / done</span><span class="s6val">48 SP / 27 SP</span></div>
+      <div class="s6finding"><strong>Finding:</strong> Consistent AI adopter (100% AI-labeled S189–S190) but sprint completion declining. Team appears to be overcommitting relative to delivery capacity. AI speed gains are being absorbed by scope growth, not improving completion rate. Recommend reducing sprint commitment ~15% and tracking whether completion rate recovers.</div>
+    </div>
+    <div class="s6tc positive">
+      <div class="s6name">Devgiri</div><div class="s6sub">CXone Integrations</div>
+      <div class="s6row"><span class="s6label">Sprint health trend</span><span class="s6val" style="color:var(--good)">62% → 110% ↑↑</span></div>
+      <div class="s6row"><span class="s6label">AI adoption (r)</span><span class="s6val">0.88 — strong</span></div>
+      <div class="s6row"><span class="s6label">S190 committed / done</span><span class="s6val">50 SP / 55 SP</span></div>
+      <div class="s6finding"><strong>Finding:</strong> Best case in the cohort. AI adoption and sprint health are both rising together. Rapid team scaling (7 SP → 50 SP/sprint) with S190 over-delivery confirms AI tooling is genuinely accelerating throughput, not just being logged. Document this team's onboarding practices as the reference model for WFM Integrations.</div>
+    </div>
+    <div class="s6tc positive">
+      <div class="s6name">Sinhagad</div><div class="s6sub">CX_Integrations</div>
+      <div class="s6row"><span class="s6label">Sprint health trend</span><span class="s6val" style="color:var(--gray)">66% → 70% → 63%</span></div>
+      <div class="s6row"><span class="s6label">AI adoption (r)</span><span class="s6val">0.98 — best in cohort</span></div>
+      <div class="s6row"><span class="s6label">S190 committed / done</span><span class="s6val">46 SP / ~29 SP</span></div>
+      <div class="s6finding"><strong>Finding:</strong> Cleanest AI adoption trajectory (r = 0.98) with steady, moderate sprint health (63–70%). The team is likely using AI for quality and thoroughness rather than raw speed — hence stable but not spectacular completion rates. Reliable and low-risk. Encourage experimenting with AI for faster first drafts to test if completion rate can improve further.</div>
+    </div>
+    <div class="s6tc monitor">
+      <div class="s6name">Integrations</div><div class="s6sub">CX_Integrations</div>
+      <div class="s6row"><span class="s6label">Sprint health trend</span><span class="s6val" style="color:var(--good)">56% → 63% → 68% ↑</span></div>
+      <div class="s6row"><span class="s6label">AI adoption (r)</span><span class="s6val" style="color:var(--mod)">−0.24 — volatile</span></div>
+      <div class="s6row"><span class="s6label">S190 committed / done</span><span class="s6val">33 SP / 23 SP</span></div>
+      <div class="s6finding"><strong>Finding:</strong> Counterintuitive: weak/negative AI correlation but sprint health improving sprint-over-sprint. Environment-dependent integration work (infra, platform, middleware) doesn't map cleanly to AI-assisted coding. Sprint improvement is organic, not AI-driven. Rather than forcing broad AI adoption metrics, identify which specific work items are AI-amenable and measure those selectively.</div>
+    </div>
+    <div class="s6tc critical">
+      <div class="s6name">Rajgad</div><div class="s6sub">Workforce Management</div>
+      <div class="s6row"><span class="s6label">Sprint health trend</span><span class="s6val" style="color:var(--good)">67% → 67% → 86%</span></div>
+      <div class="s6row"><span class="s6label">AI adoption (r)</span><span class="s6val" style="color:var(--bad)">−0.66 — declining</span></div>
+      <div class="s6row"><span class="s6label">S191 status</span><span class="s6val" style="color:var(--bad)">0 SP done — critical</span></div>
+      <div class="s6finding"><strong>Finding:</strong> S190's 86% sprint health created a false sense of momentum. S191 collapse (0 SP done, 61% AI-labeled) reveals the underlying issue: AI labeling is not translating to execution. Three questions need immediate answers: (1) What changed between S190 end and S191 start? (2) Are AI-labeled stories blocked by external dependencies? (3) Was S190 success driven by non-AI carryover items?</div>
+    </div>
+    <div class="s6tc critical">
+      <div class="s6name">Shivneri</div><div class="s6sub">Workforce Management</div>
+      <div class="s6row"><span class="s6label">Sprint health trend</span><span class="s6val" style="color:var(--bad)">62% → 9% → 28% ↓↓</span></div>
+      <div class="s6row"><span class="s6label">AI adoption (r)</span><span class="s6val">0.87 — strong</span></div>
+      <div class="s6row"><span class="s6label">Committed SP drop</span><span class="s6val" style="color:var(--bad)">43 SP → 17 SP (−60%)</span></div>
+      <div class="s6finding"><strong>Finding:</strong> Paradox — strong AI signal (r = 0.87, 100% AI-labeled) but catastrophic sprint delivery collapse. 1 SP completed in S189 (one story). Committed SP halved between S188 and S189 with no recovery. This is not an AI effectiveness issue — it is a team capacity event. Investigate whether team composition or staffing changed between S188 and S189. AI metrics are misleading here without that context.</div>
     </div>
   </div>
 </div>
@@ -603,6 +745,37 @@ const VCO={good:{c:'#16a34a',bg:'#f0fdf4'},mod:{c:'#ca8a04',bg:'#fefce8'},bad:{c
       <td><span class="sev ${sev.cls}">${sev.txt}</span></td>
       <td style="font-size:11px;color:#475569">${isTotal?'~143 more AI-SP needed in 6 days to match S190 pace.':(ACTIONS[t.id]||'Monitor.')}</td>
     </tr>`;
+  });
+})();
+
+// ── SECTION 6 — SPRINT HEALTH CHART ──────────────────────────────────────
+(function(){
+  const ctx=document.getElementById('s6HealthChart').getContext('2d');
+  new Chart(ctx,{
+    type:'line',
+    data:{
+      labels:['S188','S189','S190'],
+      datasets:[
+        {label:'Torna',      data:[80.0,77.3,64.0],  borderColor:'#7F77DD',backgroundColor:'transparent',tension:0.3,pointRadius:5,borderWidth:2.5,spanGaps:true},
+        {label:'Devgiri',    data:[null,62.2,110.0],  borderColor:'#16a34a',backgroundColor:'transparent',tension:0.3,pointRadius:5,borderWidth:2.5,borderDash:[4,3],spanGaps:true},
+        {label:'Sinhagad',   data:[65.98,69.57,62.50],borderColor:'#1e40af',backgroundColor:'transparent',tension:0.3,pointRadius:5,borderWidth:2.5,spanGaps:true},
+        {label:'Integrations',data:[56.20,63.18,67.65],borderColor:'#64748b',backgroundColor:'transparent',tension:0.3,pointRadius:5,borderWidth:2.5,spanGaps:true},
+        {label:'Rajgad',     data:[67.39,67.39,85.71],borderColor:'#dc2626',backgroundColor:'transparent',tension:0.3,pointRadius:5,borderWidth:2.5,spanGaps:true},
+        {label:'Shivneri',   data:[62.22,9.09,28.0],  borderColor:'#ea580c',backgroundColor:'transparent',tension:0.3,pointRadius:5,borderWidth:2.5,borderDash:[6,3],spanGaps:true}
+      ]
+    },
+    options:{
+      responsive:true,
+      maintainAspectRatio:false,
+      plugins:{
+        legend:{display:false},
+        tooltip:{callbacks:{label:c=>` ${c.dataset.label}: ${c.raw!==null?Number(c.raw).toFixed(1)+'%':'N/A'}`}}
+      },
+      scales:{
+        y:{min:0,max:120,ticks:{callback:v=>v+'%',font:{size:10}},grid:{color:'#f8fafc'}},
+        x:{grid:{display:false},ticks:{font:{size:11}}}
+      }
+    }
   });
 })();
 </script>
