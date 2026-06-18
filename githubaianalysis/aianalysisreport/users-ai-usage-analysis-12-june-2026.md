@@ -955,3 +955,312 @@ In all scenarios, the defense is the same: **provide the specific number and its
 ---
 
 *Analysis based on 8 checkpoints (Apr 20 → Jun 12, 2026). Bottom-5 defense section sourced from: github-ai-analysis-12-june-2026-summary.md (Budget Crisis Group, Very Late Entry Group, Volatile Patterns, Steady Climbers). Platform anomaly: github-ai-analysis-12-june-2026.md. Prior baseline: users-ai-usage-analysis-8-june-2026.md.*
+
+---
+
+---
+
+# Third Defense Batch — Mohit Baghel, Shubham Fulzele, Amol Doke, Prashasti Jain, Tushar Patil
+
+> **Note on users already defended in this file:** Shubham Fulzele (Shubhamfulzele28) is fully covered under User 4 above. Tushar Patil (tusharpati166719) is covered under User 5 above — but a **critical new finding** on his login discrepancy is added in User 13 below and substantially strengthens his defense.
+
+---
+
+## Executive Summary — Third Batch
+
+| Developer | Login | Found in Jun 12? | Defense Type | Verdict |
+|---|---|---|---|---|
+| **Mohit Baghel** | mohitbaghelnice | No | Context-first investigation | ⚠️ Absent from analysis — role/access check required |
+| **Shubham Fulzele** | Shubhamfulzele28 | Yes (CP8 only) | Platform anomaly — 4-day window | ✅ Already defended — see User 4 |
+| **Amol Doke** | amoldoke051295 | No | Context-first investigation | ⚠️ Absent from analysis — role/access check required |
+| **Prashasti Jain** | prashasti-jain | Yes | Volume floor misclassification | ✅ Strong defend — ReqEff ~25.7, penalized by absolute LoC, not efficiency |
+| **Tushar Patil** | tusharpatil166719 / tusharpati166719 | Partial (login split) | **Data integrity + platform anomaly** | ✅ Strongest update — login discrepancy erased 8-week Steady Climber history |
+
+---
+
+## 9. Mohit Baghel (mohitbaghelnice) — Absent From June 12 Analysis
+
+### Data Status
+
+| Source | Status |
+|---|---|
+| Jun 12 analysis (all files) | **Not present** — does not appear in any table, group, or tier assignment |
+| Jun 8 analysis | Present — classified **Inactive (0 activity this period — in scope)** |
+| Jun 3 and earlier | Not tracked |
+
+**There is no June 12 data to evaluate for Mohit Baghel.** He was absent from the entire June 12 analysis scope.
+
+---
+
+### Defense
+
+If the VP is flagging Mohit for Request Efficiency, one of two things is true:
+
+1. **He is not in the Copilot dataset at all** — meaning his ReqEff is undefined (0 LoC ÷ 0 premium), and the VP may be interpreting absence as a performance metric
+2. **He appears in a different data export** not covered by the June 12 analysis — a different date filter, team filter, or dashboard view
+
+In neither case is "bottom-5 by ReqEff" a valid description of his performance. ReqEff requires both a numerator and a denominator. A user with 0 activity has neither.
+
+#### Three Questions — Same as Suraj Dubey
+
+1. **Does he have an active Copilot license?** Zero activity across 53+ days while peers are active strongly suggests either no license or no IDE configuration.
+2. **What is his role this quarter?** If he is in a non-coding role (reviews, design, testing, management), LoC is the wrong metric entirely.
+3. **Was he available?** Leave, partial availability, or project secondment would explain sustained absence.
+
+#### What Being "In Scope" Means
+
+The June 8 analysis noted him as "Inactive (0 activity — in scope)." "In scope" means his GitHub login was included in the WFM Integrations team filter but contributed zero LoC. This is different from being excluded — it means the tool is tracking him, he is just not using it.
+
+---
+
+### Action Plan
+
+1. **Verify Copilot license and IDE setup** — check whether mohitbaghelnice has an active seat
+2. **Confirm role** — coding vs. non-coding this quarter
+3. **Confirm availability** — full-time Apr 20 – Jun 12?
+4. **If coding role + active license + full availability:** treat as an adoption gap, not a ReqEff failure. Set a Q3 CP1 baseline and evaluate from there.
+
+### Manager Conversation Guide
+
+**Tell Mohit's manager:**
+1. "Mohit doesn't appear in the June 12 Copilot analysis at all. Before any performance conversation, I need to confirm: does he have Copilot set up and working?"
+2. "Zero activity across two analysis periods (June 8 and June 12) is almost always a tooling or role issue, not a performance issue."
+3. "The VP's flag may be based on his absence from the dataset, which is being interpreted as poor efficiency. Absence and poor efficiency are different problems with different solutions."
+
+---
+
+---
+
+## 10. Amol Doke (amoldoke051295) — Absent From June 12 Analysis
+
+### Data Status
+
+| Source | Status |
+|---|---|
+| Jun 12 analysis (all files) | **Not present** — does not appear in any table, group, or tier assignment |
+| Jun 8 analysis | Present — classified **Inactive (0 activity this period — in scope)** |
+| Jun 3 and earlier | Not tracked |
+
+Same situation as Mohit Baghel. Amol Doke appears in the June 8 Inactive group alongside Mohit, was zero-activity across both tracked periods, and is entirely absent from the June 12 analysis.
+
+---
+
+### Defense
+
+The defense is identical in structure to Mohit Baghel. The core point: **you cannot have poor Request Efficiency if you have no Request data.** The VP's flag must be based on absence being read as inefficiency.
+
+#### Critical Distinction
+
+There is a meaningful difference between:
+- **Zero activity because the tool is not set up** (IT/onboarding issue)
+- **Zero activity because the role doesn't require coding** (metrics mismatch)
+- **Zero activity despite having access and a coding role** (adoption issue — the only real performance concern)
+
+All three look identical in a dashboard. The defense requires finding out which one applies before any conversation about performance.
+
+---
+
+### Action Plan
+
+1. **Verify Copilot license** — is amoldoke051295 provisioned?
+2. **Confirm role** — was Amol in a hands-on coding role Apr 20 – Jun 12?
+3. **Confirm availability** — full-time vs. leave/partial?
+4. **If all three confirm a gap:** adoption intervention, not performance flag. Q3 CP1 becomes the real baseline.
+
+### Manager Conversation Guide
+
+**Tell Amol's manager:**
+1. "Amol doesn't appear in two consecutive analysis periods (June 8, June 12) — he shows zero Copilot activity. This almost always means the tool isn't configured, not that he's performing poorly."
+2. "If he is in a coding role with a working Copilot setup and has been available full-time, then we have an adoption conversation. But that conversation starts with 'why hasn't the tool been useful to you?' — not with a performance flag."
+3. "Do not rank him bottom-5 on a metric that requires tool usage when tool usage may have been blocked by access or role."
+
+---
+
+---
+
+## 11. Prashasti Jain (prashasti-jain) — Strong Efficiency, Penalized by Volume Floor
+
+### Full Trajectory (CP1–CP8)
+
+| Checkpoint | Date | LoC | Window Delta | Premium | ReqEff | Pattern |
+|---|---|---|---|---|---|---|
+| **CP1** | Apr 20 | 0 | — | 0 | — | No activity |
+| **CP2** | Apr 23 | 0 | 0 | 0 | — | — |
+| **CP3** | Apr 28 | 0 | 0 | 0 | — | — |
+| **CP4** | May 11 | 203 | +203 | — | — | **First activation** |
+| **CP5** | May 18 | 837 | +634 (+312%) | — | — | **Strong growth** |
+| **CP6** | Jun 3 | 872 | +35 (+4.2%) | — | — | Consolidation |
+| **CP7** | Jun 8 | ~900 | +28 | ~35 | ~25.7 | Efficient, low volume |
+| **CP8** | Jun 12 | **1,545** | +645 (+72%) | — | — | **Re-acceleration** |
+| **Total Q2** | — | **+1,545** | — | ~35 (CP7) | **~25.7 (CP7)** | Late Accelerator / Rising |
+
+**Q3 Readiness:** ♨️ WARM (upgraded from Cold in Jun 8 analysis)
+**Pattern evolution:** Mid-Quarter Stall (Jun 8) → Late Accelerator / Rising (Jun 12)
+
+---
+
+### Defense
+
+**Prashasti Jain has one of the best Request Efficiency scores on the team. The VP's bottom-5 flag is almost certainly based on absolute LoC volume, not efficiency quality — and those are two completely different problems.**
+
+#### The ReqEff Is Not the Issue
+
+At the June 8 checkpoint, her metrics were:
+- LoC: ~900
+- Premium Requests: ~35
+- **ReqEff: ~25.7** — this is top-quartile on the team
+
+For context: the team average ReqEff is ~8. Vitthal Devkar (named efficiency benchmark) is at ~14. Prashasti at ~25.7 means she generates **more LoC per premium request than the team's named top performer**.
+
+She is not on a "bottom-5 by ReqEff" list because of poor efficiency. Either:
+1. The VP is using absolute LoC as a proxy for efficiency (lower LoC = "less efficient" — which is wrong)
+2. Her CP8 premium spiked due to the platform anomaly, dropping her number since Jun 8
+3. A different calculation method is being applied
+
+#### Why Tier E — and Why It Doesn't Mean Poor Performance
+
+The June 8 analysis gave her Tier E in all frameworks despite the strong ReqEff. The reason is the **absolute LoC floor**: the v1 framework requires minimum LoC thresholds for Tier D and above. With ~900 LoC at CP7, she was below the floor — not because she was inefficient, but because she started late (first activation at CP4 = May 11) and her absolute volume was still building.
+
+Tier E due to volume floor ≠ Tier E due to poor performance. These are categorically different.
+
+#### The CP8 Re-Acceleration Is the Most Positive Signal
+
+The +72% LoC growth from CP7 (~900) to CP8 (1,545) in 4 days is the **highest final-window growth rate** among the non-crisis users in this analysis. This is not a user who is declining — it's a user who was building slowly and then hit her stride.
+
+Her Q3 Readiness was upgraded from Cold (Jun 8) to **Warm (Jun 12)** specifically because of this late acceleration. The analysis recognized the trajectory improvement even if the snapshot tier didn't.
+
+#### Pattern Evolution Tells the Story
+
+| Period | Pattern | Interpretation |
+|---|---|---|
+| CP4–CP6 | Mid-Quarter Stall | Activated late, slow early growth |
+| CP7–CP8 | Late Accelerator / Rising | Found workflow, output accelerating |
+| Q3 Projection | Rising → Steady Climber | On track to exit volume floor by Q3 CP2 |
+
+---
+
+### Action Plan
+
+#### Immediate
+
+1. **Reframe the VP's concern** — ask whether the flag is ReqEff or absolute LoC volume. If ReqEff: show the ~25.7 number from Jun 8. If volume: agree on a Q3 target and note she is already accelerating.
+2. **No efficiency coaching needed** — her ReqEff is already excellent. The only development need is sustained output volume.
+3. **Sustain the CP8 momentum** — the +72% final-window spike needs to be carried into Q3. The risk is a post-sprint crash where the burst doesn't continue.
+
+#### Q3 Targets
+
+| Metric | Current (Jun 12) | Q3 CP1 Target | Q3 End Target |
+|---|---|---|---|
+| LoC | 1,545 | 2,000+ | 5,000+ |
+| ReqEff | ~25.7 (CP7) | Maintain >15 | Maintain >15 |
+| Tier (v1) | E (volume floor) | D | C → B |
+| Premium | ~35/period (lean) | Maintain lean | Maintain lean |
+| Pattern | Late Accelerator | Steady Climber | Steady Climber |
+
+**Key coaching point:** Do NOT change her workflow — her efficiency is already exceptional. The only goal is output volume. More consistent daily usage of the same approach she already uses.
+
+---
+
+### Manager Conversation Guide
+
+**Tell Prashasti's manager:**
+
+1. "Prashasti's Request Efficiency of ~25.7 at the June 8 checkpoint is better than Vitthal Devkar — our named efficiency benchmark. She is not on a bottom-5 list because of poor efficiency."
+2. "Her Tier E classification is a volume threshold issue, not a quality issue. She started activating Copilot in early May and her LoC is still building. By Q3 CP2, she should cross the volume floor if the CP8 acceleration continues."
+3. "The VP's flag may be based on absolute LoC (1,545 vs. top users at 5,000–10,000). That is a valid development target — but it is not a Request Efficiency problem."
+4. "Q3 recommendation: sustain the momentum from the CP8 spike. Her efficiency is already there — she just needs to produce more consistently."
+
+---
+
+---
+
+## 12. Tushar Patil — Critical Update: Login Discrepancy Changes the Entire Defense
+
+> **This section supplements User 5 (tusharpati166719) already in this file.** The defense in User 5 treated Tushar as a "Very Late Entry" based on Jun 12 data showing zero history. This section adds a critical new finding that fundamentally changes the defense.
+
+### The Login Discrepancy
+
+| Analysis Period | Login Used | LoC at CP1 | LoC at CP7/CP8 | Pattern |
+|---|---|---|---|---|
+| **Jun 3 analysis** | `tusharpatil166719` | 381 | 1,798 (CP6) | Steady Climber |
+| **Jun 8 analysis** | `tusharpatil166719` | 381 | ~1,900 (CP7) | Steady Climber, ReqEff ~19 |
+| **Jun 12 analysis** | `tusharpati166719` | 0 | 1,798 (CP8 only) | Very Late Entry |
+
+**Difference between the two logins:** `tusharpatil166719` vs `tusharpati166719` — a single letter (`l` missing in "pati" vs "patil"). This is a **one-character typo in data extraction**, not two different people.
+
+### What the Real History Shows
+
+Using `tusharpatil166719` (the historically consistent login from Jun 3 and Jun 8 files):
+
+| Checkpoint | Date | LoC | Window Delta | Pattern |
+|---|---|---|---|---|
+| **CP1** | Apr 20 | 381 | baseline | Early adopter |
+| **CP2** | Apr 23 | 381 | 0 | Flat |
+| **CP3** | Apr 28 | 853 | +472 | **Growth spurt** |
+| **CP4** | May 11 | 1,389 | +536 | Steady |
+| **CP5** | May 18 | 1,631 | +242 | Continuing |
+| **CP6** | Jun 3 | 1,798 | +167 | Consolidating |
+| **CP7** | Jun 8 | ~1,900 | +102 | **Steady Climber** |
+| **CP8** | Jun 12 | ~2,000 (est.) | — | Continuing |
+
+**ReqEff at Jun 8:** ~19 (main file) — above team average, no budget crisis
+**Tier at Jun 8:** Tier C (CRQC), Tier D (v1/v2) — not a top performer, but a steady, improving one
+**Pattern:** Steady Climber (4.7× LoC growth from CP1 to CP7)
+**Q3 Readiness at Jun 8:** Warm
+
+### The Real Defense
+
+**Tushar Patil is not a "Very Late Entry" user with 4 days of data. He is a Steady Climber with 8 weeks of consistent growth and a ReqEff of ~19 — above team average.**
+
+The Jun 12 analysis classified `tusharpati166719` (with the typo) as a brand-new user with zero history. That classification is a **data integrity error**, not a performance signal. When the correct login (`tusharpatil166719`) is used:
+
+- His LoC growth from CP1 → CP7 is **+1,519 LoC** (4.7×)
+- His ReqEff at CP7 is **~19** — above team average of ~8
+- He was classified as **Steady Climber** — the most reliable pattern in the cohort
+- His Jun 8 tier was **C (CRQC)** with a CRQC score of 4/9
+
+**The 10,754 premium at CP8 for `tusharpati166719` likely does not belong to Tushar Patil at all.** It belongs to a different user whose login was incorrectly merged with his name. Alternatively, if the login was renamed/updated in GitHub between Jun 8 and Jun 12, then the CP8 data is real — but the zero historical context is a lookup failure, not his actual history.
+
+### The VP Conversation
+
+If the VP is flagging Tushar Patil for bottom-5 ReqEff based on the Jun 12 data:
+
+1. **Show the Jun 8 data under `tusharpatil166719`** — ReqEff ~19, Steady Climber, Tier C
+2. **Point out the one-letter login difference** — this is a data extraction issue, not a performance issue
+3. **Ask the VP to reconcile which login they are evaluating** — because the two logins show completely different performance pictures
+
+This is a data integrity case, not a performance case.
+
+---
+
+### Updated Summary for Tushar Patil
+
+| Metric | Jun 12 Analysis (tusharpati166719) | Jun 8 Analysis (tusharpatil166719) | Which is correct? |
+|---|---|---|---|
+| CP1 LoC | 0 | 381 | **Jun 8 (full history)** |
+| CP7/CP8 LoC | 1,798 (CP8) | ~1,900 (CP7) | Similar values, different checkpoints |
+| Pattern | Very Late Entry | Steady Climber | **Jun 8** |
+| ReqEff | ~0.17 (collapsed) | ~19 | **Jun 8** |
+| Tier | E / unranked | C (CRQC) | **Jun 8** |
+| Premium crisis | 10,754 | No crisis (~600) | Needs verification |
+| Q3 Readiness | Cold | Warm | **Jun 8** |
+
+**Bottom line:** Before accepting the VP's bottom-5 flag for Tushar Patil, verify which login is being used in the dashboard — `tusharpatil166719` or `tusharpati166719`. One letter separates a Steady Climber from a budget crisis entry.
+
+---
+
+---
+
+## Updated One-Liners for VP Conversation
+
+| User | One-liner |
+|---|---|
+| **Mohit Baghel** | "Not in the June 12 analysis at all — zero activity may reflect tooling/access gap, not performance." |
+| **Shubham Fulzele** | "4 days of data during a platform anomaly. See User 4 in this file for the full defense." |
+| **Amol Doke** | "Same situation as Mohit Baghel — absent from two consecutive analysis periods. Investigate access/role before any flag." |
+| **Prashasti Jain** | "ReqEff of ~25.7 at Jun 8 — better than the named efficiency benchmark. Bottom-5 flag is likely based on absolute volume, not efficiency quality." |
+| **Tushar Patil** | "One-letter login difference between Jun 8 (`tusharpatil166719`) and Jun 12 (`tusharpati166719`). The Jun 8 login shows a Steady Climber with ReqEff ~19. Verify which login the VP is evaluating before accepting the flag." |
+
+---
+
+*Third batch sourced from: github-ai-analysis-8-june-2026.md (Inactive group, Steady Climbers), github-ai-analysis-12-june-2026-summary.md (Rising/Late Accelerator for prashasti-jain), github-ai-analysis-3-june-2026-summary.md (tusharpatil166719 Master Table). Login discrepancy finding: cross-referenced Jun 3, Jun 8, and Jun 12 files.*
