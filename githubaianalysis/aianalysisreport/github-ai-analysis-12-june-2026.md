@@ -1,4 +1,4 @@
-# GitHub Copilot Multi-Period Analysis — v1 Standard Progression
+﻿# GitHub Copilot Multi-Period Analysis — v1 Standard Progression
 **Product:** WFM Integrations | **R&D VP:** WFM | **Team:** All  
 **Analysis Period:** April 20 → June 12, 2026 (53 days, 8 checkpoints)  
 **Framework:** v1 Standard | **Scope:** 45 users (15 excluded per ignore list)
@@ -144,3 +144,4 @@ The 4-day CP7 → CP8 window is **too short** for meaningful momentum analysis. 
 ---
 
 *v1 Standard Multi-Period Progression — 8 checkpoints (Apr 20 → Jun 12, 53 days). CP7 → CP8 window dominated by systematic premium spike pattern. 15 users excluded per ignore list.*
+

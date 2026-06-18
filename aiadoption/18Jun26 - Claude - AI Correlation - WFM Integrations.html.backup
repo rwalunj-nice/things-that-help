@@ -1,0 +1,783 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>WFM Integrations — AI Productivity Correlation | 09-Jun-26</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+:root{
+  --good:#16a34a;--good-bg:#f0fdf4;--good-b:#bbf7d0;
+  --mod:#ca8a04;--mod-bg:#fefce8;--mod-b:#fde68a;
+  --watch:#ea580c;--watch-bg:#fff7ed;--watch-b:#fed7aa;
+  --bad:#dc2626;--bad-bg:#fef2f2;--bad-b:#fecaca;
+  --brand:#1e40af;--gray:#64748b;--gb:#e2e8f0;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#f1f5f9;color:#1e293b;font-size:13px;}
+
+/* HEADER */
+.hdr{background:linear-gradient(135deg,#0f172a 0%,#1e3a5f 55%,#1d4ed8 100%);color:#fff;padding:24px 32px 18px;}
+.hdr-top{display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:12px;}
+.hdr h1{font-size:20px;font-weight:800;letter-spacing:-.3px;}
+.hdr .sub{font-size:12px;opacity:.7;margin-top:3px;}
+.badges{display:flex;gap:10px;flex-wrap:wrap;}
+.badge{background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.22);border-radius:8px;padding:7px 14px;text-align:center;min-width:80px;}
+.badge .bv{font-size:20px;font-weight:800;}
+.badge .bl{font-size:10px;opacity:.7;margin-top:1px;}
+.pills{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px;}
+.pill{background:rgba(255,255,255,.11);border-radius:20px;padding:3px 12px;font-size:11px;}
+.sp-bar-wrap{margin-top:12px;background:rgba(255,255,255,.1);border-radius:8px;border-left:3px solid #fbbf24;padding:9px 13px;}
+.sp-bar-row{display:flex;justify-content:space-between;font-size:11.5px;margin-bottom:5px;}
+.sp-bg{height:5px;background:rgba(255,255,255,.2);border-radius:3px;}
+.sp-fill{height:5px;background:#fbbf24;border-radius:3px;}
+.sp-labels{display:flex;justify-content:space-between;font-size:10px;opacity:.55;margin-top:3px;}
+
+/* KEY INSIGHT BAR */
+.kib{background:#0f172a;color:#94a3b8;padding:8px 32px;font-size:12px;display:flex;align-items:center;gap:8px;}
+.kib strong{color:#fbbf24;}
+
+/* MAIN */
+.main{padding:18px 32px;max-width:1400px;margin:0 auto;}
+.sec{margin-bottom:26px;}
+.sec-hdr{display:flex;align-items:center;gap:8px;margin-bottom:14px;}
+.sec-num{background:var(--brand);color:#fff;font-size:11px;font-weight:700;width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.sec-title{font-size:14px;font-weight:700;color:#1e293b;}
+.card{background:#fff;border-radius:10px;padding:18px 20px;border:1px solid var(--gb);box-shadow:0 1px 3px rgba(0,0,0,.05);}
+.method{background:#f8fafc;border:1px solid var(--gb);border-left:3px solid var(--brand);border-radius:6px;padding:8px 14px;font-size:11.5px;color:#475569;margin-bottom:16px;line-height:1.6;}
+
+/* STAT ROW */
+.stat-row{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:18px;}
+.stat{background:#fff;border-radius:10px;padding:13px 15px;border:1px solid var(--gb);text-align:center;}
+.stat .sv{font-size:24px;font-weight:800;color:var(--brand);}
+.stat .sl{font-size:11px;color:var(--gray);margin-top:2px;line-height:1.4;}
+.stat .sd{font-size:11px;font-weight:600;margin-top:3px;}
+.up{color:var(--good);}.dn{color:var(--bad);}.flat{color:var(--gray);}
+
+/* SECTION 1 */
+.s1-grid{display:grid;grid-template-columns:5fr 3fr;gap:16px;}
+.corr-table{width:100%;border-collapse:collapse;font-size:12px;}
+.corr-table th{background:#f1f5f9;font-weight:600;padding:7px 10px;text-align:left;border-bottom:1px solid var(--gb);}
+.corr-table td{padding:7px 10px;border-bottom:1px solid #f8fafc;vertical-align:middle;}
+.corr-table tr:hover td{background:#f8fafc;}
+.corr-table tr.total-row td{border-bottom:none;font-weight:700;background:#f8fafc;border-top:2px solid var(--gb);}
+.r-chip{display:inline-block;padding:2px 9px;border-radius:4px;font-size:11.5px;font-weight:700;color:#fff;}
+.v-chip{display:inline-block;padding:2px 9px;border-radius:4px;font-size:11px;font-weight:600;}
+.v-good{background:var(--good-bg);color:var(--good);border:1px solid var(--good-b);}
+.v-mod{background:var(--mod-bg);color:var(--mod);border:1px solid var(--mod-b);}
+.v-bad{background:var(--bad-bg);color:var(--bad);border:1px solid var(--bad-b);}
+.trend-dots{display:flex;gap:3px;align-items:center;}
+.dot{width:10px;height:10px;border-radius:50%;flex-shrink:0;}
+
+/* SECTION 2 — trend cards 3-column grid */
+.trend-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;}
+.tc{background:#fff;border-radius:10px;padding:16px 18px;border:1px solid var(--gb);box-shadow:0 1px 3px rgba(0,0,0,.05);}
+.tc-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;}
+.tc-name{font-size:14px;font-weight:700;}
+/* CRITICAL: fixed-height chart wrapper prevents infinite resize */
+.chart-wrap{position:relative;height:160px;width:100%;}
+.tc-foot{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:10px;}
+.tc-stat{background:#f8fafc;border-radius:6px;padding:5px 8px;text-align:center;}
+.tc-stat .tv{font-size:13px;font-weight:800;}
+.tc-stat .tl{font-size:10px;color:var(--gray);margin-top:1px;}
+.tc-note{font-size:11px;color:#475569;margin-top:8px;line-height:1.55;border-top:1px solid #f1f5f9;padding-top:8px;}
+
+/* Delta table */
+.delta-table{width:100%;border-collapse:collapse;font-size:12px;}
+.delta-table th{background:#f1f5f9;font-weight:600;padding:7px 10px;text-align:center;border-bottom:1px solid var(--gb);}
+.delta-table th:first-child{text-align:left;}
+.delta-table td{padding:7px 10px;border-bottom:1px solid #f8fafc;text-align:center;}
+.delta-table td:first-child{text-align:left;font-weight:600;}
+.delta-table tr.total-row td{font-weight:700;background:#f8fafc;border-top:2px solid var(--gb);border-bottom:none;}
+.delta-pp{font-size:11px;font-weight:600;padding:1px 6px;border-radius:3px;}
+.d-up{background:#dcfce7;color:#166534;}
+.d-dn{background:#fee2e2;color:#991b1b;}
+.d-fl{background:#f1f5f9;color:#475569;}
+
+/* SECTION 3 — verdicts */
+.v-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:13px;}
+.vc{border-radius:10px;padding:14px 16px;border:1px solid;}
+.vc.good{background:var(--good-bg);border-color:var(--good-b);}
+.vc.mod{background:var(--mod-bg);border-color:var(--mod-b);}
+.vc.bad{background:var(--bad-bg);border-color:var(--bad-b);}
+.vc .vl{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;margin-bottom:3px;}
+.vc.good .vl{color:var(--good);}  .vc.mod .vl{color:var(--mod);}  .vc.bad .vl{color:var(--bad);}
+.vc .vn{font-size:14px;font-weight:700;margin-bottom:2px;}
+.vc .vr{font-size:11px;color:var(--gray);margin-bottom:6px;}
+.vc .vt{font-size:12px;color:#374151;line-height:1.5;}
+.vc .vs{margin-top:8px;padding:5px 10px;border-radius:5px;font-size:11px;font-weight:600;}
+.vc.good .vs{background:#dcfce7;color:#166534;}
+.vc.mod  .vs{background:#fef9c3;color:#854d0e;}
+.vc.bad  .vs{background:#fee2e2;color:#991b1b;}
+
+/* SECTION 4 */
+.alert-panel{background:#fff;border-radius:10px;padding:18px 20px;border:1px solid #fed7aa;border-left:4px solid var(--watch);}
+.prog-cards{display:grid;grid-template-columns:repeat(6,1fr);gap:10px;margin-bottom:16px;}
+.pc{background:#fff7ed;border:1px solid #fed7aa;border-radius:8px;padding:10px;text-align:center;}
+.pc .pn{font-size:11px;font-weight:700;color:#7c2d12;margin-bottom:4px;}
+.pc .pv{font-size:22px;font-weight:800;}
+.pc .ps{font-size:10px;color:var(--gray);margin-top:1px;}
+.pc .pb{margin-top:5px;height:5px;background:#fde8d0;border-radius:3px;overflow:hidden;}
+.pc .pf{height:5px;border-radius:3px;}
+.s191t{width:100%;border-collapse:collapse;font-size:12px;}
+.s191t th{background:#fff7ed;color:#7c2d12;font-weight:600;padding:7px 10px;text-align:left;border-bottom:1px solid #fed7aa;font-size:11px;}
+.s191t td{padding:7px 10px;border-bottom:1px solid #fef0e7;vertical-align:middle;}
+.s191t tr.total-row td{font-weight:700;background:#fef9f5;border-top:2px solid #fed7aa;border-bottom:none;}
+.sev{display:inline-block;padding:2px 8px;border-radius:4px;font-size:11px;font-weight:600;}
+.sev-crit{background:#fee2e2;color:#991b1b;border:1px solid #fecaca;}
+.sev-high{background:#ffedd5;color:#9a3412;border:1px solid #fed7aa;}
+.sev-med{background:#fef9c3;color:#854d0e;border:1px solid #fde68a;}
+.sev-ok{background:#f0fdf4;color:#166534;border:1px solid #bbf7d0;}
+.pb-wrap{display:flex;align-items:center;gap:6px;}
+.pb-bg{flex:1;height:7px;background:#f1f5f9;border-radius:4px;overflow:hidden;}
+.pb-fg{height:7px;border-radius:4px;}
+
+/* SECTION 5 */
+.exec{background:#0f172a;color:#cbd5e1;border-radius:10px;padding:18px 22px;line-height:1.75;font-size:12.5px;}
+.exec strong{color:#fff;}
+.exec .highlight{display:inline-block;background:rgba(99,102,241,.2);border-radius:3px;padding:0 4px;color:#a5b4fc;}
+.exec-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:14px;}
+.exec-card{background:rgba(255,255,255,.07);border-radius:8px;padding:12px 14px;border:1px solid rgba(255,255,255,.1);}
+.exec-card .et{font-size:10px;text-transform:uppercase;letter-spacing:.7px;opacity:.6;margin-bottom:4px;}
+.exec-card .ev{font-size:14px;font-weight:700;color:#fff;}
+.exec-card .ed{font-size:11px;margin-top:3px;opacity:.7;}
+
+/* SECTION 6 — Sprint Velocity & Health */
+.s6-layout{display:grid;grid-template-columns:2fr 1fr;gap:16px;align-items:start;}
+.s6-team-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:16px;}
+.s6tc{background:#fff;border-radius:10px;padding:14px 16px;border:1px solid var(--gb);box-shadow:0 1px 3px rgba(0,0,0,.05);}
+.s6tc.critical{border-left:3px solid var(--bad);}
+.s6tc.warning{border-left:3px solid var(--watch);}
+.s6tc.positive{border-left:3px solid var(--good);}
+.s6tc.monitor{border-left:3px solid var(--mod);}
+.s6tc .s6name{font-size:13px;font-weight:700;margin-bottom:2px;}
+.s6tc .s6sub{font-size:11px;color:var(--gray);margin-bottom:8px;}
+.s6tc .s6row{display:flex;justify-content:space-between;font-size:11.5px;margin-bottom:3px;}
+.s6tc .s6label{color:var(--gray);}
+.s6tc .s6val{font-weight:600;}
+.s6tc .s6finding{font-size:11px;color:#374151;line-height:1.55;margin-top:8px;padding-top:8px;border-top:1px solid #f1f5f9;}
+.quad-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;}
+.quad{border-radius:8px;padding:12px 14px;border:1px solid;}
+.quad.tl{background:#f0fdf4;border-color:#bbf7d0;}
+.quad.tr{background:#fff7ed;border-color:#fed7aa;}
+.quad.bl{background:#fefce8;border-color:#fde68a;}
+.quad.br{background:#fef2f2;border-color:#fecaca;}
+.quad .qt{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.7px;margin-bottom:4px;}
+.quad.tl .qt{color:var(--good);}.quad.tr .qt{color:var(--watch);}.quad.bl .qt{color:var(--mod);}.quad.br .qt{color:var(--bad);}
+.quad .qteams{font-size:12px;font-weight:600;color:#1e293b;margin-bottom:3px;}
+.quad .qdesc{font-size:11px;color:#475569;line-height:1.5;}
+
+@media(max-width:1000px){
+  .trend-grid,.v-grid,.prog-cards{grid-template-columns:repeat(2,1fr);}
+  .stat-row,.s1-grid{grid-template-columns:repeat(2,1fr);}
+  .exec-grid{grid-template-columns:1fr;}
+  .s6-layout,.s6-team-grid{grid-template-columns:1fr;}
+}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="hdr">
+  <div class="hdr-top">
+    <div>
+      <h1>🔗 WFM Integrations — AI Productivity Correlation</h1>
+      <div class="sub">Agentic Coding Weekly · Sub-Team Deep-Dive · 09 June 2026</div>
+    </div>
+    <div class="badges">
+      <div class="badge"><div class="bv">0.92</div><div class="bl">Team r (3-sprint)</div></div>
+      <div class="badge"><div class="bv">0.60</div><div class="bl">r stated (full history)</div></div>
+      <div class="badge"><div class="bv">6</div><div class="bl">Sub-Teams</div></div>
+      <div class="badge"><div class="bv">77%</div><div class="bl">Peak delivery (S190)</div></div>
+    </div>
+  </div>
+  <div class="pills">
+    <div class="pill">✅ S188 (18-Mar-26) — completed</div>
+    <div class="pill">✅ S189 (15-Apr-26) — completed</div>
+    <div class="pill">✅ S190 (06-May-26) — completed</div>
+    <div class="pill">⏳ S191 (27-May → 16-Jun-26) — IN PROGRESS · 6 days left</div>
+  </div>
+  <div class="sp-bar-wrap">
+    <div class="sp-bar-row">
+      <span><strong>Sprint S191 Progress</strong> — CX.26.3.191</span>
+      <span style="color:#fbbf24;font-weight:700">48 issues · 39/182 AI-SP done · 21% delivered · 6 days remaining</span>
+    </div>
+    <div class="sp-bg"><div class="sp-fill" style="width:54%"></div></div>
+    <div class="sp-labels"><span>Start 27 May</span><span>▲ Today 9 Jun (54% elapsed)</span><span>End 16 Jun</span></div>
+  </div>
+</div>
+
+<div class="kib">
+  💡 <strong>Key finding:</strong> 4/6 sub-teams show strong positive correlation (r ≥ 0.87).
+  <strong>Sinhagad</strong> is the standout (r = 0.98). <strong>Rajgad</strong> (r = –0.66) is declining from a once-high baseline.
+  S191 in-progress — <strong>Integrations sub-team</strong> is leading at 56% mid-sprint.
+</div>
+
+<div class="main">
+
+<div class="method">
+  <strong>Methodology:</strong> Pearson r = correlation between sprint sequence (S188=1, S189=2, S190=3) and % AI SP Delivered per sub-team.
+  % AI SP Delivered (S188–S190) = SP Done with Agentic AI ÷ SP Completed. % AI SP Delivered (S191, new format) = SP Done ÷ SP with AI Label.
+  <strong>S191 data (★) is excluded from r calculation</strong> — sprint closes 16 June 2026.
+</div>
+
+<div class="stat-row">
+  <div class="stat"><div class="sv">56%→77%</div><div class="sl">Team delivery growth<br>S188 → S190</div><div class="sd up">↑ +21 pp in 3 sprints</div></div>
+  <div class="stat"><div class="sv">4 / 6</div><div class="sl">Sub-teams with<br>positive r ≥ 0.5</div><div class="sd dn">⚠ Rajgad &amp; Integrations volatile</div></div>
+  <div class="stat"><div class="sv">21%</div><div class="sl">S191 delivery so far<br>39 / 182 AI-labeled SP</div><div class="sd flat">⏳ Sprint 54% elapsed</div></div>
+  <div class="stat"><div class="sv">~143 SP</div><div class="sl">Needed in 6 days<br>to match S190 (77%)</div><div class="sd dn">↓ Stretch target</div></div>
+</div>
+
+<!-- ══ SECTION 1 ════════════════════════════════════════════════════════ -->
+<div class="sec">
+  <div class="sec-hdr"><div class="sec-num">1</div><div class="sec-title">Correlation Overview — AI Adoption × Delivery Strength (Pearson r, 3 completed sprints)</div></div>
+  <div class="s1-grid">
+    <div class="card">
+      <!-- fixed-height wrapper prevents expansion -->
+      <div style="position:relative;height:200px;">
+        <canvas id="barChart"></canvas>
+      </div>
+    </div>
+    <div class="card" style="overflow:auto">
+      <table class="corr-table">
+        <thead><tr>
+          <th>Sub-Team</th><th>r</th><th>Verdict</th><th>S188→S190</th>
+        </tr></thead>
+        <tbody id="corrTbody"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- ══ SECTION 2 ════════════════════════════════════════════════════════ -->
+<div class="sec">
+  <div class="sec-hdr"><div class="sec-num">2</div><div class="sec-title">Sprint-by-Sprint Trend — % AI Story Points Delivered per Sub-Team</div></div>
+
+  <!-- 6 individual team trend cards -->
+  <div class="trend-grid" id="trendGrid"></div>
+
+  <!-- Sprint-over-sprint delta table -->
+  <div class="card" style="margin-top:16px;overflow:auto;">
+    <div style="font-size:12px;font-weight:700;color:#475569;margin-bottom:10px;">Sprint-over-Sprint Delta (pp = percentage points)</div>
+    <table class="delta-table">
+      <thead><tr>
+        <th>Sub-Team</th>
+        <th>S188<br><span style="font-weight:400;font-size:10px">18-Mar</span></th>
+        <th>S189<br><span style="font-weight:400;font-size:10px">15-Apr</span></th>
+        <th>Δ →S189</th>
+        <th>S190<br><span style="font-weight:400;font-size:10px">06-May</span></th>
+        <th>Δ →S190</th>
+        <th>S191★<br><span style="font-weight:400;font-size:10px">in progress</span></th>
+        <th>Δ →S191★</th>
+        <th>r</th>
+      </tr></thead>
+      <tbody id="deltaTbody"></tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ══ SECTION 3 ════════════════════════════════════════════════════════ -->
+<div class="sec">
+  <div class="sec-hdr"><div class="sec-num">3</div><div class="sec-title">Team Verdicts</div></div>
+  <div class="v-grid" id="verdictGrid"></div>
+</div>
+
+<!-- ══ SECTION 4 ════════════════════════════════════════════════════════ -->
+<div class="sec">
+  <div class="sec-hdr"><div class="sec-num">4</div><div class="sec-title">Sprint S191 Status &amp; Alerts — CX.26.3.191 · 6 Days Remaining (closes 16 Jun)</div></div>
+  <div class="alert-panel">
+    <div class="prog-cards" id="progCards"></div>
+    <table class="s191t">
+      <thead><tr>
+        <th>Sub-Team</th><th>Issues w/ AI</th><th>SP w/ AI Label</th>
+        <th>Total Sprint SP</th><th>% Usage Planned</th>
+        <th>SP Done w/ AI</th><th>SP Completed</th>
+        <th>% AI SP Delivered</th><th>vs S190</th><th>Severity</th><th>Action</th>
+      </tr></thead>
+      <tbody id="s191Tbody"></tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ══ SECTION 5 ════════════════════════════════════════════════════════ -->
+<div class="sec">
+  <div class="sec-hdr"><div class="sec-num">5</div><div class="sec-title">Executive Takeaway</div></div>
+  <div class="exec">
+    <strong>Executive Summary — WFM Integrations · 09 June 2026</strong><br><br>
+    The WFM Integrations team has built a <strong>genuine AI delivery culture</strong> over the past 3 sprints.
+    Overall delivery grew from <strong>56% (S188)</strong> to <strong>77% (S190)</strong> — a 21 pp gain — confirming that agentic AI is translating into measurable sprint output.
+    The team-level r of <strong>0.92</strong> (3-sprint window; 0.60 stated from full history) signals a strong and consistent positive correlation between AI adoption and delivery.
+    <br><br>
+    <strong>Top performers:</strong> <span class="highlight">Sinhagad</span> (r = 0.98) shows the cleanest growth trajectory.
+    <span class="highlight">Torna</span> and <span class="highlight">Shivneri</span> hit 100% AI delivery in S189 and held through S190.
+    <span class="highlight">Devgiri</span> made the largest absolute jump — 0% → 80% — demonstrating rapid AI onboarding in a single sprint cycle.
+    <br><br>
+    <strong>Watch items:</strong>
+    <span class="highlight">Rajgad</span> (r = –0.66) started highest at 83% in S188 but has been declining — urgent to investigate reverting to manual workflows, tooling friction, or scope change.
+    <span class="highlight">Integrations sub-team</span> (r = –0.24) is volatile (48%→63%→43%), likely driven by environment-dependent work rather than AI adoption failure — leading at 56% in S191 is positive.
+    <br><br>
+    <strong>Sprint S191 outlook:</strong> 39/182 AI-labeled SP done with 6 days remaining. Devgiri (32%) and Integrations (56%) progressing. Rajgad and Shivneri show 0 SP done — monitor daily before sprint close on 16 June.
+
+    <div class="exec-grid">
+      <div class="exec-card">
+        <div class="et">Best Performer</div>
+        <div class="ev">Sinhagad · r = 0.98</div>
+        <div class="ed">Consistent growth every sprint. 29%→63%→79%</div>
+      </div>
+      <div class="exec-card">
+        <div class="et">Needs Immediate Attention</div>
+        <div class="ev">Rajgad · r = –0.66</div>
+        <div class="ed">Declining from 83% peak. 0 SP done in S191. Investigate blocker.</div>
+      </div>
+      <div class="exec-card">
+        <div class="et">S191 Sprint Risk</div>
+        <div class="ev">~143 SP to close in 6 days</div>
+        <div class="ed">54% elapsed, 21% delivered. Torna, Sinhagad, Rajgad, Shivneri need acceleration.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ SECTION 6 ════════════════════════════════════════════════════════ -->
+<div class="sec">
+  <div class="sec-hdr"><div class="sec-num">6</div><div class="sec-title">Sprint Velocity &amp; Delivery Health — Power BI Sprint Charts (S188–S190)</div></div>
+  <div class="method">
+    <strong>Data source:</strong> Power BI CXone Sprints view — Story Points Committed vs Completed per sprint per team.
+    Sprint Health % = SP Completed ÷ SP Committed (with 1-day slack). Analysed separately from AI adoption metrics (Sections 1–5) to surface divergences between AI tool usage and actual sprint delivery pace.
+  </div>
+
+  <div class="s6-layout">
+    <div class="card">
+      <div style="font-size:12px;font-weight:700;color:#475569;margin-bottom:10px;">Sprint Health % — S188 → S189 → S190</div>
+      <div style="position:relative;height:220px;"><canvas id="s6HealthChart"></canvas></div>
+      <div style="display:flex;flex-wrap:wrap;gap:12px;margin-top:10px;font-size:11px;color:var(--gray);">
+        <span><span style="display:inline-block;width:18px;height:2px;background:#7F77DD;vertical-align:middle;margin-right:4px;"></span>Torna</span>
+        <span><span style="display:inline-block;width:18px;height:2px;background:#16a34a;border-bottom:2px dotted #16a34a;vertical-align:middle;margin-right:4px;"></span>Devgiri</span>
+        <span><span style="display:inline-block;width:18px;height:2px;background:#1e40af;vertical-align:middle;margin-right:4px;"></span>Sinhagad</span>
+        <span><span style="display:inline-block;width:18px;height:2px;background:#64748b;vertical-align:middle;margin-right:4px;"></span>Integrations</span>
+        <span><span style="display:inline-block;width:18px;height:2px;background:#dc2626;vertical-align:middle;margin-right:4px;"></span>Rajgad</span>
+        <span><span style="display:inline-block;width:18px;height:2px;background:#ea580c;border-bottom:2px dashed #ea580c;vertical-align:middle;margin-right:4px;"></span>Shivneri</span>
+      </div>
+    </div>
+
+    <div>
+      <div class="card" style="margin-bottom:12px;">
+        <div style="font-size:12px;font-weight:700;color:#475569;margin-bottom:10px;">AI Adoption × Sprint Health Quadrants</div>
+        <div class="quad-grid">
+          <div class="quad tl">
+            <div class="qt">✅ Aligned</div>
+            <div class="qteams">Sinhagad, Devgiri</div>
+            <div class="qdesc">High AI adoption + stable-to-growing sprint health. Both metrics moving in the same direction.</div>
+          </div>
+          <div class="quad tr">
+            <div class="qt">⚠ Diverging</div>
+            <div class="qteams">Torna</div>
+            <div class="qdesc">100% AI adoption but sprint health declining 80%→64%. AI not compensating for scope inflation.</div>
+          </div>
+          <div class="quad bl">
+            <div class="qt">~ Complex</div>
+            <div class="qteams">Integrations</div>
+            <div class="qdesc">Weak AI correlation, but sprint health improving independently. Work type mismatch with AI tooling.</div>
+          </div>
+          <div class="quad br">
+            <div class="qt">🔴 Critical</div>
+            <div class="qteams">Rajgad, Shivneri</div>
+            <div class="qdesc">Rajgad: S190 looked great (86%), S191 = 0 SP done. Shivneri: 100% AI but sprint health crashed to 9%.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div style="font-size:12px;font-weight:700;color:#475569;margin-bottom:8px;">Sprint Health Summary</div>
+        <table style="width:100%;border-collapse:collapse;font-size:11.5px;">
+          <tr style="border-bottom:1px solid #f1f5f9;">
+            <th style="text-align:left;padding:5px 6px;font-weight:600;color:var(--gray);font-size:11px;">Team</th>
+            <th style="text-align:center;padding:5px 6px;font-weight:600;color:var(--gray);font-size:11px;">S188</th>
+            <th style="text-align:center;padding:5px 6px;font-weight:600;color:var(--gray);font-size:11px;">S189</th>
+            <th style="text-align:center;padding:5px 6px;font-weight:600;color:var(--gray);font-size:11px;">S190</th>
+            <th style="text-align:center;padding:5px 6px;font-weight:600;color:var(--gray);font-size:11px;">Trend</th>
+          </tr>
+          <tr><td style="padding:5px 6px;font-weight:600">Torna</td><td style="text-align:center">80%</td><td style="text-align:center">77%</td><td style="text-align:center">64%</td><td style="text-align:center;color:var(--bad);font-weight:700">↓</td></tr>
+          <tr style="background:#f8fafc"><td style="padding:5px 6px;font-weight:600">Devgiri</td><td style="text-align:center;color:var(--gray)">—</td><td style="text-align:center">62%</td><td style="text-align:center;color:var(--good);font-weight:700">110%</td><td style="text-align:center;color:var(--good);font-weight:700">↑↑</td></tr>
+          <tr><td style="padding:5px 6px;font-weight:600">Sinhagad</td><td style="text-align:center">66%</td><td style="text-align:center">70%</td><td style="text-align:center">63%</td><td style="text-align:center;color:var(--gray)">~</td></tr>
+          <tr style="background:#f8fafc"><td style="padding:5px 6px;font-weight:600">Integrations</td><td style="text-align:center">56%</td><td style="text-align:center">63%</td><td style="text-align:center">68%</td><td style="text-align:center;color:var(--good);font-weight:700">↑</td></tr>
+          <tr><td style="padding:5px 6px;font-weight:600">Rajgad</td><td style="text-align:center">67%</td><td style="text-align:center">67%</td><td style="text-align:center">86%</td><td style="text-align:center;color:var(--good);font-weight:700">↑</td></tr>
+          <tr style="background:#f8fafc"><td style="padding:5px 6px;font-weight:600">Shivneri</td><td style="text-align:center">62%</td><td style="text-align:center;color:var(--bad);font-weight:700">9%</td><td style="text-align:center;color:var(--bad)">28%</td><td style="text-align:center;color:var(--bad);font-weight:700">↓↓</td></tr>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <div class="s6-team-grid">
+    <div class="s6tc monitor">
+      <div class="s6name">Torna</div><div class="s6sub">CXone Integrations</div>
+      <div class="s6row"><span class="s6label">Sprint health trend</span><span class="s6val" style="color:var(--bad)">80% → 77% → 64%</span></div>
+      <div class="s6row"><span class="s6label">AI adoption (r)</span><span class="s6val">0.87 — strong</span></div>
+      <div class="s6row"><span class="s6label">S190 committed / done</span><span class="s6val">48 SP / 27 SP</span></div>
+      <div class="s6finding"><strong>Finding:</strong> Consistent AI adopter (100% AI-labeled S189–S190) but sprint completion declining. Team appears to be overcommitting relative to delivery capacity. AI speed gains are being absorbed by scope growth, not improving completion rate. Recommend reducing sprint commitment ~15% and tracking whether completion rate recovers.</div>
+    </div>
+    <div class="s6tc positive">
+      <div class="s6name">Devgiri</div><div class="s6sub">CXone Integrations</div>
+      <div class="s6row"><span class="s6label">Sprint health trend</span><span class="s6val" style="color:var(--good)">62% → 110% ↑↑</span></div>
+      <div class="s6row"><span class="s6label">AI adoption (r)</span><span class="s6val">0.88 — strong</span></div>
+      <div class="s6row"><span class="s6label">S190 committed / done</span><span class="s6val">50 SP / 55 SP</span></div>
+      <div class="s6finding"><strong>Finding:</strong> Best case in the cohort. AI adoption and sprint health are both rising together. Rapid team scaling (7 SP → 50 SP/sprint) with S190 over-delivery confirms AI tooling is genuinely accelerating throughput, not just being logged. Document this team's onboarding practices as the reference model for WFM Integrations.</div>
+    </div>
+    <div class="s6tc positive">
+      <div class="s6name">Sinhagad</div><div class="s6sub">CX_Integrations</div>
+      <div class="s6row"><span class="s6label">Sprint health trend</span><span class="s6val" style="color:var(--gray)">66% → 70% → 63%</span></div>
+      <div class="s6row"><span class="s6label">AI adoption (r)</span><span class="s6val">0.98 — best in cohort</span></div>
+      <div class="s6row"><span class="s6label">S190 committed / done</span><span class="s6val">46 SP / ~29 SP</span></div>
+      <div class="s6finding"><strong>Finding:</strong> Cleanest AI adoption trajectory (r = 0.98) with steady, moderate sprint health (63–70%). The team is likely using AI for quality and thoroughness rather than raw speed — hence stable but not spectacular completion rates. Reliable and low-risk. Encourage experimenting with AI for faster first drafts to test if completion rate can improve further.</div>
+    </div>
+    <div class="s6tc monitor">
+      <div class="s6name">Integrations</div><div class="s6sub">CX_Integrations</div>
+      <div class="s6row"><span class="s6label">Sprint health trend</span><span class="s6val" style="color:var(--good)">56% → 63% → 68% ↑</span></div>
+      <div class="s6row"><span class="s6label">AI adoption (r)</span><span class="s6val" style="color:var(--mod)">−0.24 — volatile</span></div>
+      <div class="s6row"><span class="s6label">S190 committed / done</span><span class="s6val">33 SP / 23 SP</span></div>
+      <div class="s6finding"><strong>Finding:</strong> Counterintuitive: weak/negative AI correlation but sprint health improving sprint-over-sprint. Environment-dependent integration work (infra, platform, middleware) doesn't map cleanly to AI-assisted coding. Sprint improvement is organic, not AI-driven. Rather than forcing broad AI adoption metrics, identify which specific work items are AI-amenable and measure those selectively.</div>
+    </div>
+    <div class="s6tc critical">
+      <div class="s6name">Rajgad</div><div class="s6sub">Workforce Management</div>
+      <div class="s6row"><span class="s6label">Sprint health trend</span><span class="s6val" style="color:var(--good)">67% → 67% → 86%</span></div>
+      <div class="s6row"><span class="s6label">AI adoption (r)</span><span class="s6val" style="color:var(--bad)">−0.66 — declining</span></div>
+      <div class="s6row"><span class="s6label">S191 status</span><span class="s6val" style="color:var(--bad)">0 SP done — critical</span></div>
+      <div class="s6finding"><strong>Finding:</strong> S190's 86% sprint health created a false sense of momentum. S191 collapse (0 SP done, 61% AI-labeled) reveals the underlying issue: AI labeling is not translating to execution. Three questions need immediate answers: (1) What changed between S190 end and S191 start? (2) Are AI-labeled stories blocked by external dependencies? (3) Was S190 success driven by non-AI carryover items?</div>
+    </div>
+    <div class="s6tc critical">
+      <div class="s6name">Shivneri</div><div class="s6sub">Workforce Management</div>
+      <div class="s6row"><span class="s6label">Sprint health trend</span><span class="s6val" style="color:var(--bad)">62% → 9% → 28% ↓↓</span></div>
+      <div class="s6row"><span class="s6label">AI adoption (r)</span><span class="s6val">0.87 — strong</span></div>
+      <div class="s6row"><span class="s6label">Committed SP drop</span><span class="s6val" style="color:var(--bad)">43 SP → 17 SP (−60%)</span></div>
+      <div class="s6finding"><strong>Finding:</strong> Paradox — strong AI signal (r = 0.87, 100% AI-labeled) but catastrophic sprint delivery collapse. 1 SP completed in S189 (one story). Committed SP halved between S188 and S189 with no recovery. This is not an AI effectiveness issue — it is a team capacity event. Investigate whether team composition or staffing changed between S188 and S189. AI metrics are misleading here without that context.</div>
+    </div>
+  </div>
+</div>
+
+</div><!-- /main -->
+
+<script>
+// ── DATA ──────────────────────────────────────────────────────────────────
+const SPRINTS     = ['S188','S189','S190','S191★'];
+const SPRINT_DT   = ['18-Mar','15-Apr','06-May','In Progress'];
+
+const TEAMS = [
+  {
+    id:'torna', name:'Torna', r:0.87, verdict:'good', verdictLabel:'Good',
+    pcts:[69,100,100,17],
+    s191:{issues:8,spAI:29,total:41,usage:71,done:5,completed:7,pct:17},
+    verdictText:'Reached 100% AI delivery in S189 and maintained in S190. Best consistency in the team. S191 at 17% — 5/29 AI-SP done. Likely to close strong with 6 days remaining.',
+    noteText:'100% delivery S189–S190. S191: 5/29 SP done (17%) — 24 SP remaining in 6 days.'
+  },
+  {
+    id:'devgiri', name:'Devgiri', r:0.88, verdict:'good', verdictLabel:'Good',
+    pcts:[0,78,80,32],
+    s191:{issues:11,spAI:50,total:55,usage:91,done:16,completed:21,pct:32},
+    verdictText:'Most dramatic onboarding story — 0% in S188 to 78% in S189, stable at 80% in S190. Fastest absolute improvement in the team. S191 at 32% (16/50 SP) with strong momentum.',
+    noteText:'Zero AI in S188 → 80% in two sprints. S191: 16/50 SP done (32%) — highest mid-sprint pace in team.'
+  },
+  {
+    id:'integrations', name:'Integrations', r:-0.24, verdict:'mod', verdictLabel:'Moderate',
+    pcts:[48,63,43,56],
+    s191:{issues:4,spAI:18,total:38,usage:47,done:10,completed:14,pct:56},
+    verdictText:'Volatile pattern (48%→63%→43%) driven by environment-dependent integration work. Not an AI adoption failure — tooling and env constraints dominate. Leading team in S191 at 56% (10/18 SP).',
+    noteText:'Volatile history but S191 leads team at 56% (10/18 SP). Low AI-label scope (18 SP) reflects nature of integration work.'
+  },
+  {
+    id:'sinhagad', name:'Sinhagad', r:0.98, verdict:'good', verdictLabel:'Good',
+    pcts:[29,63,79,18],
+    s191:{issues:13,spAI:44,total:72,usage:61,done:8,completed:12,pct:18},
+    verdictText:'Best growth trajectory (r = 0.98) — consistent sprint-over-sprint improvement from 29% to 79%. Demonstrates a strong, sustained AI adoption culture. S191 at 18% with the largest AI scope (44 SP).',
+    noteText:'Best r in team (0.98). 29%→63%→79%. S191: 8/44 SP done (18%) — largest scope, needs acceleration.'
+  },
+  {
+    id:'rajgad', name:'Rajgad', r:-0.66, verdict:'bad', verdictLabel:'Concern',
+    pcts:[83,65,71,0],
+    s191:{issues:4,spAI:23,total:38,usage:61,done:0,completed:1,pct:0},
+    verdictText:'Started with the highest AI delivery in S188 (83%) but on a declining trend. S191 = 0 SP done with AI despite 61% AI usage planned. Urgent investigation needed — possible reversion to manual workflows or tooling blocker.',
+    noteText:'Highest start (83% S188) but declining (r = –0.66). S191 = 0 SP done — root cause investigation required.'
+  },
+  {
+    id:'shivneri', name:'Shivneri', r:0.87, verdict:'good', verdictLabel:'Good',
+    pcts:[64,100,100,0],
+    s191:{issues:8,spAI:18,total:28,usage:64,done:0,completed:0,pct:0},
+    verdictText:'Hit 100% AI delivery in S189–S190 — strong AI adoption. S191 = 0 SP done, but sprint is only half elapsed. Small AI scope (18 SP). Likely backloaded work pattern — monitor closely over final 6 days.',
+    noteText:'100% S189–S190. S191 = 0 SP done — small scope (18 SP), likely backloaded. Watch for late-sprint burst.'
+  }
+];
+
+const TEAM_TOTAL = {
+  name:'WFM Integrations (Total)', r:0.92,
+  pcts:[56,74,77,21],
+  s191:{issues:48,spAI:182,total:272,usage:67,done:39,completed:55,pct:21}
+};
+
+// ── HELPERS ───────────────────────────────────────────────────────────────
+function rColor(r){return r>=0.7?'#16a34a':r>=0.3?'#ca8a04':r<0?'#dc2626':'#64748b';}
+function vc(v){return v==='good'?'v-good':v==='bad'?'v-bad':'v-mod';}
+function deltaClass(d){return d>2?'d-up':d<-2?'d-dn':'d-fl';}
+function deltaStr(d){return(d>0?'+':'')+d+'pp';}
+function sevLabel(pct,prev){
+  if(pct===0&&prev>50)return{cls:'sev-crit',txt:'Critical'};
+  if((pct-prev)<-40)return{cls:'sev-high',txt:'High'};
+  if((pct-prev)<-15)return{cls:'sev-med',txt:'Medium'};
+  return{cls:'sev-ok',txt:'On Track'};
+}
+const VCO={good:{c:'#16a34a',bg:'#f0fdf4'},mod:{c:'#ca8a04',bg:'#fefce8'},bad:{c:'#dc2626',bg:'#fef2f2'}};
+
+// ── SECTION 1 — BAR CHART ─────────────────────────────────────────────────
+(function(){
+  const ctx=document.getElementById('barChart').getContext('2d');
+  const labels=[...TEAMS.map(t=>t.name),'Total'];
+  const vals  =[...TEAMS.map(t=>t.r), TEAM_TOTAL.r];
+  const bgs   =[...TEAMS.map(t=>VCO[t.verdict].c+'33'),'#1e40af33'];
+  const bds   =[...TEAMS.map(t=>VCO[t.verdict].c),'#1e40af'];
+  new Chart(ctx,{
+    type:'bar',
+    data:{labels,datasets:[{data:vals,backgroundColor:bgs,borderColor:bds,borderWidth:2,borderRadius:5}]},
+    options:{
+      responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>`r = ${Number(c.raw).toFixed(2)}`}}},
+      scales:{
+        y:{min:-1,max:1.1,ticks:{callback:v=>Number(v).toFixed(1),font:{size:10}},
+           grid:{color:ctx2=>ctx2.tick.value===0?'#94a3b888':'#f8fafc'}},
+        x:{ticks:{font:{size:10}},grid:{display:false}}
+      }
+    }
+  });
+
+  // Correlation table
+  const tb=document.getElementById('corrTbody');
+  [...TEAMS,TEAM_TOTAL].forEach(t=>{
+    const isTotal=(t.name===TEAM_TOTAL.name);
+    const grow=t.pcts[2]-t.pcts[0];
+    const growStr=(grow>=0?'+':'')+grow+'pp';
+    const growCls=grow>0?'up':grow<0?'dn':'flat';
+    tb.innerHTML+=`<tr${isTotal?' class="total-row"':''}>
+      <td><strong>${t.name}</strong></td>
+      <td><span class="r-chip" style="background:${rColor(t.r)}">${Number(t.r).toFixed(2)}</span></td>
+      <td><span class="v-chip ${isTotal?'v-good':vc(t.verdict)}">${isTotal?'Good':t.verdictLabel}</span></td>
+      <td><span class="${growCls}">${t.pcts[0]}% → ${t.pcts[2]}% (<strong>${growStr}</strong>)</span></td>
+    </tr>`;
+  });
+})();
+
+// ── SECTION 2A — INDIVIDUAL TREND CARDS ──────────────────────────────────
+(function(){
+  const grid=document.getElementById('trendGrid');
+  TEAMS.forEach(t=>{
+    const vo=VCO[t.verdict];
+    const peak=Math.max(...t.pcts.slice(0,3));
+    const s191p=t.pcts[3];
+    const delta=s191p-t.pcts[2];
+
+    const card=document.createElement('div');
+    card.className='tc';
+    card.innerHTML=`
+      <div class="tc-head">
+        <div class="tc-name">${t.name}</div>
+        <span class="r-chip" style="background:${rColor(t.r)}">${Number(t.r).toFixed(2)}</span>
+      </div>
+      <div class="chart-wrap"><canvas id="tc_${t.id}"></canvas></div>
+      <div class="tc-foot">
+        <div class="tc-stat"><div class="tv" style="color:${vo.c}">${peak}%</div><div class="tl">Peak (S188–S190)</div></div>
+        <div class="tc-stat"><div class="tv" style="color:#f59e0b">${s191p}%</div><div class="tl">S191★ (live)</div></div>
+        <div class="tc-stat"><div class="tv ${delta>=0?'up':'dn'}">${delta>=0?'+':''}${delta}pp</div><div class="tl">vs S190</div></div>
+      </div>
+      <div class="tc-note">${t.noteText}</div>
+    `;
+    grid.appendChild(card);
+
+    // Build chart after DOM is ready
+    setTimeout(()=>{
+      const ctx=document.getElementById(`tc_${t.id}`).getContext('2d');
+      // Historical line (S188–S190) — solid
+      const histData=t.pcts.slice(0,3).map((y,i)=>({x:i,y}));
+      // Current sprint dot (S191) — separate dataset, dashed connect
+      const liveData=[{x:2,y:t.pcts[2]},{x:3,y:t.pcts[3]}];
+
+      new Chart(ctx,{
+        type:'line',
+        data:{datasets:[
+          {
+            label:'% AI SP Delivered',
+            data:histData,
+            borderColor:vo.c,
+            backgroundColor:vo.c+'20',
+            fill:true,
+            tension:0.35,
+            pointBackgroundColor:vo.c,
+            pointBorderColor:'#fff',
+            pointBorderWidth:2,
+            pointRadius:6,
+            borderWidth:2.5,
+            order:1
+          },
+          {
+            label:'S191★ (live)',
+            data:liveData,
+            borderColor:'#f59e0b',
+            backgroundColor:'transparent',
+            fill:false,
+            tension:0,
+            borderDash:[5,4],
+            borderWidth:2,
+            pointBackgroundColor:['transparent','#f59e0b'],
+            pointBorderColor:['transparent','#fff'],
+            pointBorderWidth:[0,2],
+            pointRadius:[0,7],
+            pointStyle:['circle','star'],
+            order:2
+          }
+        ]},
+        options:{
+          responsive:true,
+          maintainAspectRatio:false,
+          plugins:{
+            legend:{display:false},
+            tooltip:{callbacks:{
+              title:items=>`${SPRINTS[Math.round(items[0].raw.x)]} (${SPRINT_DT[Math.round(items[0].raw.x)]})`,
+              label:c=>`${c.raw.y}% AI SP Delivered`
+            }}
+          },
+          scales:{
+            x:{type:'linear',min:-0.4,max:3.4,
+              ticks:{callback:v=>{const i=Math.round(v);return[0,1,2,3].includes(i)?SPRINTS[i]:'';},
+                     maxTicksLimit:4,font:{size:9},maxRotation:0},
+              grid:{color:'#f1f5f9'}
+            },
+            y:{min:0,max:115,
+              ticks:{callback:v=>v+'%',stepSize:25,font:{size:9}},
+              grid:{color:'#f1f5f9'}
+            }
+          }
+        }
+      });
+    },0);
+  });
+})();
+
+// ── SECTION 2B — DELTA TABLE ──────────────────────────────────────────────
+(function(){
+  const tb=document.getElementById('deltaTbody');
+  [...TEAMS,TEAM_TOTAL].forEach(t=>{
+    const[p0,p1,p2,p3]=t.pcts;
+    const d01=p1-p0,d12=p2-p1,d23=p3-p2;
+    const isTotal=(t.name===TEAM_TOTAL.name);
+    tb.innerHTML+=`<tr${isTotal?' class="total-row"':''}>
+      <td>${isTotal?'<strong>':''}${t.name}${isTotal?'</strong>':''}</td>
+      <td style="font-weight:700">${p0}%</td>
+      <td style="font-weight:700">${p1}%</td>
+      <td><span class="delta-pp ${deltaClass(d01)}">${deltaStr(d01)}</span></td>
+      <td style="font-weight:700">${p2}%</td>
+      <td><span class="delta-pp ${deltaClass(d12)}">${deltaStr(d12)}</span></td>
+      <td style="font-weight:700;color:#f59e0b">${p3}%★</td>
+      <td><span class="delta-pp ${deltaClass(d23)}">${deltaStr(d23)}</span></td>
+      <td><span class="r-chip" style="background:${rColor(t.r||0.92)};font-size:11px">${Number(t.r||0.92).toFixed(2)}</span></td>
+    </tr>`;
+  });
+})();
+
+// ── SECTION 3 — VERDICTS ──────────────────────────────────────────────────
+(function(){
+  const icons={good:'✅',mod:'⚡',bad:'🔴'};
+  const vg=document.getElementById('verdictGrid');
+  TEAMS.forEach(t=>{
+    const el=document.createElement('div');
+    el.className=`vc ${t.verdict}`;
+    el.innerHTML=`
+      <div class="vl">${icons[t.verdict]} ${t.verdictLabel}</div>
+      <div class="vn">${t.name}</div>
+      <div class="vr">r = ${Number(t.r).toFixed(2)} · ${t.r>0.5?'↑ Positive trend':t.r<-0.3?'↓ Declining':'~ Volatile'}</div>
+      <div class="vt">${t.verdictText}</div>
+      <div class="vs">S191: ${t.s191.pct}% · ${t.s191.done}/${t.s191.spAI} AI-SP · ${t.s191.usage}% usage planned</div>
+    `;
+    vg.appendChild(el);
+  });
+})();
+
+// ── SECTION 4 — S191 PANEL ────────────────────────────────────────────────
+(function(){
+  const pc=document.getElementById('progCards');
+  TEAMS.forEach(t=>{
+    const c=VCO[t.verdict].c;
+    pc.innerHTML+=`<div class="pc">
+      <div class="pn">${t.name}</div>
+      <div class="pv" style="color:${c}">${t.s191.pct}%</div>
+      <div class="ps">${t.s191.done}/${t.s191.spAI} AI-SP</div>
+      <div class="pb"><div class="pf" style="width:${t.s191.pct}%;background:${c}"></div></div>
+    </div>`;
+  });
+
+  const ACTIONS={
+    torna:'Monitor. 24 AI-SP remaining before 16 Jun.',
+    devgiri:'On track. Maintain pace — 34 AI-SP remaining.',
+    integrations:'Leading team. Keep momentum, close remaining 8 SP.',
+    sinhagad:'Large scope (44 SP). Needs acceleration — 36 SP to close.',
+    rajgad:'🚨 0 SP done. Identify blocker immediately.',
+    shivneri:'0 SP done. Confirm backloaded or escalate.'
+  };
+
+  const tb=document.getElementById('s191Tbody');
+  [...TEAMS,TEAM_TOTAL].forEach(t=>{
+    const s=t.s191;
+    const prevPct=t.pcts?.[2]??TEAM_TOTAL.pcts[2];
+    const sev=sevLabel(s.pct,prevPct);
+    const delta=s.pct-prevPct;
+    const dc=delta>=0?'d-up':'d-dn';
+    const isTotal=(t.name===TEAM_TOTAL.name);
+    const barColor=isTotal?'#1e40af':(VCO[t.verdict]||VCO.good).c;
+    tb.innerHTML+=`<tr${isTotal?' class="total-row"':''}>
+      <td><strong>${t.name}</strong></td>
+      <td style="text-align:center">${s.issues}</td>
+      <td style="text-align:center">${s.spAI}</td>
+      <td style="text-align:center">${s.total}</td>
+      <td style="text-align:center">${s.usage}%</td>
+      <td style="text-align:center;font-weight:700">${s.done}</td>
+      <td style="text-align:center">${s.completed}</td>
+      <td>
+        <div class="pb-wrap">
+          <div class="pb-bg"><div class="pb-fg" style="width:${s.pct}%;background:${barColor}"></div></div>
+          <strong>${s.pct}%</strong>
+        </div>
+      </td>
+      <td><span class="delta-pp ${dc}">${deltaStr(delta)}</span></td>
+      <td><span class="sev ${sev.cls}">${sev.txt}</span></td>
+      <td style="font-size:11px;color:#475569">${isTotal?'~143 more AI-SP needed in 6 days to match S190 pace.':(ACTIONS[t.id]||'Monitor.')}</td>
+    </tr>`;
+  });
+})();
+
+// ── SECTION 6 — SPRINT HEALTH CHART ──────────────────────────────────────
+(function(){
+  const ctx=document.getElementById('s6HealthChart').getContext('2d');
+  new Chart(ctx,{
+    type:'line',
+    data:{
+      labels:['S188','S189','S190'],
+      datasets:[
+        {label:'Torna',      data:[80.0,77.3,64.0],  borderColor:'#7F77DD',backgroundColor:'transparent',tension:0.3,pointRadius:5,borderWidth:2.5,spanGaps:true},
+        {label:'Devgiri',    data:[null,62.2,110.0],  borderColor:'#16a34a',backgroundColor:'transparent',tension:0.3,pointRadius:5,borderWidth:2.5,borderDash:[4,3],spanGaps:true},
+        {label:'Sinhagad',   data:[65.98,69.57,62.50],borderColor:'#1e40af',backgroundColor:'transparent',tension:0.3,pointRadius:5,borderWidth:2.5,spanGaps:true},
+        {label:'Integrations',data:[56.20,63.18,67.65],borderColor:'#64748b',backgroundColor:'transparent',tension:0.3,pointRadius:5,borderWidth:2.5,spanGaps:true},
+        {label:'Rajgad',     data:[67.39,67.39,85.71],borderColor:'#dc2626',backgroundColor:'transparent',tension:0.3,pointRadius:5,borderWidth:2.5,spanGaps:true},
+        {label:'Shivneri',   data:[62.22,9.09,28.0],  borderColor:'#ea580c',backgroundColor:'transparent',tension:0.3,pointRadius:5,borderWidth:2.5,borderDash:[6,3],spanGaps:true}
+      ]
+    },
+    options:{
+      responsive:true,
+      maintainAspectRatio:false,
+      plugins:{
+        legend:{display:false},
+        tooltip:{callbacks:{label:c=>` ${c.dataset.label}: ${c.raw!==null?Number(c.raw).toFixed(1)+'%':'N/A'}`}}
+      },
+      scales:{
+        y:{min:0,max:120,ticks:{callback:v=>v+'%',font:{size:10}},grid:{color:'#f8fafc'}},
+        x:{grid:{display:false},ticks:{font:{size:11}}}
+      }
+    }
+  });
+})();
+</script>
+</body>
+</html>
