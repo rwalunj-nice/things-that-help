@@ -43,7 +43,7 @@ def _issue_to_bug(issue: dict, rca_field: str, fix_field: str) -> Bug:
     )
 
 
-def _markdown_to_adf(text: str) -> dict:
+def _wrap_text_as_adf(text: str) -> dict:
     return {
         "type": "doc",
         "version": 1,
@@ -97,7 +97,7 @@ class JiraClient:
     def post_comment(self, issue_key: str, markdown_body: str) -> None:
         resp = requests.post(
             f"{self._base}/rest/api/3/issue/{issue_key}/comment",
-            json={"body": _markdown_to_adf(markdown_body)},
+            json={"body": _wrap_text_as_adf(markdown_body)},
             auth=self._auth,
         )
         resp.raise_for_status()
