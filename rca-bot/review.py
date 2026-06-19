@@ -15,16 +15,16 @@ def run_review(jira: JiraClient, claude: ClaudeClient, filter_id: str) -> None:
     log.info(f"Reviewing {len(bugs)} bugs from filter {filter_id}")
 
     for bug in bugs:
-        if jira.has_bot_comment(bug.key):
-            log.info(f"[{bug.key}] already reviewed — skipping")
-            continue
-
-        if not bug.rca_text.strip():
-            jira.post_comment(bug.key, _EMPTY_RCA_COMMENT)
-            log.info(f"[{bug.key}] no RCA content — posted placeholder")
-            continue
-
         try:
+            if jira.has_bot_comment(bug.key):
+                log.info(f"[{bug.key}] already reviewed — skipping")
+                continue
+
+            if not bug.rca_text.strip():
+                jira.post_comment(bug.key, _EMPTY_RCA_COMMENT)
+                log.info(f"[{bug.key}] no RCA content — posted placeholder")
+                continue
+
             result = claude.analyze_rca_gaps(
                 rca_text=bug.rca_text,
                 fix_text=bug.fix_text,

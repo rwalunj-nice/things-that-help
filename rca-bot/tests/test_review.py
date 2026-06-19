@@ -98,6 +98,24 @@ def test_claude_error_does_not_abort_loop():
     mock_jira.post_comment.assert_called_once_with("INT-002", "Review OK")
 
 
+def test_jira_error_does_not_abort_loop():
+    bug1 = _make_bug(key="INT-001", rca_text="RCA content")
+    bug2 = _make_bug(key="INT-002", rca_text="More RCA content")
+    mock_jira = MagicMock()
+    mock_jira.get_filter_bugs.return_value = [bug1, bug2]
+    mock_jira.has_bot_comment.side_effect = [Exception("Jira error"), False]
+    mock_claude = MagicMock()
+    mock_claude.analyze_rca_gaps.return_value = {
+        "rubric_gaps": [], "five_whys_chain": [],
+        "deepest_unanswered_why": "", "comment_markdown": "Review OK",
+    }
+
+    run_review(mock_jira, mock_claude, filter_id="97314")
+
+    # INT-001 failed on has_bot_comment but INT-002 should still be processed
+    mock_jira.post_comment.assert_called_once_with("INT-002", "Review OK")
+
+
 def test_multiple_bugs_processed_independently():
     bugs = [
         _make_bug(key="INT-001", rca_text="RCA 1"),
