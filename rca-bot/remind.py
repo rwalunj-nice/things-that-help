@@ -1,4 +1,3 @@
-import argparse
 import logging
 from config import load_config
 from jira_client import JiraClient
