@@ -1,4 +1,4 @@
-from unittest.mock import MagicMock, patch
+from unittest.mock import MagicMock
 from models import Bug
 from scan import should_skip, run_scan
 
@@ -79,6 +79,22 @@ def test_run_scan_dry_run_does_not_add_label(tmp_path, monkeypatch):
     }
 
     run_scan(mock_jira, mock_claude, filter_id="101489", label="INT_RCA_CANDIDATE", dry_run=True)
+
+    mock_jira.add_label.assert_not_called()
+
+
+def test_run_scan_does_not_add_label_for_ineligible_bug(tmp_path, monkeypatch):
+    monkeypatch.chdir(tmp_path)
+    bug = _make_bug(labels=["INT_CFB"])
+
+    mock_jira = MagicMock()
+    mock_jira.get_bugs_since.return_value = [bug]
+    mock_claude = MagicMock()
+    mock_claude.judge_rca_eligibility.return_value = {
+        "eligible": False, "reason": "Trivial fix", "confidence": "high"
+    }
+
+    run_scan(mock_jira, mock_claude, filter_id="101489", label="INT_RCA_CANDIDATE", dry_run=False)
 
     mock_jira.add_label.assert_not_called()
 
