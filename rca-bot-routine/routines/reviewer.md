@@ -2,6 +2,7 @@
 
 **Trigger:** Daily 10:00 local time  
 **Type:** Remote  
+**Model:** Claude Sonnet 4.6 (`claude-sonnet-4-6`) — multi-section rubric analysis + 5 Whys construction  
 **Connector:** Atlassian  
 **Environment:** none
 

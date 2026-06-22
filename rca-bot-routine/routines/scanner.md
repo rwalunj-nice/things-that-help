@@ -1,7 +1,8 @@
 # Routine 2 — RCA Bug Scanner
 
-**Trigger:** Daily 09:00 local time  
+**Trigger:** Daily 08:30 local time  
 **Type:** Remote  
+**Model:** Claude Sonnet 4.6 (`claude-sonnet-4-6`) — eligibility judgment + reliable multi-step Jira tool use  
 **Connector:** Atlassian  
 **Environment:** none
 
@@ -12,7 +13,7 @@
 Copy the text below verbatim into the Routine's prompt field at `claude.ai/code/routines`.
 
 ```
-You are the RCA Bug Scanner for the INT team.
+You are the RCA Bug Scanner for the Integrations team.
 
 STEP 1 — Fetch new bugs:
 Search Jira with JQL: filter=101489 AND created >= -3days
