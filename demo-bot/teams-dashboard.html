@@ -1,0 +1,648 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Teams Channel Analytics — Swarm Resolution Assistant</title>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:'Segoe UI',sans-serif;background:#0d1117;color:#e6edf3;min-height:100vh}
+
+  /* ── HEADER ── */
+  header{background:#161b22;border-bottom:1px solid #30363d;padding:14px 28px;display:flex;align-items:center;gap:14px}
+  .h-logo{width:36px;height:36px;background:#e94560;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
+  header h1{font-size:16px;font-weight:700}
+  header p{font-size:11px;color:#8b949e;margin-top:2px}
+  .h-right{margin-left:auto;display:flex;align-items:center;gap:10px}
+  .btn-sm{padding:6px 14px;border-radius:7px;font-size:12px;font-weight:700;text-decoration:none;cursor:pointer;border:none}
+  .btn-back{background:rgba(255,255,255,.08);color:#8b949e}
+  .btn-back:hover{color:white;background:rgba(255,255,255,.14)}
+  .btn-cta{background:#e94560;color:white}
+  .btn-cta:hover{background:#c73652}
+  .pulse{display:inline-block;width:7px;height:7px;background:#3fb950;border-radius:50%;animation:pulse 1.5s infinite;margin-right:4px;vertical-align:middle}
+  @keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+
+  /* ── LAYOUT ── */
+  main{padding:20px 28px;max-width:1300px;margin:0 auto}
+
+  /* ── CHANNEL STRIP ── */
+  .channel-strip{background:#161b22;border:1px solid #30363d;border-radius:10px;padding:14px 20px;display:flex;align-items:center;gap:12px;margin-bottom:20px}
+  .teams-icon{width:34px;height:34px;background:#6264a7;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
+  .cs-name{font-size:14px;font-weight:700;color:#e6edf3}
+  .cs-meta{font-size:11px;color:#6e7681;margin-top:2px}
+  .cs-pills{margin-left:auto;display:flex;gap:8px;flex-wrap:wrap}
+  .pill{background:rgba(255,255,255,.06);border:1px solid #30363d;border-radius:12px;padding:3px 10px;font-size:11px;color:#8b949e}
+  .pill.live{border-color:#3fb950;color:#3fb950;background:rgba(63,185,80,.08)}
+
+  /* ── STAT CARDS ── */
+  .cards{display:grid;grid-template-columns:repeat(5,1fr);gap:14px;margin-bottom:20px}
+  .card{background:#161b22;border:1px solid #30363d;border-radius:10px;padding:18px 20px}
+  .card-label{font-size:11px;font-weight:600;color:#6e7681;text-transform:uppercase;letter-spacing:.6px;margin-bottom:8px}
+  .card-val{font-size:28px;font-weight:800;line-height:1}
+  .card-sub{font-size:11px;color:#6e7681;margin-top:4px}
+  .cv-blue{color:#58a6ff}
+  .cv-green{color:#3fb950}
+  .cv-red{color:#f85149}
+  .cv-gold{color:#d29922}
+  .cv-purple{color:#bc8cff}
+
+  /* ── GRID ROWS ── */
+  .row2{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px}
+  .row3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;margin-bottom:16px}
+  .panel{background:#161b22;border:1px solid #30363d;border-radius:10px;padding:20px}
+  .panel-title{font-size:11px;font-weight:700;color:#6e7681;text-transform:uppercase;letter-spacing:.6px;margin-bottom:16px}
+
+  /* ── BAR CHART ── */
+  .bar-row{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+  .bar-row:last-child{margin-bottom:0}
+  .bar-label{font-size:12px;color:#c9d1d9;width:170px;flex-shrink:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .bar-track{flex:1;background:#21262d;border-radius:4px;height:10px;position:relative}
+  .bar-fill{height:100%;border-radius:4px;transition:width .6s ease}
+  .bar-pct{font-size:11px;color:#6e7681;width:34px;text-align:right;flex-shrink:0}
+  .bar-count{font-size:11px;color:#6e7681;width:20px;text-align:right;flex-shrink:0}
+  .bf-blue{background:#58a6ff}
+  .bf-red{background:#f85149}
+  .bf-gold{background:#d29922}
+  .bf-orange{background:#fb923c}
+  .bf-purple{background:#bc8cff}
+  .bf-green{background:#3fb950}
+  .bf-teal{background:#0ea5a0}
+
+  /* ── DONUT ── */
+  .donut-wrap{display:flex;align-items:center;gap:20px}
+  .donut-svg{flex-shrink:0}
+  .donut-legend{display:flex;flex-direction:column;gap:8px}
+  .legend-item{display:flex;align-items:center;gap:8px;font-size:12px;color:#c9d1d9}
+  .legend-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
+  .legend-val{font-weight:700;margin-left:auto}
+
+  /* ── TIMELINE ── */
+  .timeline-wrap{margin-bottom:16px}
+
+  /* ── MESSAGE LOG ── */
+  .table-wrap{background:#161b22;border:1px solid #30363d;border-radius:10px;overflow:hidden;margin-bottom:20px}
+  .table-hdr{padding:14px 20px;border-bottom:1px solid #30363d;display:flex;align-items:center;justify-content:space-between}
+  .table-hdr-title{font-size:14px;font-weight:600}
+  .table-hdr-sub{font-size:12px;color:#6e7681}
+  table{width:100%;border-collapse:collapse}
+  th{padding:9px 14px;font-size:11px;font-weight:600;color:#6e7681;text-transform:uppercase;letter-spacing:.5px;text-align:left;border-bottom:1px solid #21262d;background:#161b22}
+  td{padding:10px 14px;font-size:12px;color:#c9d1d9;border-bottom:1px solid #21262d;vertical-align:top}
+  tr:last-child td{border-bottom:none}
+  tr.user-row:hover td{background:#1c2128}
+  tr.bot-row:hover td{background:#1c2128}
+  tr.bot-row td{color:#94a3b8}
+  .detail-row{display:none}
+  .detail-row td{background:#0d1117;padding:0}
+  .detail-inner{padding:12px 16px;border-top:1px solid #21262d}
+  .detail-inner table{background:transparent}
+  .detail-inner th{background:transparent;font-size:10px}
+  .detail-inner td{font-size:11px;color:#8b949e}
+
+  .badge{display:inline-block;padding:2px 8px;border-radius:8px;font-size:10px;font-weight:700;letter-spacing:.3px}
+  .b-user{background:rgba(88,166,255,.15);color:#58a6ff}
+  .b-bot{background:rgba(139,148,158,.1);color:#6e7681}
+  .b-yes{background:rgba(248,81,73,.15);color:#f85149}
+  .b-no{background:rgba(63,185,80,.12);color:#3fb950}
+  .b-high{background:rgba(63,185,80,.12);color:#3fb950}
+  .b-medium{background:rgba(210,153,34,.12);color:#d29922}
+  .b-low{background:rgba(139,148,158,.1);color:#6e7681}
+  .b-p1{background:rgba(248,81,73,.2);color:#f85149;font-size:11px}
+  .b-critical{background:rgba(248,81,73,.15);color:#f85149}
+  .b-urgent{background:rgba(251,146,60,.15);color:#fb923c}
+  .b-neutral{background:rgba(139,148,158,.1);color:#6e7681}
+
+  .expand-btn{cursor:pointer;color:#58a6ff;font-size:11px;text-decoration:underline;background:none;border:none;padding:0}
+  .ts{font-family:'Courier New',monospace;font-size:11px;color:#6e7681}
+  .component-tag{font-size:11px;color:#bc8cff}
+  .summary-text{font-size:12px;color:#c9d1d9;max-width:320px}
+  .user-query{font-size:12px;color:#58a6ff;font-style:italic}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="h-logo">⚡</div>
+  <div>
+    <h1>Teams Channel Analytics</h1>
+    <p><span class="pulse"></span>Auto-refresh every 5s · Last: <span id="last-ts">–</span> · Workshop – Swarm Channel Resolution – Not For Prod</p>
+  </div>
+  <div class="h-right">
+    <a class="btn-sm btn-back" href="/dashboard">← Dashboard</a>
+    <a class="btn-sm btn-cta" href="/">Open Bot →</a>
+  </div>
+</header>
+
+<main>
+
+  <!-- Channel strip -->
+  <div class="channel-strip">
+    <div class="teams-icon">💬</div>
+    <div>
+      <div class="cs-name">Workshop – Swarm Channel Resolution – Not For Prod</div>
+      <div class="cs-meta">Group ID: e2c37adc-42e7-4848-89a9-6962d6ebb6d5 · Channel: 19:91lyMikZdA…@thread.tacv2</div>
+    </div>
+    <div class="cs-pills">
+      <span class="pill live">● Live</span>
+      <span class="pill">52-min window</span>
+      <span class="pill">08:44 – 09:36 UTC</span>
+      <span class="pill">Jun 22, 2026</span>
+    </div>
+  </div>
+
+  <!-- Stats cards -->
+  <div class="cards">
+    <div class="card">
+      <div class="card-label">Total Messages</div>
+      <div class="card-val cv-blue">11</div>
+      <div class="card-sub">incl. system event</div>
+    </div>
+    <div class="card">
+      <div class="card-label">User Queries</div>
+      <div class="card-val cv-purple">3</div>
+      <div class="card-sub">from 1 unique user</div>
+    </div>
+    <div class="card">
+      <div class="card-label">Bot Responses</div>
+      <div class="card-val cv-green">8</div>
+      <div class="card-sub">avg 3.1 hypotheses</div>
+    </div>
+    <div class="card">
+      <div class="card-label">Escalation Rate</div>
+      <div class="card-val cv-red">37.5%</div>
+      <div class="card-sub">3 of 8 flagged YES</div>
+    </div>
+    <div class="card">
+      <div class="card-label">Components Hit</div>
+      <div class="card-val cv-gold">3</div>
+      <div class="card-sub">Agent · API · Media</div>
+    </div>
+  </div>
+
+  <!-- Row 1: Swarm types + Sentiment -->
+  <div class="row2">
+
+    <div class="panel">
+      <div class="panel-title">Swarm Type Distribution — Bot Responses</div>
+      <div class="bar-row">
+        <div class="bar-label">Agent Stuck / Routing</div>
+        <div class="bar-track"><div class="bar-fill bf-orange" style="width:62.5%"></div></div>
+        <div class="bar-pct">62.5%</div>
+        <div class="bar-count">5</div>
+      </div>
+      <div class="bar-row">
+        <div class="bar-label">API / UserHub / Hire Date</div>
+        <div class="bar-track"><div class="bar-fill bf-blue" style="width:25%"></div></div>
+        <div class="bar-pct">25%</div>
+        <div class="bar-count">2</div>
+      </div>
+      <div class="bar-row">
+        <div class="bar-label">Media Server / Playback (P1)</div>
+        <div class="bar-track"><div class="bar-fill bf-red" style="width:12.5%"></div></div>
+        <div class="bar-pct">12.5%</div>
+        <div class="bar-count">1</div>
+      </div>
+
+      <div style="margin-top:20px">
+        <div class="panel-title" style="margin-bottom:10px">Top Queried Swarms (User)</div>
+        <div class="bar-row">
+          <div class="bar-label">Agents stuck unavailable</div>
+          <div class="bar-track"><div class="bar-fill bf-orange" style="width:66.7%"></div></div>
+          <div class="bar-pct">67%</div>
+          <div class="bar-count">2</div>
+        </div>
+        <div class="bar-row">
+          <div class="bar-label">API missing hire date</div>
+          <div class="bar-track"><div class="bar-fill bf-blue" style="width:33.3%"></div></div>
+          <div class="bar-pct">33%</div>
+          <div class="bar-count">1</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-title">Swarm Urgency / Sentiment (Query-level)</div>
+      <div class="donut-wrap" style="margin-bottom:20px">
+        <svg class="donut-svg" width="100" height="100" viewBox="0 0 100 100">
+          <!-- Critical 25% = 90deg -->
+          <circle cx="50" cy="50" r="35" fill="none" stroke="#21262d" stroke-width="14"/>
+          <!-- Urgent 50% = 180deg, offset 0 -->
+          <circle cx="50" cy="50" r="35" fill="none" stroke="#fb923c" stroke-width="14"
+            stroke-dasharray="110 110" stroke-dashoffset="0"
+            transform="rotate(-90 50 50)"/>
+          <!-- Critical 25% = 55deg, offset -110 (after urgent) -->
+          <circle cx="50" cy="50" r="35" fill="none" stroke="#f85149" stroke-width="14"
+            stroke-dasharray="55 165" stroke-dashoffset="-110"
+            transform="rotate(-90 50 50)"/>
+          <!-- Neutral 25% = 55deg, offset -165 -->
+          <circle cx="50" cy="50" r="35" fill="none" stroke="#475569" stroke-width="14"
+            stroke-dasharray="55 165" stroke-dashoffset="-165"
+            transform="rotate(-90 50 50)"/>
+          <text x="50" y="54" text-anchor="middle" fill="white" font-size="12" font-weight="700">4</text>
+          <text x="50" y="63" text-anchor="middle" fill="#6e7681" font-size="7">swarms</text>
+        </svg>
+        <div class="donut-legend">
+          <div class="legend-item"><div class="legend-dot" style="background:#fb923c"></div>Urgent / Operational<span class="legend-val" style="color:#fb923c">50%</span></div>
+          <div class="legend-item"><div class="legend-dot" style="background:#f85149"></div>Critical (P1)<span class="legend-val" style="color:#f85149">25%</span></div>
+          <div class="legend-item"><div class="legend-dot" style="background:#475569"></div>Neutral / Data Issue<span class="legend-val" style="color:#8b949e">25%</span></div>
+        </div>
+      </div>
+
+      <div class="panel-title" style="margin-bottom:10px">Response Sentiment Signals</div>
+      <div class="bar-row">
+        <div class="bar-label">Escalation triggered</div>
+        <div class="bar-track"><div class="bar-fill bf-red" style="width:37.5%"></div></div>
+        <div class="bar-pct">37.5%</div>
+        <div class="bar-count">3</div>
+      </div>
+      <div class="bar-row">
+        <div class="bar-label">High-confidence rank-1</div>
+        <div class="bar-track"><div class="bar-fill bf-green" style="width:87.5%"></div></div>
+        <div class="bar-pct">87.5%</div>
+        <div class="bar-count">7</div>
+      </div>
+      <div class="bar-row">
+        <div class="bar-label">Missing severity (P-level)</div>
+        <div class="bar-track"><div class="bar-fill bf-gold" style="width:87.5%"></div></div>
+        <div class="bar-pct">87.5%</div>
+        <div class="bar-count">7</div>
+      </div>
+      <div class="bar-row">
+        <div class="bar-label">Missing TTR data</div>
+        <div class="bar-track"><div class="bar-fill bf-gold" style="width:87.5%"></div></div>
+        <div class="bar-pct">87.5%</div>
+        <div class="bar-count">7</div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Row 2: Confidence + Escalation + User activity -->
+  <div class="row3">
+
+    <div class="panel">
+      <div class="panel-title">Hypothesis Confidence Distribution</div>
+      <div class="bar-row">
+        <div class="bar-label">High confidence</div>
+        <div class="bar-track"><div class="bar-fill bf-green" style="width:48%"></div></div>
+        <div class="bar-pct">48%</div>
+        <div class="bar-count">12</div>
+      </div>
+      <div class="bar-row">
+        <div class="bar-label">Medium confidence</div>
+        <div class="bar-track"><div class="bar-fill bf-gold" style="width:28%"></div></div>
+        <div class="bar-pct">28%</div>
+        <div class="bar-count">7</div>
+      </div>
+      <div class="bar-row">
+        <div class="bar-label">Low confidence</div>
+        <div class="bar-track"><div class="bar-fill bf-orange" style="width:24%"></div></div>
+        <div class="bar-pct">24%</div>
+        <div class="bar-count">6</div>
+      </div>
+      <div style="margin-top:14px;font-size:11px;color:#6e7681">25 total hypotheses across 8 bot responses</div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-title">Escalation Distribution</div>
+      <div style="display:flex;gap:12px;margin-bottom:14px">
+        <div style="flex:1;background:#0d1117;border-radius:8px;padding:14px;text-align:center">
+          <div style="font-size:24px;font-weight:800;color:#f85149">3</div>
+          <div style="font-size:11px;color:#6e7681;margin-top:4px">Escalation YES</div>
+        </div>
+        <div style="flex:1;background:#0d1117;border-radius:8px;padding:14px;text-align:center">
+          <div style="font-size:24px;font-weight:800;color:#3fb950">5</div>
+          <div style="font-size:11px;color:#6e7681;margin-top:4px">Escalation NO</div>
+        </div>
+      </div>
+      <div class="bar-row" style="margin-bottom:6px">
+        <div class="bar-label">YES — cross-team</div>
+        <div class="bar-track"><div class="bar-fill bf-red" style="width:37.5%"></div></div>
+        <div class="bar-pct">37.5%</div>
+      </div>
+      <div class="bar-row">
+        <div class="bar-label">NO — self-service</div>
+        <div class="bar-track"><div class="bar-fill bf-green" style="width:62.5%"></div></div>
+        <div class="bar-pct">62.5%</div>
+      </div>
+      <div style="margin-top:12px;font-size:11px;color:#6e7681">Cross-team escalations: UserHub team (2), Telephony/SBC (1)</div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-title">Active Users</div>
+      <div style="display:flex;align-items:center;gap:12px;padding:10px;background:#0d1117;border-radius:8px;margin-bottom:10px">
+        <div style="width:36px;height:36px;background:#6264a7;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0">SR</div>
+        <div>
+          <div style="font-size:13px;font-weight:700;color:#e6edf3">Saranya Rao</div>
+          <div style="font-size:11px;color:#6e7681">3 queries · 09:08 – 09:35 UTC</div>
+        </div>
+        <div style="margin-left:auto;text-align:right">
+          <span class="badge b-urgent">Urgent</span>
+        </div>
+      </div>
+      <div style="font-size:11px;color:#6e7681;margin-bottom:8px">Swarms raised:</div>
+      <div style="font-size:12px;color:#8b949e;padding:6px 10px;background:#0d1117;border-radius:6px;margin-bottom:6px">"Agents stuck in unavailable state" (×2)</div>
+      <div style="font-size:12px;color:#8b949e;padding:6px 10px;background:#0d1117;border-radius:6px">"API - Agent API Missing Hire Date" (×1)</div>
+    </div>
+
+  </div>
+
+  <!-- Activity Timeline -->
+  <div class="panel timeline-wrap">
+    <div class="panel-title">Activity Timeline — 08:44 to 09:36 UTC (52 minutes)</div>
+    <svg viewBox="0 0 900 110" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:auto">
+
+      <!-- baseline -->
+      <line x1="30" y1="60" x2="870" y2="60" stroke="#30363d" stroke-width="1.5"/>
+
+      <!-- time axis labels -->
+      <text x="30"  y="85" fill="#6e7681" font-size="10" text-anchor="middle">08:44</text>
+      <text x="222" y="85" fill="#6e7681" font-size="10" text-anchor="middle">09:00</text>
+      <text x="384" y="85" fill="#6e7681" font-size="10" text-anchor="middle">09:15</text>
+      <text x="546" y="85" fill="#6e7681" font-size="10" text-anchor="middle">09:20</text>
+      <text x="708" y="85" fill="#6e7681" font-size="10" text-anchor="middle">09:30</text>
+      <text x="870" y="85" fill="#6e7681" font-size="10" text-anchor="middle">09:36</text>
+
+      <!-- tick marks -->
+      <line x1="222" y1="56" x2="222" y2="64" stroke="#30363d" stroke-width="1"/>
+      <line x1="384" y1="56" x2="384" y2="64" stroke="#30363d" stroke-width="1"/>
+      <line x1="546" y1="56" x2="546" y2="64" stroke="#30363d" stroke-width="1"/>
+      <line x1="708" y1="56" x2="708" y2="64" stroke="#30363d" stroke-width="1"/>
+
+      <!-- legend -->
+      <circle cx="760" cy="100" r="5" fill="#6e7681"/>
+      <text x="770" y="104" fill="#6e7681" font-size="9">Bot response</text>
+      <circle cx="820" cy="100" r="5" fill="#58a6ff"/>
+      <text x="830" y="104" fill="#6e7681" font-size="9">User query</text>
+
+      <!-- scale: 840px / 52min = 16.15 px/min, offset x=30 -->
+
+      <!-- 08:44 Bot (0min) → x=30 — P1 Media/Playback -->
+      <line x1="30" y1="60" x2="30" y2="30" stroke="#f85149" stroke-width="1" stroke-dasharray="3,2"/>
+      <circle cx="30" cy="60" r="6" fill="#f85149"/>
+      <text x="30" y="23" fill="#f85149" font-size="9" text-anchor="middle">P1</text>
+      <text x="30" y="14" fill="#f85149" font-size="8" text-anchor="middle">08:44</text>
+
+      <!-- 08:50 Bot (6min) → x=127 — Agent Stuck -->
+      <line x1="127" y1="60" x2="127" y2="38" stroke="#6e7681" stroke-width="1" stroke-dasharray="3,2"/>
+      <circle cx="127" cy="60" r="5" fill="#6e7681"/>
+      <text x="127" y="31" fill="#6e7681" font-size="8" text-anchor="middle">Bot</text>
+
+      <!-- 09:07 Bot (23min) → x=402 — Escalation YES -->
+      <line x1="402" y1="60" x2="402" y2="28" stroke="#f85149" stroke-width="1" stroke-dasharray="3,2"/>
+      <circle cx="402" cy="60" r="5" fill="#f85149"/>
+      <text x="402" y="21" fill="#f85149" font-size="8" text-anchor="middle">Esc!</text>
+
+      <!-- 09:08 User query (24min) → x=418 -->
+      <line x1="418" y1="60" x2="418" y2="18" stroke="#58a6ff" stroke-width="1.5"/>
+      <circle cx="418" cy="60" r="6" fill="#58a6ff"/>
+      <text x="418" y="12" fill="#58a6ff" font-size="8.5" text-anchor="middle">Saranya</text>
+
+      <!-- 09:14 Bot (30min) → x=515 -->
+      <line x1="515" y1="60" x2="515" y2="38" stroke="#6e7681" stroke-width="1" stroke-dasharray="3,2"/>
+      <circle cx="515" cy="60" r="5" fill="#6e7681"/>
+
+      <!-- 09:20 User query (36min) → x=612 -->
+      <line x1="612" y1="60" x2="612" y2="18" stroke="#58a6ff" stroke-width="1.5"/>
+      <circle cx="612" cy="60" r="6" fill="#58a6ff"/>
+      <text x="612" y="12" fill="#58a6ff" font-size="8.5" text-anchor="middle">Saranya</text>
+
+      <!-- 09:21 Bot (37min) → x=628 -->
+      <line x1="634" y1="60" x2="634" y2="38" stroke="#6e7681" stroke-width="1" stroke-dasharray="3,2"/>
+      <circle cx="634" cy="60" r="5" fill="#6e7681"/>
+
+      <!-- 09:26 Bot (42min) → x=708 — Escalation YES -->
+      <line x1="708" y1="60" x2="708" y2="30" stroke="#f85149" stroke-width="1" stroke-dasharray="3,2"/>
+      <circle cx="708" cy="60" r="5" fill="#f85149"/>
+      <text x="708" y="23" fill="#f85149" font-size="8" text-anchor="middle">Esc!</text>
+
+      <!-- 09:28 Bot (44min) → x=741 — Escalation YES -->
+      <line x1="741" y1="60" x2="741" y2="38" stroke="#f85149" stroke-width="1" stroke-dasharray="3,2"/>
+      <circle cx="741" cy="60" r="5" fill="#f85149"/>
+
+      <!-- 09:35 User query (51min) → x=853 -->
+      <line x1="853" y1="60" x2="853" y2="18" stroke="#58a6ff" stroke-width="1.5"/>
+      <circle cx="853" cy="60" r="6" fill="#58a6ff"/>
+      <text x="853" y="12" fill="#58a6ff" font-size="8.5" text-anchor="middle">Saranya</text>
+
+      <!-- 09:36 Bot (52min) → x=870 -->
+      <line x1="870" y1="60" x2="870" y2="38" stroke="#6e7681" stroke-width="1" stroke-dasharray="3,2"/>
+      <circle cx="870" cy="60" r="5" fill="#6e7681"/>
+
+    </svg>
+  </div>
+
+  <!-- Message Log -->
+  <div class="table-wrap">
+    <div class="table-hdr">
+      <span class="table-hdr-title">Full Message Log</span>
+      <span class="table-hdr-sub">Click bot rows to expand hypotheses</span>
+    </div>
+    <table>
+      <thead>
+        <tr>
+          <th>Time (UTC)</th>
+          <th>Type</th>
+          <th>From</th>
+          <th>Component</th>
+          <th>Summary / Query</th>
+          <th>Severity</th>
+          <th>Escalation</th>
+          <th>Top Confidence</th>
+        </tr>
+      </thead>
+      <tbody id="msg-log"></tbody>
+    </table>
+  </div>
+
+</main>
+
+<script>
+const MSGS = [
+  {
+    id: "1782117845696", time: "08:44:05", type: "bot",
+    component: "Media Server / Playback",
+    summary: "P1 playback failure — RTP packet loss on media server. Multiple customers impacted.",
+    severity: "P1", escalation: false, topConf: "High",
+    hypotheses: [
+      { rank:1, text:"Media server RTP packet loss — network buffer overflow", conf:"High", ttr:"42 mins" },
+      { rank:2, text:"Recording service failed to reconnect after restart", conf:"Medium", ttr:"67 mins" },
+      { rank:3, text:"API gateway timeout misconfiguration under high load", conf:"Low", ttr:"95 mins" }
+    ]
+  },
+  {
+    id: "1782118204746", time: "08:50:04", type: "bot",
+    component: "Agent State / Routing",
+    summary: "Multiple agents stuck in unavailable state. Routing engine sync delay suspected.",
+    severity: null, escalation: false, topConf: "High",
+    hypotheses: [
+      { rank:1, text:"Routing engine sync delay — agents remain unavailable", conf:"High", ttr:"—" },
+      { rank:2, text:"UserHub data not reflecting in ACD — blocking state transitions", conf:"Medium", ttr:"—" },
+      { rank:3, text:"Weekly maintenance job overwriting agent availability config", conf:"Low", ttr:"—" }
+    ]
+  },
+  {
+    id: "1782119273707", time: "09:07:53", type: "bot",
+    component: "Agent State / Routing",
+    summary: "Agents stuck — sync/config issue suspected. Escalation raised due to multi-BU impact.",
+    severity: null, escalation: true, topConf: "Medium",
+    hypotheses: [
+      { rank:1, text:"Sync or configuration issue", conf:"Medium", ttr:"—" },
+      { rank:2, text:"Bug in routing engine", conf:"Low", ttr:"—" },
+      { rank:3, text:"Configuration mismatch", conf:"Low", ttr:"—" }
+    ]
+  },
+  {
+    id: "1782119333329", time: "09:08:53", type: "user",
+    from: "Saranya Rao",
+    query: "Agents stuck in unavailable state",
+    component: "Agent State", sentiment: "urgent"
+  },
+  {
+    id: "1782119693711", time: "09:14:53", type: "bot",
+    component: "Agent State / Routing",
+    summary: "Routing engine sync delay. L1 pause point after step 3.",
+    severity: null, escalation: false, topConf: "High",
+    hypotheses: [
+      { rank:1, text:"Routing engine sync delay — agents remain unavailable", conf:"High", ttr:"—" },
+      { rank:2, text:"UserHub data not reflecting correctly in ACD", conf:"Medium", ttr:"—" },
+      { rank:3, text:"Weekly maintenance job overwriting config", conf:"Low", ttr:"—" }
+    ]
+  },
+  {
+    id: "1782120054697", time: "09:20:54", type: "user",
+    from: "Saranya Rao",
+    query: "API - Agent API Missing Hire Date",
+    component: "API / UserHub", sentiment: "neutral"
+  },
+  {
+    id: "1782120106531", time: "09:21:46", type: "bot",
+    component: "Agent State / Routing",
+    summary: "Parallel trigger for agent stuck pattern (cross-query).",
+    severity: null, escalation: false, topConf: "High",
+    hypotheses: [
+      { rank:1, text:"Routing engine sync delay", conf:"High", ttr:"—" },
+      { rank:2, text:"UserHub data not reflecting in ACD", conf:"Medium", ttr:"—" },
+      { rank:3, text:"Weekly maintenance job", conf:"Low", ttr:"—" }
+    ]
+  },
+  {
+    id: "1782120409500", time: "09:26:49", type: "bot",
+    component: "Agent API / UserHub",
+    summary: "Missing hireDate — InData lambda sync gap. ACD ready, fix needed on UserHub side.",
+    severity: null, escalation: true, topConf: "High",
+    hypotheses: [
+      { rank:1, text:"InData sync via lambda missing hireDate — UserHub has value but ACD not receiving it", conf:"High", ttr:"—" },
+      { rank:2, text:"UserHub sending null HireDate to ACD — data source mismatch", conf:"Medium", ttr:"—" }
+    ]
+  },
+  {
+    id: "1782120506986", time: "09:28:26", type: "bot",
+    component: "API / UserHub",
+    summary: "Agent API Missing Hire Date — cross-team handoff to UserHub required.",
+    severity: null, escalation: true, topConf: "High",
+    hypotheses: [
+      { rank:1, text:"Moved to UserHub team; product discussion initiated", conf:"High", ttr:"—" },
+      { rank:2, text:"Missing media leg at SBC — telephony config", conf:"High", ttr:"—" },
+      { rank:3, text:"Recording profile did not cover the queue", conf:"Medium", ttr:"—" }
+    ]
+  },
+  {
+    id: "1782120953772", time: "09:35:53", type: "user",
+    from: "Saranya Rao",
+    query: "Agents stuck in unavailable state",
+    component: "Agent State", sentiment: "urgent"
+  },
+  {
+    id: "1782120982144", time: "09:36:22", type: "bot",
+    component: "Agent",
+    summary: "Workaround advised; monitoring enabled; routed to respective team.",
+    severity: null, escalation: false, topConf: "High",
+    hypotheses: [
+      { rank:1, text:"Client advised workaround and best practices", conf:"High", ttr:"—" },
+      { rank:2, text:"Monitoring enabled for future validation", conf:"High", ttr:"—" },
+      { rank:3, text:"Routed to respective team for further action", conf:"High", ttr:"—" },
+      { rank:4, text:"Bug fix deployed to production", conf:"High", ttr:"—" },
+      { rank:5, text:"Failed recording is actually a Short recording — KI shared", conf:"Medium", ttr:"—" }
+    ]
+  }
+];
+
+const confBadge = c => `<span class="badge b-${c.toLowerCase()}">${c}</span>`;
+const escBadge  = e => e ? '<span class="badge b-yes">YES</span>' : '<span class="badge b-no">NO</span>';
+const sentBadge = s => `<span class="badge b-${s}">${s.charAt(0).toUpperCase()+s.slice(1)}</span>`;
+
+function renderTable() {
+  const tbody = document.getElementById('msg-log');
+  // preserve open detail rows so re-render doesn't collapse them
+  const open = new Set();
+  tbody.querySelectorAll('.detail-row').forEach(r => {
+    if (r.style.display === 'table-row') open.add(r.id);
+  });
+  tbody.innerHTML = '';
+  MSGS.forEach((m, i) => {
+    if (m.type === 'user') {
+      const tr = document.createElement('tr');
+      tr.className = 'user-row';
+      tr.innerHTML = `
+        <td class="ts">${m.time}</td>
+        <td><span class="badge b-user">👤 User</span></td>
+        <td style="font-size:12px;font-weight:600;color:#58a6ff">${m.from}</td>
+        <td class="component-tag">${m.component}</td>
+        <td class="user-query">"${m.query}"</td>
+        <td>—</td>
+        <td>—</td>
+        <td>${sentBadge(m.sentiment)}</td>`;
+      tbody.appendChild(tr);
+    } else {
+      const rowId = `detail-${i}`;
+      const tr = document.createElement('tr');
+      tr.className = 'bot-row';
+      tr.style.cursor = 'pointer';
+      tr.onclick = () => {
+        const d = document.getElementById(rowId);
+        d.style.display = d.style.display === 'table-row' ? 'none' : 'table-row';
+      };
+      tr.innerHTML = `
+        <td class="ts">${m.time}</td>
+        <td><span class="badge b-bot">🤖 Bot</span></td>
+        <td style="font-size:12px;color:#6e7681">Swarm Bot</td>
+        <td class="component-tag">${m.component}</td>
+        <td class="summary-text">${m.summary} <button class="expand-btn">▸ hypotheses</button></td>
+        <td>${m.severity ? `<span class="badge b-p1">${m.severity}</span>` : '<span style="color:#475569;font-size:11px">—</span>'}</td>
+        <td>${escBadge(m.escalation)}</td>
+        <td>${confBadge(m.topConf)}</td>`;
+      tbody.appendChild(tr);
+
+      const hypoRows = m.hypotheses.map(h =>
+        `<tr><td style="text-align:center;color:#6e7681">${h.rank}</td><td>${h.text}</td><td>${confBadge(h.conf)}</td><td style="color:#6e7681">${h.ttr}</td></tr>`
+      ).join('');
+
+      const detailTr = document.createElement('tr');
+      detailTr.id = rowId;
+      detailTr.className = 'detail-row';
+      detailTr.style.display = open.has(rowId) ? 'table-row' : 'none';
+      detailTr.innerHTML = `
+        <td colspan="8">
+          <div class="detail-inner">
+            <table>
+              <thead><tr><th>Rank</th><th>Hypothesis</th><th>Confidence</th><th>TTR</th></tr></thead>
+              <tbody>${hypoRows}</tbody>
+            </table>
+          </div>
+        </td>`;
+      tbody.appendChild(detailTr);
+    }
+  });
+}
+
+function tick() {
+  renderTable();
+  document.getElementById('last-ts').textContent = new Date().toLocaleTimeString();
+}
+
+tick();
+setInterval(tick, 5000);
+</script>
+
+</body>
+</html>

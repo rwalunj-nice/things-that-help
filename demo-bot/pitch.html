@@ -1,0 +1,621 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Swarm Resolution Assistant — Solution Overview</title>
+<style>
+  :root {
+    --navy:   #0f3460;
+    --navy2:  #16213e;
+    --red:    #e94560;
+    --red2:   #c73652;
+    --teal:   #0ea5a0;
+    --gold:   #f5a623;
+    --green:  #22c55e;
+    --txt:    #1a1a2e;
+    --muted:  #64748b;
+    --border: #e2e8f0;
+    --bg:     #f8fafc;
+    --white:  #ffffff;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(--txt);line-height:1.6}
+
+  /* ── NAV ──────────────────────────────────────────────────────────── */
+  nav{position:sticky;top:0;z-index:100;background:rgba(15,52,96,.96);backdrop-filter:blur(8px);padding:0 40px;display:flex;align-items:center;height:56px;gap:8px}
+  .nav-logo{display:flex;align-items:center;gap:10px;color:white;font-weight:700;font-size:15px;text-decoration:none}
+  .nav-logo-icon{width:30px;height:30px;background:var(--red);border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:15px}
+  nav ul{display:flex;gap:4px;list-style:none;margin-left:auto}
+  nav ul a{color:rgba(255,255,255,.75);text-decoration:none;font-size:13px;padding:6px 12px;border-radius:6px;transition:all .2s}
+  nav ul a:hover{color:white;background:rgba(255,255,255,.12)}
+  .nav-cta{background:var(--red)!important;color:white!important;font-weight:700}
+  .nav-cta:hover{background:var(--red2)!important}
+
+  /* ── HERO ─────────────────────────────────────────────────────────── */
+  .hero{background:linear-gradient(135deg,var(--navy) 0%,var(--navy2) 60%,#1a1a3e 100%);color:white;padding:80px 40px 72px;text-align:center;position:relative;overflow:hidden}
+  .hero::before{content:'';position:absolute;inset:0;background:url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")}
+  .hero-category{display:inline-block;background:rgba(233,69,96,.2);border:1px solid rgba(233,69,96,.4);color:#ff8fa3;font-size:11px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;padding:5px 14px;border-radius:20px;margin-bottom:20px}
+  .hero h1{font-size:48px;font-weight:800;line-height:1.15;margin-bottom:16px;letter-spacing:-.5px}
+  .hero h1 span{color:var(--red)}
+  .hero-desc{font-size:18px;color:rgba(255,255,255,.75);max-width:600px;margin:0 auto 36px;font-weight:400}
+  .hero-btns{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;margin-bottom:48px}
+  .btn{display:inline-flex;align-items:center;gap:8px;padding:13px 26px;border-radius:10px;font-size:15px;font-weight:700;text-decoration:none;transition:all .2s;cursor:pointer;border:none}
+  .btn-primary{background:var(--red);color:white;box-shadow:0 4px 20px rgba(233,69,96,.35)}
+  .btn-primary:hover{background:var(--red2);transform:translateY(-1px)}
+  .btn-outline{background:transparent;color:white;border:2px solid rgba(255,255,255,.4)}
+  .btn-outline:hover{background:rgba(255,255,255,.1);border-color:white}
+  .btn-teal{background:var(--teal);color:white;box-shadow:0 4px 20px rgba(14,165,160,.35)}
+  .btn-teal:hover{background:#0c8f8a;transform:translateY(-1px)}
+  .hero-stats{display:flex;justify-content:center;gap:40px;flex-wrap:wrap}
+  .stat{text-align:center}
+  .stat-num{font-size:32px;font-weight:800;color:var(--red);line-height:1}
+  .stat-lbl{font-size:12px;color:rgba(255,255,255,.5);margin-top:4px;text-transform:uppercase;letter-spacing:.5px}
+
+  /* ── SECTION WRAPPER ─────────────────────────────────────────────── */
+  section{padding:72px 40px}
+  .container{max-width:1100px;margin:0 auto}
+  .section-tag{display:inline-block;background:#ffe4e8;color:var(--red);font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;padding:4px 12px;border-radius:20px;margin-bottom:12px}
+  .section-tag.blue{background:#dbeafe;color:var(--navy)}
+  .section-tag.green{background:#dcfce7;color:#166534}
+  .section-tag.gold{background:#fef3c7;color:#92400e}
+  h2{font-size:32px;font-weight:800;color:var(--txt);margin-bottom:12px;letter-spacing:-.3px}
+  .section-sub{font-size:16px;color:var(--muted);max-width:580px;margin-bottom:48px}
+
+  /* ── PROBLEM CARDS ───────────────────────────────────────────────── */
+  .problem-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+  .prob-card{background:white;border:1px solid var(--border);border-radius:14px;padding:24px;position:relative;overflow:hidden}
+  .prob-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:var(--red)}
+  .prob-icon{font-size:28px;margin-bottom:12px}
+  .prob-num{font-size:36px;font-weight:800;color:var(--red);line-height:1;margin-bottom:4px}
+  .prob-label{font-size:13px;font-weight:600;color:var(--txt);margin-bottom:6px}
+  .prob-desc{font-size:13px;color:var(--muted)}
+
+  /* ── HOW IT WORKS ─────────────────────────────────────────────────── */
+  .how-bg{background:white}
+  .steps{display:grid;grid-template-columns:repeat(3,1fr);gap:0;position:relative}
+  .steps::before{content:'';position:absolute;top:44px;left:16.67%;right:16.67%;height:2px;background:linear-gradient(to right,var(--navy),var(--red));z-index:0}
+  .step{text-align:center;padding:0 24px;position:relative;z-index:1}
+  .step-circle{width:90px;height:90px;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 20px;font-size:30px;position:relative}
+  .step-circle.c1{background:linear-gradient(135deg,var(--navy),#1e5aa8)}
+  .step-circle.c2{background:linear-gradient(135deg,var(--red),#ff6b6b)}
+  .step-circle.c3{background:linear-gradient(135deg,var(--teal),#38bdf8)}
+  .step-n{position:absolute;top:-4px;right:-4px;width:26px;height:26px;background:var(--gold);border-radius:50%;font-size:12px;font-weight:800;color:white;display:flex;align-items:center;justify-content:center}
+  .step h3{font-size:16px;font-weight:700;color:var(--txt);margin-bottom:8px}
+  .step p{font-size:13px;color:var(--muted);line-height:1.55}
+
+  /* ── ARCHITECTURE ────────────────────────────────────────────────── */
+  .arch-bg{background:var(--navy2)}
+  .arch-bg h2{color:white}
+  .arch-bg .section-sub{color:rgba(255,255,255,.6)}
+  .arch-diagram{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);border-radius:16px;padding:32px;overflow-x:auto}
+
+  /* ── KB HIGHLIGHT ────────────────────────────────────────────────── */
+  .kb-grid{display:grid;grid-template-columns:1fr 1fr;gap:32px;align-items:start}
+  .kb-left h2{margin-bottom:16px}
+  .kb-left p{font-size:15px;color:var(--muted);margin-bottom:24px}
+  .kb-tags{display:flex;flex-wrap:wrap;gap:8px}
+  .kb-tag{background:white;border:1px solid var(--border);border-radius:20px;padding:5px 14px;font-size:12px;font-weight:600;color:var(--navy)}
+  .kb-tag.csv{background:#fef3c7;border-color:#fde68a;color:#92400e}
+  .kb-right{background:var(--navy);border-radius:16px;padding:28px;color:white}
+  .kb-right h3{font-size:16px;font-weight:700;margin-bottom:20px;color:rgba(255,255,255,.6);text-transform:uppercase;letter-spacing:.5px;font-size:11px}
+  .kb-stat-row{display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-bottom:1px solid rgba(255,255,255,.08)}
+  .kb-stat-row:last-child{border-bottom:none}
+  .kb-stat-label{font-size:13px;color:rgba(255,255,255,.7)}
+  .kb-stat-val{font-size:20px;font-weight:800;color:var(--red)}
+
+  /* ── DEPLOYMENT ──────────────────────────────────────────────────── */
+  .deploy-bg{background:white}
+  .deploy-steps{display:flex;flex-direction:column;gap:0}
+  .deploy-step{display:flex;gap:24px;padding:24px 0;border-bottom:1px solid var(--border);position:relative}
+  .deploy-step:last-child{border-bottom:none}
+  .deploy-num{width:44px;height:44px;border-radius:50%;background:var(--navy);color:white;font-weight:800;font-size:16px;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:2px}
+  .deploy-content h3{font-size:16px;font-weight:700;color:var(--txt);margin-bottom:6px}
+  .deploy-content p{font-size:14px;color:var(--muted);margin-bottom:10px}
+  .code-block{background:#0d1117;border-radius:8px;padding:12px 16px;font-family:'Courier New',monospace;font-size:13px;color:#e6edf3;overflow-x:auto;line-height:1.6}
+  .code-block .c-comment{color:#6e7681}
+  .code-block .c-cmd{color:#79c0ff}
+  .code-block .c-val{color:#a5d6ff}
+  .deploy-tag{display:inline-block;padding:2px 8px;border-radius:6px;font-size:11px;font-weight:700;margin-bottom:8px}
+  .deploy-tag.optional{background:#fef3c7;color:#92400e}
+  .deploy-tag.required{background:#dbeafe;color:var(--navy)}
+
+  /* ── CTA ──────────────────────────────────────────────────────────── */
+  .cta-bg{background:linear-gradient(135deg,var(--navy) 0%,#1a1a3e 100%);color:white;text-align:center}
+  .cta-bg h2{color:white;font-size:38px;margin-bottom:16px}
+  .cta-bg p{color:rgba(255,255,255,.65);font-size:17px;max-width:520px;margin:0 auto 40px}
+  .cta-links{display:flex;gap:16px;justify-content:center;flex-wrap:wrap}
+  .demo-link-card{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.15);border-radius:14px;padding:20px 28px;text-align:center;text-decoration:none;color:white;transition:all .2s;min-width:180px}
+  .demo-link-card:hover{background:rgba(255,255,255,.14);border-color:rgba(255,255,255,.35);transform:translateY(-2px)}
+  .demo-link-icon{font-size:32px;margin-bottom:10px}
+  .demo-link-title{font-size:15px;font-weight:700;margin-bottom:4px}
+  .demo-link-url{font-size:12px;color:rgba(255,255,255,.45);font-family:'Courier New',monospace}
+
+  /* ── FOOTER ──────────────────────────────────────────────────────── */
+  footer{background:var(--navy2);color:rgba(255,255,255,.4);text-align:center;padding:24px;font-size:12px}
+
+  /* ── RESPONSIVE ──────────────────────────────────────────────────── */
+  @media(max-width:768px){
+    .hero h1{font-size:32px}
+    .problem-grid{grid-template-columns:1fr}
+    .steps{grid-template-columns:1fr;gap:32px}
+    .steps::before{display:none}
+    .kb-grid{grid-template-columns:1fr}
+    nav ul{display:none}
+    section{padding:48px 24px}
+    nav{padding:0 24px}
+    .hero{padding:56px 24px 48px}
+  }
+</style>
+</head>
+<body>
+
+<!-- ── NAV ──────────────────────────────────────────────────────────────── -->
+<nav>
+  <a class="nav-logo" href="#">
+    <div class="nav-logo-icon">⚡</div>
+    Swarm Resolution Assistant
+  </a>
+  <ul>
+    <li><a href="#problem">Problem</a></li>
+    <li><a href="#how">How It Works</a></li>
+    <li><a href="#architecture">Architecture</a></li>
+    <li><a href="#deploy">Deploy</a></li>
+    <li><a href="http://localhost:8000" target="_blank" class="nav-cta">Try Demo →</a></li>
+  </ul>
+</nav>
+
+<!-- ── HERO ──────────────────────────────────────────────────────────────── -->
+<section class="hero" id="top">
+  <div class="container">
+    <div class="hero-category">Customer Swarms &amp; Supportability</div>
+    <h1>Resolve Swarms <span>Faster</span><br>with AI-Powered Playbooks</h1>
+    <p class="hero-desc">
+      Suggests probable root causes and step-by-step remediation actions for active swarms
+      by mining 84 historical resolution patterns from real CXone incidents.
+    </p>
+    <div class="hero-btns">
+      <a class="btn btn-primary" href="http://localhost:8000" target="_blank">⚡ Try the Bot</a>
+      <a class="btn btn-teal" href="http://localhost:8000/dashboard" target="_blank">📊 Live Dashboard</a>
+      <a class="btn btn-outline" href="#architecture">View Architecture</a>
+    </div>
+    <div class="hero-stats">
+      <div class="stat"><div class="stat-num">84</div><div class="stat-lbl">Resolution Patterns</div></div>
+      <div class="stat"><div class="stat-num">18</div><div class="stat-lbl">CXone Recording Patterns</div></div>
+      <div class="stat"><div class="stat-num">&lt;3s</div><div class="stat-lbl">Time to First Hypothesis</div></div>
+      <div class="stat"><div class="stat-num">0</div><div class="stat-lbl">External Dependencies</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ── PROBLEM ────────────────────────────────────────────────────────────── -->
+<section id="problem">
+  <div class="container">
+    <div class="section-tag">The Problem</div>
+    <h2>CXone Swarms Cost Hours, Every Time</h2>
+    <p class="section-sub">When an active swarm hits, engineers manually reconstruct root cause hypotheses from memory and scattered Jira history — burning time that could be saved.</p>
+    <div class="problem-grid">
+      <div class="prob-card">
+        <div class="prob-icon">⏱️</div>
+        <div class="prob-num">45–90m</div>
+        <div class="prob-label">Average MTTR per swarm</div>
+        <div class="prob-desc">Most of this time is spent forming the initial hypothesis — not executing the fix.</div>
+      </div>
+      <div class="prob-card">
+        <div class="prob-icon">🔁</div>
+        <div class="prob-num">2,000+</div>
+        <div class="prob-label">Engineering hours per year</div>
+        <div class="prob-desc">Reinvestigating patterns that have been seen and resolved multiple times before.</div>
+      </div>
+      <div class="prob-card">
+        <div class="prob-icon">📂</div>
+        <div class="prob-num">116</div>
+        <div class="prob-label">Incidents analysed in our KB</div>
+        <div class="prob-desc">26 distinct recurring patterns found — many with 5–10 repeat occurrences and identical root causes.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── HOW IT WORKS ────────────────────────────────────────────────────────── -->
+<section id="how" class="how-bg">
+  <div class="container">
+    <div class="section-tag blue">How It Works</div>
+    <h2>From Symptom to Playbook in Seconds</h2>
+    <p class="section-sub">Describe what you're seeing. The assistant returns ranked root cause hypotheses, investigation steps, and the historical playbook that resolved it before.</p>
+    <div class="steps">
+      <div class="step">
+        <div class="step-circle c1">
+          🗣️
+          <div class="step-n">1</div>
+        </div>
+        <h3>Describe the Symptom</h3>
+        <p>Type a natural-language description of the active swarm — or pick a chip. Works in the browser UI or @mention in Microsoft Teams.</p>
+      </div>
+      <div class="step">
+        <div class="step-circle c2">
+          🧠
+          <div class="step-n">2</div>
+        </div>
+        <h3>Pattern Matching Engine</h3>
+        <p>Word-boundary keyword scoring ranks all 84 patterns by relevance. The top 2 matches are selected for your response.</p>
+      </div>
+      <div class="step">
+        <div class="step-circle c3">
+          📋
+          <div class="step-n">3</div>
+        </div>
+        <h3>Ranked Playbook Returned</h3>
+        <p>Each result contains: ranked root cause hypotheses, ordered investigation steps, and a historical playbook with recurrence counts.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── ARCHITECTURE ────────────────────────────────────────────────────────── -->
+<section id="architecture" class="arch-bg">
+  <div class="container">
+    <div class="section-tag">Architecture</div>
+    <h2>Solution Architecture</h2>
+    <p class="section-sub">A single FastAPI process serves both the browser chat UI and the Microsoft Teams webhook — no external database, no cloud dependencies.</p>
+
+    <div class="arch-diagram">
+      <svg viewBox="0 0 960 420" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:auto;font-family:'Segoe UI',sans-serif">
+
+        <!-- ── CLIENT LAYER ── -->
+        <!-- Browser box -->
+        <rect x="30" y="60" width="140" height="76" rx="10" fill="#1e3a5f" stroke="#3b6ea5" stroke-width="1.5"/>
+        <text x="100" y="88" fill="#93c5fd" font-size="20" text-anchor="middle">🌐</text>
+        <text x="100" y="108" fill="white" font-size="13" font-weight="700" text-anchor="middle">Browser</text>
+        <text x="100" y="126" fill="#64748b" font-size="11" text-anchor="middle">Chat UI</text>
+
+        <!-- Teams box -->
+        <rect x="30" y="164" width="140" height="76" rx="10" fill="#1e3a5f" stroke="#3b6ea5" stroke-width="1.5"/>
+        <text x="100" y="192" fill="#93c5fd" font-size="20" text-anchor="middle">💬</text>
+        <text x="100" y="212" fill="white" font-size="13" font-weight="700" text-anchor="middle">Microsoft Teams</text>
+        <text x="100" y="230" fill="#64748b" font-size="11" text-anchor="middle">Outgoing Webhook</text>
+
+        <!-- Dashboard box -->
+        <rect x="30" y="268" width="140" height="76" rx="10" fill="#1e3a5f" stroke="#3b6ea5" stroke-width="1.5"/>
+        <text x="100" y="296" fill="#93c5fd" font-size="20" text-anchor="middle">📊</text>
+        <text x="100" y="316" fill="white" font-size="13" font-weight="700" text-anchor="middle">Dashboard</text>
+        <text x="100" y="334" fill="#64748b" font-size="11" text-anchor="middle">/dashboard</text>
+
+        <!-- Layer label -->
+        <text x="100" y="38" fill="#475569" font-size="11" font-weight="600" text-anchor="middle" letter-spacing="1">CLIENTS</text>
+        <line x1="30" y1="44" x2="170" y2="44" stroke="#334155" stroke-width="1"/>
+
+        <!-- ── ARROWS left → center ── -->
+        <!-- Browser → FastAPI -->
+        <line x1="170" y1="98" x2="280" y2="200" stroke="#3b6ea5" stroke-width="1.5" stroke-dasharray="5,3" marker-end="url(#arr-blue)"/>
+        <text x="210" y="148" fill="#3b6ea5" font-size="10" text-anchor="middle" transform="rotate(-25,210,148)">POST /api/session</text>
+
+        <!-- Teams → FastAPI -->
+        <line x1="170" y1="202" x2="280" y2="210" stroke="#3b6ea5" stroke-width="1.5" stroke-dasharray="5,3" marker-end="url(#arr-blue)"/>
+        <text x="225" y="198" fill="#3b6ea5" font-size="10" text-anchor="middle">POST /webhook</text>
+
+        <!-- Dashboard → FastAPI -->
+        <line x1="170" y1="306" x2="280" y2="230" stroke="#3b6ea5" stroke-width="1.5" stroke-dasharray="5,3" marker-end="url(#arr-blue)"/>
+        <text x="217" y="278" fill="#3b6ea5" font-size="10" text-anchor="middle" transform="rotate(20,217,278)">GET /api/threads</text>
+
+        <!-- ── FASTAPI (center) ── -->
+        <rect x="280" y="130" width="180" height="160" rx="12" fill="#0f3460" stroke="#e94560" stroke-width="2"/>
+        <text x="370" y="158" fill="#f87171" font-size="22" text-anchor="middle">⚡</text>
+        <text x="370" y="182" fill="white" font-size="15" font-weight="800" text-anchor="middle">FastAPI Server</text>
+        <text x="370" y="202" fill="#94a3b8" font-size="11" text-anchor="middle">python -m uvicorn main:app</text>
+        <line x1="300" y1="215" x2="440" y2="215" stroke="#1e3a5f" stroke-width="1"/>
+        <text x="370" y="232" fill="#64748b" font-size="11" text-anchor="middle">Session Management</text>
+        <text x="370" y="250" fill="#64748b" font-size="11" text-anchor="middle">HMAC Verification</text>
+        <text x="370" y="268" fill="#64748b" font-size="11" text-anchor="middle">Markdown Renderer</text>
+
+        <!-- Layer label -->
+        <text x="370" y="38" fill="#475569" font-size="11" font-weight="600" text-anchor="middle" letter-spacing="1">APPLICATION</text>
+        <line x1="280" y1="44" x2="460" y2="44" stroke="#334155" stroke-width="1"/>
+
+        <!-- ── ARROWS center → right ── -->
+        <!-- FastAPI → KB -->
+        <line x1="460" y1="185" x2="560" y2="120" stroke="#e94560" stroke-width="1.5" marker-end="url(#arr-red)"/>
+        <text x="505" y="145" fill="#e94560" font-size="10" text-anchor="middle" transform="rotate(-25,505,145)">keyword search</text>
+
+        <!-- FastAPI ↔ Session Store -->
+        <line x1="460" y1="215" x2="560" y2="215" stroke="#22c55e" stroke-width="1.5" marker-end="url(#arr-green)"/>
+        <line x1="560" y1="230" x2="460" y2="230" stroke="#22c55e" stroke-width="1.5" marker-end="url(#arr-green2)"/>
+        <text x="510" y="207" fill="#22c55e" font-size="10" text-anchor="middle">read / write</text>
+
+        <!-- FastAPI → Teams response -->
+        <line x1="460" y1="290" x2="560" y2="320" stroke="#f5a623" stroke-width="1.5" marker-end="url(#arr-gold)"/>
+        <text x="506" y="313" fill="#f5a623" font-size="10" text-anchor="middle" transform="rotate(15,506,313)">JSON response</text>
+
+        <!-- ── KNOWLEDGE BASE ── -->
+        <rect x="560" y="60" width="160" height="120" rx="10" fill="#1e3a5f" stroke="#e94560" stroke-width="1.5"/>
+        <text x="640" y="94" fill="#fca5a5" font-size="22" text-anchor="middle">📚</text>
+        <text x="640" y="118" fill="white" font-size="14" font-weight="700" text-anchor="middle">Knowledge Base</text>
+        <text x="640" y="138" fill="#64748b" font-size="11" text-anchor="middle">knowledge.json</text>
+        <text x="640" y="156" fill="#e94560" font-size="12" font-weight="700" text-anchor="middle">84 patterns</text>
+
+        <!-- ── SESSION STORE ── -->
+        <rect x="560" y="200" width="160" height="90" rx="10" fill="#1e3a5f" stroke="#22c55e" stroke-width="1.5"/>
+        <text x="640" y="228" fill="#86efac" font-size="22" text-anchor="middle">🗄️</text>
+        <text x="640" y="252" fill="white" font-size="14" font-weight="700" text-anchor="middle">Session Store</text>
+        <text x="640" y="272" fill="#64748b" font-size="11" text-anchor="middle">in-memory dict</text>
+
+        <!-- ── TEAMS RESPONSE ── -->
+        <rect x="560" y="310" width="160" height="76" rx="10" fill="#1e3a5f" stroke="#f5a623" stroke-width="1.5"/>
+        <text x="640" y="338" fill="#fde68a" font-size="20" text-anchor="middle">📤</text>
+        <text x="640" y="360" fill="white" font-size="13" font-weight="700" text-anchor="middle">Teams Response</text>
+        <text x="640" y="378" fill="#64748b" font-size="11" text-anchor="middle">{"type":"message"}</text>
+
+        <!-- Layer label -->
+        <text x="640" y="38" fill="#475569" font-size="11" font-weight="600" text-anchor="middle" letter-spacing="1">DATA LAYER</text>
+        <line x1="560" y1="44" x2="720" y2="44" stroke="#334155" stroke-width="1"/>
+
+        <!-- ── NGROK (optional) ── -->
+        <rect x="760" y="152" width="160" height="76" rx="10" fill="#1a1a2e" stroke="#475569" stroke-width="1.5" stroke-dasharray="6,3"/>
+        <text x="840" y="178" fill="#94a3b8" font-size="18" text-anchor="middle">🔀</text>
+        <text x="840" y="200" fill="#94a3b8" font-size="13" font-weight="700" text-anchor="middle">ngrok tunnel</text>
+        <text x="840" y="218" fill="#475569" font-size="11" text-anchor="middle">optional — Teams only</text>
+
+        <!-- FastAPI ↔ ngrok -->
+        <line x1="460" y1="200" x2="760" y2="190" stroke="#475569" stroke-width="1" stroke-dasharray="4,4" marker-end="url(#arr-grey)"/>
+
+        <!-- Layer label -->
+        <text x="840" y="38" fill="#475569" font-size="11" font-weight="600" text-anchor="middle" letter-spacing="1">OPTIONAL</text>
+        <line x1="760" y1="44" x2="930" y2="44" stroke="#334155" stroke-width="1"/>
+
+        <!-- ── ARROW MARKERS ── -->
+        <defs>
+          <marker id="arr-blue" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+            <path d="M0,0 L0,6 L8,3 z" fill="#3b6ea5"/>
+          </marker>
+          <marker id="arr-red" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+            <path d="M0,0 L0,6 L8,3 z" fill="#e94560"/>
+          </marker>
+          <marker id="arr-green" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+            <path d="M0,0 L0,6 L8,3 z" fill="#22c55e"/>
+          </marker>
+          <marker id="arr-green2" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+            <path d="M0,0 L0,6 L8,3 z" fill="#22c55e"/>
+          </marker>
+          <marker id="arr-gold" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+            <path d="M0,0 L0,6 L8,3 z" fill="#f5a623"/>
+          </marker>
+          <marker id="arr-grey" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+            <path d="M0,0 L0,6 L8,3 z" fill="#475569"/>
+          </marker>
+        </defs>
+
+      </svg>
+    </div>
+
+    <!-- component table -->
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:28px">
+      <div style="background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:10px;padding:18px">
+        <div style="font-size:11px;font-weight:700;color:#e94560;letter-spacing:.8px;text-transform:uppercase;margin-bottom:8px">Chat UI + API</div>
+        <div style="font-size:13px;color:rgba(255,255,255,.8)">Browser-based chat with session management, message history, end-thread, and feedback modal. All 6 REST endpoints served by FastAPI.</div>
+      </div>
+      <div style="background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:10px;padding:18px">
+        <div style="font-size:11px;font-weight:700;color:#22c55e;letter-spacing:.8px;text-transform:uppercase;margin-bottom:8px">Session Store</div>
+        <div style="font-size:13px;color:rgba(255,255,255,.8)">In-memory thread-safe dict stores all sessions, message history, and feedback. Dashboard polls <code style="background:rgba(255,255,255,.1);padding:1px 5px;border-radius:4px">/api/threads</code> every 5 s.</div>
+      </div>
+      <div style="background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:10px;padding:18px">
+        <div style="font-size:11px;font-weight:700;color:#f5a623;letter-spacing:.8px;text-transform:uppercase;margin-bottom:8px">Knowledge Engine</div>
+        <div style="font-size:13px;color:rgba(255,255,255,.8)">Word-boundary keyword scoring over 84 JSON entries. Top-2 matches returned per query. Swap in Bedrock embeddings for production semantic search.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── KNOWLEDGE BASE ─────────────────────────────────────────────────────── -->
+<section id="kb">
+  <div class="container">
+    <div class="section-tag gold">Knowledge Base</div>
+    <div class="kb-grid">
+      <div class="kb-left">
+        <h2>84 Swarm Patterns Ready to Query</h2>
+        <p>The knowledge base was bootstrapped from 116 real CXone incident records, with 66 additional platform-level infrastructure patterns covering Kubernetes, Kafka, Redis, certificates, and more.</p>
+        <div class="kb-tags">
+          <div class="kb-tag csv">🔴 Playback Error 8203</div>
+          <div class="kb-tag csv">🔴 PCI Masking Failure</div>
+          <div class="kb-tag csv">🔴 Upload Token Expiry</div>
+          <div class="kb-tag csv">🔴 Screen Agent Blank</div>
+          <div class="kb-tag csv">🔴 SIPREC Audio Missing</div>
+          <div class="kb-tag csv">🔴 Bulk Export Empty</div>
+          <div class="kb-tag">🔵 Login / SSO Failure</div>
+          <div class="kb-tag">🔵 API 500 / 429 Errors</div>
+          <div class="kb-tag">🔵 Call Drop / Quality</div>
+          <div class="kb-tag">🔵 Kubernetes OOMKill</div>
+          <div class="kb-tag">🔵 Kafka Consumer Lag</div>
+          <div class="kb-tag">🔵 Certificate Expiry</div>
+          <div class="kb-tag">🔵 Redis Cache Failure</div>
+          <div class="kb-tag">🔵 Database Timeout</div>
+          <div class="kb-tag">🔵 Real-time Reporting Lag</div>
+          <div class="kb-tag">🔵 IVR Routing Failure</div>
+        </div>
+        <div style="margin-top:16px;font-size:12px;color:var(--muted)">
+          🔴 CXone recording-specific (18 patterns from incident CSV)&nbsp;&nbsp;
+          🔵 Platform / infrastructure (66 patterns)
+        </div>
+      </div>
+      <div class="kb-right">
+        <h3>Knowledge Base Stats</h3>
+        <div class="kb-stat-row">
+          <span class="kb-stat-label">Total patterns</span>
+          <span class="kb-stat-val">84</span>
+        </div>
+        <div class="kb-stat-row">
+          <span class="kb-stat-label">CXone recording patterns</span>
+          <span class="kb-stat-val">18</span>
+        </div>
+        <div class="kb-stat-row">
+          <span class="kb-stat-label">Real incidents analysed</span>
+          <span class="kb-stat-val">116</span>
+        </div>
+        <div class="kb-stat-row">
+          <span class="kb-stat-label">Distinct recurring patterns found</span>
+          <span class="kb-stat-val">26</span>
+        </div>
+        <div class="kb-stat-row">
+          <span class="kb-stat-label">Max recurrence count</span>
+          <span class="kb-stat-val">9×</span>
+        </div>
+        <div class="kb-stat-row">
+          <span class="kb-stat-label">Avg recurrence (recording patterns)</span>
+          <span class="kb-stat-val">5×</span>
+        </div>
+        <div style="margin-top:16px;padding:12px;background:rgba(255,255,255,.06);border-radius:8px">
+          <div style="font-size:11px;color:#64748b;margin-bottom:4px">PRODUCTION UPGRADE PATH</div>
+          <div style="font-size:12px;color:rgba(255,255,255,.65)">Replace keyword matching with AWS Bedrock embeddings + vector search to enable semantic, context-aware retrieval at scale.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── DEPLOYMENT ─────────────────────────────────────────────────────────── -->
+<section id="deploy" class="deploy-bg">
+  <div class="container">
+    <div class="section-tag green">Deployment</div>
+    <h2>Up and Running in 5 Minutes</h2>
+    <p class="section-sub">No cloud account, no API key, no external database. Just Python and a terminal.</p>
+
+    <div class="deploy-steps">
+
+      <div class="deploy-step">
+        <div class="deploy-num">1</div>
+        <div class="deploy-content">
+          <span class="deploy-tag required">Required</span>
+          <h3>Clone &amp; Install Dependencies</h3>
+          <p>Navigate to the <code>demo-bot/</code> directory and install the three Python packages.</p>
+          <div class="code-block">
+            <span class="c-comment"># Install fastapi, uvicorn, python-dotenv</span><br>
+            <span class="c-cmd">pip install</span> <span class="c-val">-r requirements.txt</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="deploy-step">
+        <div class="deploy-num">2</div>
+        <div class="deploy-content">
+          <span class="deploy-tag required">Required</span>
+          <h3>Configure Environment</h3>
+          <p>Copy the example env file. The HMAC secret is only needed for Teams webhook — leave it blank for local browser testing.</p>
+          <div class="code-block">
+            <span class="c-cmd">cp</span> <span class="c-val">.env.example .env</span><br>
+            <span class="c-comment"># TEAMS_HMAC_SECRET=   ← leave blank for local testing</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="deploy-step">
+        <div class="deploy-num">3</div>
+        <div class="deploy-content">
+          <span class="deploy-tag required">Required</span>
+          <h3>Start the Server</h3>
+          <p>Launch with uvicorn. The server starts on port 8000 with hot-reload enabled.</p>
+          <div class="code-block">
+            <span class="c-cmd">python -m uvicorn</span> <span class="c-val">main:app --reload</span><br>
+            <span class="c-comment"># INFO:     Uvicorn running on http://127.0.0.1:8000</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="deploy-step">
+        <div class="deploy-num">4</div>
+        <div class="deploy-content">
+          <span class="deploy-tag required">Required</span>
+          <h3>Open Browser UI &amp; Dashboard</h3>
+          <p>Open the bot in your browser. Click "Start New Thread", ask a swarm question, then check the live dashboard.</p>
+          <div class="code-block">
+            <span class="c-comment"># Chat UI</span><br>
+            <span class="c-val">http://localhost:8000</span><br><br>
+            <span class="c-comment"># Live dashboard (all threads + sentiment)</span><br>
+            <span class="c-val">http://localhost:8000/dashboard</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="deploy-step">
+        <div class="deploy-num">5</div>
+        <div class="deploy-content">
+          <span class="deploy-tag optional">Optional — Teams</span>
+          <h3>Expose via ngrok for Microsoft Teams</h3>
+          <p>If you want the bot to respond inside a Teams channel, expose the local server with ngrok and register an Outgoing Webhook.</p>
+          <div class="code-block">
+            <span class="c-comment"># Terminal 2 — expose localhost:8000</span><br>
+            <span class="c-cmd">ngrok http</span> <span class="c-val">8000</span><br><br>
+            <span class="c-comment"># Copy the https URL → Teams channel → ··· → Manage channel</span><br>
+            <span class="c-comment"># → Outgoing Webhooks → Add → Callback URL → paste ngrok URL/webhook</span><br>
+            <span class="c-comment"># → Copy HMAC token → paste into .env as TEAMS_HMAC_SECRET → restart</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="deploy-step">
+        <div class="deploy-num">6</div>
+        <div class="deploy-content">
+          <span class="deploy-tag optional">Optional — Teams</span>
+          <h3>Test in Teams Channel</h3>
+          <p>Mention the webhook name followed by any swarm symptom. The bot replies inline within 3 seconds. Teams sessions also appear on the dashboard.</p>
+          <div class="code-block">
+            <span class="c-val">@Swarm Assistant</span> <span class="c-comment">agents cannot log in</span><br>
+            <span class="c-val">@Swarm Assistant</span> <span class="c-comment">recordings stuck pending upload</span><br>
+            <span class="c-val">@Swarm Assistant</span> <span class="c-comment">playback error 8203 CXone recording</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ── CTA ─────────────────────────────────────────────────────────────────── -->
+<section class="cta-bg" id="demo">
+  <div class="container">
+    <h2>See It in Action</h2>
+    <p>The bot is running locally. Open the chat UI to describe a swarm symptom, then check the dashboard to see your session appear with live sentiment analysis.</p>
+    <div class="cta-links">
+      <a class="demo-link-card" href="http://localhost:8000" target="_blank">
+        <div class="demo-link-icon">⚡</div>
+        <div class="demo-link-title">Try the Bot</div>
+        <div class="demo-link-url">localhost:8000</div>
+      </a>
+      <a class="demo-link-card" href="http://localhost:8000/dashboard" target="_blank">
+        <div class="demo-link-icon">📊</div>
+        <div class="demo-link-title">Live Dashboard</div>
+        <div class="demo-link-url">localhost:8000/dashboard</div>
+      </a>
+      <a class="demo-link-card" href="http://localhost:8000/health" target="_blank">
+        <div class="demo-link-icon">🩺</div>
+        <div class="demo-link-title">Health Check</div>
+        <div class="demo-link-url">localhost:8000/health</div>
+      </a>
+      <a class="demo-link-card" href="http://localhost:8000/docs" target="_blank">
+        <div class="demo-link-icon">📖</div>
+        <div class="demo-link-title">API Docs</div>
+        <div class="demo-link-url">localhost:8000/docs</div>
+      </a>
+    </div>
+
+    <!-- example queries -->
+    <div style="margin-top:48px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.12);border-radius:14px;padding:28px;max-width:700px;margin-left:auto;margin-right:auto;margin-top:48px">
+      <div style="font-size:11px;font-weight:700;color:#e94560;letter-spacing:1px;text-transform:uppercase;margin-bottom:16px">Try these queries in the bot</div>
+      <div style="display:flex;flex-direction:column;gap:10px">
+        <div style="background:rgba(255,255,255,.07);border-radius:8px;padding:10px 16px;font-family:'Courier New',monospace;font-size:13px;color:#e6edf3">playback unavailable error 8203 CXone recording</div>
+        <div style="background:rgba(255,255,255,.07);border-radius:8px;padding:10px 16px;font-family:'Courier New',monospace;font-size:13px;color:#e6edf3">recordings stuck pending upload File Storage token expiry</div>
+        <div style="background:rgba(255,255,255,.07);border-radius:8px;padding:10px 16px;font-family:'Courier New',monospace;font-size:13px;color:#e6edf3">PCI pause resume DTMF masking not working</div>
+        <div style="background:rgba(255,255,255,.07);border-radius:8px;padding:10px 16px;font-family:'Courier New',monospace;font-size:13px;color:#e6edf3">agents cannot log in authentication failure SSO</div>
+        <div style="background:rgba(255,255,255,.07);border-radius:8px;padding:10px 16px;font-family:'Courier New',monospace;font-size:13px;color:#e6edf3">Kubernetes pod OOMKill crash loop restarting</div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ── FOOTER ──────────────────────────────────────────────────────────────── -->
+<footer>
+  Swarm Resolution Assistant · Customer Swarms &amp; Supportability · Built with FastAPI · 84 Patterns · Sessions + Sentiment Dashboard
+</footer>
+
+</body>
+</html>
