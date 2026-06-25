@@ -1,0 +1,40 @@
+%% Failure recovery: SQS visibility-timeout redelivery
+%% Applies to StateAggregator, IntervalReader, IntervalPublisher
+sequenceDiagram
+    autonumber
+    participant P as Producer<br/>(StreamConsumer or IntervalAggregator)
+    participant Q as SQS Queue
+    participant C as Consumer<br/>(StateAggregator / IntervalReader / IntervalPublisher)
+    participant T as Target<br/>(DynamoDB / external WFM)
+    participant DLQ as Dead-Letter<br/>Queue
+
+    P->>Q: SendMessage M1
+
+    C->>Q: ReceiveMessage (long poll)
+    Q-->>C: M1, visibility timeout starts (e.g. 60s)
+
+    C->>T: process + write/POST
+    T-->>C: ERROR (transient)
+    C-->>C: throw exception
+
+    Note over Q: Message NOT deleted<br/>Visibility timeout expires
+    Q-->>Q: M1 visible again
+
+    C->>Q: ReceiveMessage
+    Q-->>C: M1 (attempt 2)
+    C->>T: retry
+    T-->>C: SUCCESS
+    C->>Q: DeleteMessage M1
+
+    Note over P,DLQ: Or - poison message:
+    P->>Q: SendMessage M2 (malformed)
+
+    loop receiveCount < maxReceives (e.g. 5)
+        C->>Q: ReceiveMessage
+        Q-->>C: M2
+        C->>T: process
+        T-->>C: ERROR (persistent)
+        C-->>Q: visibility timeout, redelivery
+    end
+
+    Q->>DLQ: Move M2 to DLQ (alarm on DLQ depth)

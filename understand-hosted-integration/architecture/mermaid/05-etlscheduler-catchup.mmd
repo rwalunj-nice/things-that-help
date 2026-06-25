@@ -1,0 +1,37 @@
+%% Failure recovery: EtlScheduler catch-up after downtime
+sequenceDiagram
+    autonumber
+    participant ES as EtlScheduler<br/>(restarted after downtime)
+    participant AUR as Aurora
+    participant DW as Cluster DW
+    participant IA as IntervalAggregator
+
+    Note over ES: Restart at 14:35 after ~45min downtime
+    Note over ES: Last successful interval was 13:45
+
+    ES->>AUR: Interval_GetClusters
+    AUR-->>ES: clusters
+
+    loop Per cluster
+        ES->>AUR: Interval_GetLastEtlRequest(c, 'COMPOSITE_ETL')
+        AUR-->>ES: lastSuccessful = 13:45
+
+        ES->>ES: currentInterval = 14:30 (This15MinIncrement)
+        ES->>ES: gap detected: 14:00, 14:15, 14:30 all missing
+
+        loop For each missed slot (14:00 -> 14:15 -> 14:30)
+            ES->>DW: IC_GetETLData(...)
+            DW-->>ES: etlTime
+            alt ETL data exists for slot
+                ES->>IA: POST IntervalRequest (catch-up)
+                IA-->>ES: 200
+                ES->>AUR: Interval_UpdateLastEtlRequest
+                ES->>ES: metric etl_interval_count++
+            else No ETL data
+                ES->>IA: POST ErrorIntervalRequest (skip)
+                ES->>ES: metric etl_missed_intervals++
+            end
+        end
+    end
+
+    Note over ES: Normal operation resumes on next 60s tick

@@ -1,0 +1,38 @@
+%% Interval data flow - StreamConsumer + IntervalReader (alternate trigger path)
+%% Real-time events drive per-domain Redis sorted sets and SQS batch-start signals
+%% IntervalReader coordinates per-domain inflight reading on a 15-min cron
+%% Output goes to FIFO queue feeding aggregation - DynamoDB - IntervalAggregator
+sequenceDiagram
+    autonumber
+    participant ACD as ACD or DFO
+    participant KO as Kinesis<br/>Orch Stream
+    participant STC as StreamConsumer<br/>Java
+    participant Q as SQS IR Queue<br/>prefixed AC, CS,<br/>ACDFO, CSDFO, AS
+    participant R as Redis sorted sets<br/>ac, cs, acdfo, csdfo, as<br/>:inflight
+    participant LST as IntervalReader<br/>SQSQueueListener<br/>JMS
+    participant SCH as IntervalReader<br/>Scheduler cron
+    participant IRS as IntervalReaderService
+    participant FIFO as SQS NICEWFM_IR_SA_QUEUE<br/>.fifo
+    participant EXT as SQS external<br/>batch-completion queue
+    participant IA as IntervalAggregator<br/>downstream
+
+    ACD->>KO: interval-relevant orchestration event
+    KO->>STC: KCL read
+
+    Note over STC: For each event domain
+    STC->>R: ZADD score timestamp to domain sorted set
+    STC->>Q: SQS notify with prefix e.g. AC underscore timestamp
+
+    Note over LST,SCH: IntervalReader process model
+    Q->>LST: JmsListener receives batch-start signal
+    LST->>LST: store batch-start timestamp in system property
+
+    Note over SCH: Cron tick every 15 minutes
+    SCH->>IRS: process batchStartTs
+    IRS->>R: ZRANGEBYSCORE per domain
+    R-->>IRS: inflight refs
+    IRS->>FIFO: SendMessage per-tenant MessageGroupId
+    SCH->>EXT: NotifyExternalApplication
+
+    Note over FIFO,IA: Downstream aggregation eventually writes DynamoDB. IntervalAggregator then reads DynamoDB to produce S3 files. See diagram 02.
+    FIFO-->>IA: consumed by aggregation path

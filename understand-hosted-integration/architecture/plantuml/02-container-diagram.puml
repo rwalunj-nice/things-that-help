@@ -1,0 +1,95 @@
+@startuml WFM-Container-Diagram
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Container.puml
+
+title NICE WFM Integration Platform - Container Diagram (C4 Level 2)\n(Two pipelines: real-time Kinesis + historic-interval S3 file drop)
+
+Person(admin, "Platform Admin")
+
+System_Ext(acd, "ACD / DFO", "Source events")
+System_Ext(dw, "Cluster Data Warehouses", "Per-cluster SQL Server")
+System_Ext(verint, "Verint WFM (REST)")
+System_Ext(iex_rt, "IEX WFM (ASCWS REST)\nreal-time")
+System_Ext(iex_sftp, "IEX SFTP server\nhistoric files")
+System_Ext(cxone, "External CxOne pickup\nhistoric files")
+
+System_Boundary(wfm, "WFM Integration Platform") {
+
+    ' Real-time pipeline (Kinesis-based)
+    Container(stream_consumer, "StreamConsumer", "Java 21 / Spring Boot 3.5.9", "Reads Kinesis, writes Redis sorted sets + SQS SA/IR notifications")
+    Container(state_collector, "StateCollector", "C# / .NET 6, IHostedService", "Transforms orchestration -> WFM-centric")
+    Container(state_aggregator, "StateAggregator", "Java 21 / Spring Boot 3.5.9", "Aggregates events into DynamoDB facts")
+    Container(state_publisher, "StatePublisher", "C# / .NET", "Real-time agent state -> IEX ASCWS")
+    Container(interval_reader, "IntervalReader", "Java 21 / Spring Boot 3.5.9", "Cron + Redis sorted-set reader; FIFO output")
+
+    ' Historic-interval pipeline (S3 file drop)
+    Container(etl_scheduler, "EtlScheduler", "C# / .NET 6, IHostedService", "Polls DW every 60s, posts IntervalRequest")
+    Container(aggregator, "IntervalAggregator", "C# / .NET", "Reads DynamoDB, writes per-WFM S3 files (3 generators)")
+    Container(verint_publisher, "VerintPublisher", "Java / Spring Boot", "Consumes verint/ S3 events, POSTs Verint REST")
+    Container(interval_publisher, "IntervalPublisher", "C# / .NET, IHostedService", "Consumes iexsftp/ S3 events, SFTP-pushes to IEX")
+
+    Container(wfm_config, "WfmConfig", "C# / ASP.NET Core", "Central config REST API")
+
+    ' Data stores
+    ContainerDb(kinesis_orch, "Kinesis", "Orchestration Stream", "Raw ACD/DFO events")
+    ContainerDb(kinesis_wfm, "Kinesis", "WFM State Stream", "Transformed state events")
+    ContainerDb(redis, "Redis (ElastiCache)", "Cluster mode", "5 sorted-set inflight keys")
+    ContainerDb(sqs_sa, "SQS", "SA queue", "StateAggregator notifications")
+    ContainerDb(sqs_ir, "SQS", "IR queue (prefixed)", "Batch-start signals")
+    ContainerDb(sqs_ir_sa, "SQS FIFO", "IR_SA_QUEUE.fifo", "Interval-reader output")
+    ContainerDb(sqs_verint, "SQS", "SqsVerintPublishQueue", "S3 events on verint/ + verintadherence/")
+    ContainerDb(sqs_iex, "SQS", "SqsPublishQueue", "S3 events on iexsftp/")
+    ContainerDb(dynamo, "DynamoDB", "Aggregated facts", "Real-time -> historic boundary")
+    ContainerDb(s3, "S3 interval bucket", "IntegrationsWFMIntervalBucket", "verint/, verintadherence/, iexsftp/, cxonewfm/")
+    ContainerDb(aurora, "Aurora MySQL", "Config + tracking", "tbl_409_tenant_status, tbl_409_iex_config, Interval_*, External_GetAllTenantData")
+}
+
+' Inbound
+Rel(acd, kinesis_orch, "publishes", "Kinesis")
+Rel(admin, wfm_config, "REST CRUD", "HTTPS+JWT")
+
+' Real-time pipeline
+Rel(kinesis_orch, stream_consumer, "KCL read")
+Rel(kinesis_orch, state_collector, "KCL read")
+Rel(stream_consumer, redis, "ZADD per-domain sorted sets")
+Rel(stream_consumer, sqs_sa, "notify")
+Rel(stream_consumer, sqs_ir, "prefixed batch-start signals")
+Rel(sqs_sa, state_aggregator, "JMS receive")
+Rel(redis, state_aggregator, "fetch events")
+Rel(state_aggregator, dynamo, "PutItem")
+Rel(state_collector, kinesis_wfm, "publish WFM-centric")
+Rel(kinesis_wfm, state_publisher, "KCL read")
+Rel(state_publisher, iex_rt, "POST ASCWS", "HTTPS")
+
+' Interval-reader path
+Rel(sqs_ir, interval_reader, "JMS receive batch-start")
+Rel(redis, interval_reader, "read sorted sets")
+Rel(interval_reader, sqs_ir_sa, "send FIFO")
+
+' Historic-interval pipeline
+Rel(dw, etl_scheduler, "IC_GetETLData", "SQL Server")
+Rel(aurora, etl_scheduler, "Interval_*")
+Rel(etl_scheduler, aurora, "Interval_UpdateLastEtlRequest")
+Rel(etl_scheduler, aggregator, "POST IntervalRequest", "HTTPS")
+Rel(dynamo, aggregator, "DynamoConnector read")
+Rel(aggregator, s3, "PutObject (4 prefixes)")
+
+Rel(s3, sqs_verint, "S3 event verint/* + verintadherence/*")
+Rel(s3, sqs_iex, "S3 event iexsftp/*")
+
+Rel(sqs_verint, verint_publisher, "long poll")
+Rel(s3, verint_publisher, "GetObject (per S3 event)")
+Rel(aurora, verint_publisher, "External_GetAllTenantData (per-tenant config)")
+Rel(verint_publisher, verint, "POST per-tenant API", "HTTPS")
+
+Rel(sqs_iex, interval_publisher, "long poll")
+Rel(s3, interval_publisher, "GetObject (per S3 event)")
+Rel(aurora, interval_publisher, "Interval_GetSftpConnectionsByTenantStack (SFTP creds)")
+Rel(interval_publisher, iex_sftp, "SFTP upload (Renci.SshNet)")
+
+Rel(s3, cxone, "external pickup (no in-repo consumer)")
+
+' Config
+Rel(wfm_config, aurora, "Dapper SQL")
+
+SHOW_LEGEND()
+@enduml

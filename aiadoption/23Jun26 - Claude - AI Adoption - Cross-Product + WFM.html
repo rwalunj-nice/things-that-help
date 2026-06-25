@@ -1,0 +1,930 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>WFM Agentic Development — AI Adoption · Cross-Product + WFM | 23-Jun-26</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+:root{
+  --good:#16a34a;--good-bg:#f0fdf4;--good-b:#bbf7d0;
+  --mod:#ca8a04;--mod-bg:#fefce8;--mod-b:#fde68a;
+  --watch:#ea580c;--watch-bg:#fff7ed;--watch-b:#fed7aa;
+  --bad:#dc2626;--bad-bg:#fef2f2;--bad-b:#fecaca;
+  --brand:#1e40af;--gray:#64748b;--gb:#e2e8f0;
+  --info:#0891b2;--info-bg:#f0f9ff;--info-b:#bae6fd;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#f1f5f9;color:#1e293b;font-size:13px;}
+
+/* PAGE NAV */
+.pnav{background:#1e293b;display:flex;align-items:center;gap:0;border-bottom:2px solid #334155;position:sticky;top:0;z-index:100;}
+.pnav-btn{padding:10px 22px;font-size:12px;font-weight:600;color:#94a3b8;border:none;background:transparent;cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-2px;transition:all .15s;}
+.pnav-btn.active{color:#fff;border-bottom-color:#3b82f6;background:rgba(59,130,246,.1);}
+.pnav-btn:hover:not(.active){color:#cbd5e1;background:rgba(255,255,255,.05);}
+.pnav-sep{color:#475569;margin:0 4px;font-size:14px;}
+.pnav-title{padding:10px 20px;font-size:13px;font-weight:800;color:#f1f5f9;margin-right:auto;}
+
+/* HEADER */
+.hdr{background:linear-gradient(135deg,#0f172a 0%,#1e3a5f 55%,#1d4ed8 100%);color:#fff;padding:24px 32px 18px;}
+.hdr-top{display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:12px;}
+.hdr h1{font-size:20px;font-weight:800;letter-spacing:-.3px;}
+.hdr .sub{font-size:12px;opacity:.7;margin-top:3px;}
+.badges{display:flex;gap:10px;flex-wrap:wrap;}
+.badge{background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.22);border-radius:8px;padding:7px 14px;text-align:center;min-width:80px;}
+.badge .bv{font-size:20px;font-weight:800;}
+.badge .bl{font-size:10px;opacity:.7;margin-top:1px;}
+.pills{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px;}
+.pill{background:rgba(255,255,255,.11);border-radius:20px;padding:3px 12px;font-size:11px;}
+.pill.active{background:rgba(251,191,36,.25);border:1px solid rgba(251,191,36,.4);}
+
+/* KEY INSIGHT BAR */
+.kib{background:#0f172a;color:#94a3b8;padding:8px 32px;font-size:12px;display:flex;align-items:center;gap:8px;}
+.kib strong{color:#fbbf24;}
+
+/* MAIN */
+.main{padding:18px 32px;max-width:1500px;margin:0 auto;}
+.sec{margin-bottom:26px;}
+.sec-hdr{display:flex;align-items:center;gap:8px;margin-bottom:14px;}
+.sec-num{background:var(--brand);color:#fff;font-size:11px;font-weight:700;width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.sec-title{font-size:14px;font-weight:700;color:#1e293b;}
+.card{background:#fff;border-radius:10px;padding:18px 20px;border:1px solid var(--gb);box-shadow:0 1px 3px rgba(0,0,0,.05);}
+.method{background:#f8fafc;border:1px solid var(--gb);border-left:3px solid var(--brand);border-radius:6px;padding:8px 14px;font-size:11.5px;color:#475569;margin-bottom:16px;line-height:1.6;}
+
+/* STAT ROW */
+.stat-row{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin-bottom:18px;}
+.stat{background:#fff;border-radius:10px;padding:13px 15px;border:1px solid var(--gb);text-align:center;}
+.stat .sv{font-size:24px;font-weight:800;color:var(--brand);}
+.stat .sl{font-size:11px;color:var(--gray);margin-top:2px;line-height:1.4;}
+.stat .sd{font-size:11px;font-weight:600;margin-top:3px;}
+.up{color:var(--good);}.dn{color:var(--bad);}.flat{color:var(--gray);}
+
+/* CHART */
+.chart-wrap{position:relative;height:320px;width:100%;}
+.chart-legend{display:flex;flex-wrap:wrap;gap:12px;margin-top:12px;}
+.cl-item{display:flex;align-items:center;gap:6px;font-size:12px;}
+.cl-dot{width:12px;height:12px;border-radius:3px;flex-shrink:0;}
+
+/* PRODUCT CARDS */
+.prod-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;}
+.pc-card{border-radius:10px;padding:16px 18px;border:1px solid;}
+.pc-card.good{background:var(--good-bg);border-color:var(--good-b);}
+.pc-card.mod{background:var(--mod-bg);border-color:var(--mod-b);}
+.pc-card.watch{background:var(--watch-bg);border-color:var(--watch-b);}
+.pc-card.bad{background:var(--bad-bg);border-color:var(--bad-b);}
+.pc-card.info{background:var(--info-bg);border-color:var(--info-b);}
+.pc-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px;}
+.pc-name{font-size:13px;font-weight:700;}
+.pc-badge{font-size:10px;font-weight:700;padding:2px 8px;border-radius:4px;text-transform:uppercase;letter-spacing:.5px;}
+.pc-badge.good{background:#dcfce7;color:#166534;}
+.pc-badge.mod{background:#fef9c3;color:#854d0e;}
+.pc-badge.watch{background:#ffedd5;color:#9a3412;}
+.pc-badge.bad{background:#fee2e2;color:#991b1b;}
+.pc-badge.info{background:#e0f2fe;color:#075985;}
+.pc-stats{display:flex;gap:10px;margin:8px 0;}
+.pc-stat{text-align:center;}
+.pc-stat .psv{font-size:18px;font-weight:800;}
+.pc-stat .psl{font-size:10px;color:var(--gray);margin-top:1px;}
+.pc-trend{display:flex;gap:4px;align-items:center;margin:6px 0;flex-wrap:wrap;}
+.pc-sp{font-size:11px;padding:2px 7px;border-radius:12px;font-weight:600;}
+.pc-note{font-size:11px;color:#374151;margin-top:6px;line-height:1.5;border-top:1px solid rgba(0,0,0,.06);padding-top:6px;}
+.pc-s192{display:inline-block;background:rgba(251,191,36,.2);border:1px solid rgba(251,191,36,.5);border-radius:4px;padding:2px 8px;font-size:10px;font-weight:700;color:#92400e;margin-top:4px;}
+
+/* DELTA TABLE */
+.delta-table{width:100%;border-collapse:collapse;font-size:12px;}
+.delta-table th{background:#f1f5f9;font-weight:600;padding:7px 10px;text-align:center;border-bottom:1px solid var(--gb);}
+.delta-table th:first-child{text-align:left;}
+.delta-table td{padding:7px 10px;border-bottom:1px solid #f8fafc;text-align:center;vertical-align:middle;}
+.delta-table td:first-child{text-align:left;font-weight:600;}
+.delta-table tr:last-child td{border-bottom:none;}
+.pct-val{font-weight:700;font-size:12px;}
+.delta-pp{font-size:11px;font-weight:600;padding:1px 6px;border-radius:3px;}
+.d-up{background:#dcfce7;color:#166534;}
+.d-dn{background:#fee2e2;color:#991b1b;}
+.d-fl{background:#f1f5f9;color:#475569;}
+.s192-cell{background:#fffbeb;border-left:2px solid #fbbf24;font-style:italic;}
+.na-cell{color:#94a3b8;font-size:11px;}
+
+/* EPIC TABLE */
+.epic-table{width:100%;border-collapse:collapse;font-size:12px;}
+.epic-table th{background:#f1f5f9;font-weight:600;padding:7px 10px;text-align:left;border-bottom:1px solid var(--gb);}
+.epic-table th.r{text-align:right;}
+.epic-table td{padding:8px 10px;border-bottom:1px solid #f8fafc;vertical-align:middle;}
+.epic-table tr:last-child td{border-bottom:none;}
+.epic-table td.r{text-align:right;}
+.prog-bar{display:flex;align-items:center;gap:6px;}
+.pb-bg{flex:1;height:7px;background:#e2e8f0;border-radius:4px;overflow:hidden;min-width:60px;}
+.pb-fg{height:7px;border-radius:4px;transition:width .3s;}
+.pb-pct{font-weight:700;font-size:11px;min-width:32px;text-align:right;}
+
+/* CORR MATRIX */
+.corr-matrix{width:100%;border-collapse:collapse;font-size:12px;}
+.corr-matrix th,.corr-matrix td{padding:8px;border:1px solid var(--gb);text-align:center;}
+.corr-matrix th{background:#f1f5f9;font-weight:600;}
+.r-chip{display:inline-block;padding:2px 8px;border-radius:4px;font-size:11.5px;font-weight:700;color:#fff;min-width:44px;text-align:center;}
+.na-chip{display:inline-block;padding:2px 8px;border-radius:4px;font-size:11px;color:#94a3b8;background:#f1f5f9;}
+
+/* SYNTHESIS */
+.synth-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+.synth-item{background:#fff;border-radius:8px;padding:14px 16px;border:1px solid var(--gb);}
+.synth-item h4{font-size:13px;font-weight:700;margin-bottom:6px;color:var(--brand);}
+.synth-item p{font-size:12px;color:#374151;line-height:1.6;}
+
+/* PAGE 2 SPECIFIC */
+.s2-hdr{background:linear-gradient(135deg,#0f172a 0%,#1e3a5f 55%,#1d4ed8 100%);color:#fff;padding:24px 32px 18px;}
+.nav-link{display:inline-block;background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.25);border-radius:6px;padding:5px 14px;font-size:11.5px;color:#fff;text-decoration:none;cursor:pointer;margin-top:10px;}
+.nav-link:hover{background:rgba(255,255,255,.22);}
+
+/* TEAM TREND CARDS */
+.trend-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;}
+.tc{background:#fff;border-radius:10px;padding:16px 18px;border:1px solid var(--gb);box-shadow:0 1px 3px rgba(0,0,0,.05);}
+.tc-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;}
+.tc-name{font-size:14px;font-weight:700;}
+.tc-chart{position:relative;height:160px;width:100%;}
+.tc-foot{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:10px;}
+.tc-stat{background:#f8fafc;border-radius:6px;padding:5px 8px;text-align:center;}
+.tc-stat .tv{font-size:13px;font-weight:800;}
+.tc-stat .tl{font-size:10px;color:var(--gray);margin-top:1px;}
+.tc-note{font-size:11px;color:#475569;margin-top:8px;line-height:1.55;border-top:1px solid #f1f5f9;padding-top:8px;}
+.v-good{background:var(--good-bg);color:var(--good);border:1px solid var(--good-b);}
+.v-mod{background:var(--mod-bg);color:var(--mod);border:1px solid var(--mod-b);}
+.v-bad{background:var(--bad-bg);color:var(--bad);border:1px solid var(--bad-b);}
+.v-chip{display:inline-block;padding:2px 8px;border-radius:4px;font-size:11px;font-weight:600;}
+
+/* SPRINT TABLE */
+.sp-table{width:100%;border-collapse:collapse;font-size:12px;}
+.sp-table th{background:#f1f5f9;font-weight:600;padding:7px 10px;text-align:center;border-bottom:1px solid var(--gb);font-size:11px;}
+.sp-table th:first-child{text-align:left;}
+.sp-table td{padding:7px 10px;border-bottom:1px solid #f8fafc;text-align:center;vertical-align:middle;}
+.sp-table td:first-child{text-align:left;font-weight:600;}
+.sp-table tr.total-row td{font-weight:700;background:#f8fafc;border-top:2px solid var(--gb);border-bottom:none;}
+.sp-table .s192-col{background:#fffbeb;border-left:2px solid #fbbf24;}
+.sp-pct{font-weight:700;}
+
+/* OUTLOOK */
+.outlook-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;}
+.outlook-card{border-radius:8px;padding:14px 16px;border:1px solid;}
+.outlook-card.good{background:var(--good-bg);border-color:var(--good-b);}
+.outlook-card.watch{background:var(--watch-bg);border-color:var(--watch-b);}
+.outlook-card.bad{background:var(--bad-bg);border-color:var(--bad-b);}
+.outlook-card.mod{background:var(--mod-bg);border-color:var(--mod-b);}
+.outlook-card h4{font-size:12.5px;font-weight:700;margin-bottom:5px;}
+.outlook-card p{font-size:11.5px;line-height:1.55;color:#374151;}
+
+.s192-banner{background:linear-gradient(135deg,#1c1917,#292524);border-left:4px solid #fbbf24;border-radius:8px;padding:14px 18px;color:#fef3c7;margin-bottom:18px;}
+.s192-banner strong{color:#fbbf24;}
+.s192-team-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:12px;}
+.s192-team{background:rgba(255,255,255,.08);border-radius:8px;padding:10px 12px;border:1px solid rgba(255,255,255,.1);}
+.s192-team .stn{font-size:11px;font-weight:700;color:#e2e8f0;margin-bottom:3px;}
+.s192-team .stv{font-size:18px;font-weight:800;color:#fbbf24;}
+.s192-team .sts{font-size:10px;color:#94a3b8;margin-top:1px;}
+
+/* DATA NOTE */
+.data-note{background:#f0f9ff;border:1px solid #bae6fd;border-left:3px solid var(--info);border-radius:6px;padding:8px 14px;font-size:11.5px;color:#075985;margin-bottom:14px;}
+</style>
+</head>
+<body>
+
+<!-- PAGE NAVIGATION -->
+<div class="pnav">
+  <div class="pnav-title">WFM Agentic Development</div>
+  <button class="pnav-btn active" onclick="showPage(1)" id="btn1">Cross-Product Overview</button>
+  <button class="pnav-btn" onclick="showPage(2)" id="btn2">WFM Integrations Deep-Dive</button>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════ PAGE 1 ═══ -->
+<div id="page1">
+
+<div class="hdr">
+  <div class="hdr-top">
+    <div>
+      <h1>AI Adoption — Cross-Product Comparison</h1>
+      <div class="sub">WFM Agentic Development Dashboard · PI2 Sprint Analysis · 23 Jun 2026</div>
+    </div>
+    <div class="badges">
+      <div class="badge"><div class="bv">4</div><div class="bl">Products analysed</div></div>
+      <div class="badge"><div class="bv">82%</div><div class="bl">Avg AI (S189-S191)</div></div>
+      <div class="badge"><div class="bv">IEX</div><div class="bl">Peak performer (97%)</div></div>
+      <div class="badge" style="border-color:rgba(251,191,36,.5);background:rgba(251,191,36,.2)"><div class="bv" style="color:#fbbf24">S192★</div><div class="bl">Active sprint</div></div>
+    </div>
+  </div>
+  <div class="pills">
+    <div class="pill">✅ IEX Core · PI2.S1-S4 complete</div>
+    <div class="pill">✅ CXone Integrations · S188-S192</div>
+    <div class="pill">✅ CXone WFM · S189-S190 confirmed</div>
+    <div class="pill">✅ ESP · S189-S192 confirmed</div>
+    <div class="pill active">★ S192 all products in-progress</div>
+  </div>
+</div>
+<div class="kib">
+  💡 <strong>Key finding:</strong> IEX Core leads at 97% (PI2.S2 peak); ESP holds 95% consistently. CXone Integrations stable at 74-77% across 3 closed sprints. S192 active — all products in early delivery phase.
+</div>
+
+<div class="main">
+
+<!-- STAT ROW -->
+<div class="stat-row">
+  <div class="stat"><div class="sv">97%</div><div class="sl">IEX Core Peak<br>(PI2.S2)</div><div class="sd up">+12pp vs S1</div></div>
+  <div class="stat"><div class="sv">95%</div><div class="sl">ESP Peak<br>(PI2.S2)</div><div class="sd up">+6pp vs S1</div></div>
+  <div class="stat"><div class="sv">80%</div><div class="sl">CXone WFM<br>(PI2.S2)</div><div class="sd up">+5pp vs S1</div></div>
+  <div class="stat"><div class="sv">74%</div><div class="sl">CXone Int<br>Stable Range</div><div class="sd flat">±3pp across S1-S3</div></div>
+  <div class="stat"><div class="sv">63%</div><div class="sl">CXone Int S192★<br>Planned AI</div><div class="sd" style="color:#f59e0b">5% delivered</div></div>
+</div>
+
+<!-- SECTION 1: SPRINT TREND CHART -->
+<div class="sec">
+  <div class="sec-hdr"><div class="sec-num">1</div><div class="sec-title">Sprint Trend — % AI Adoption (PI2.S1–S4)</div></div>
+  <div class="card">
+    <div class="method">
+      <strong>Metric:</strong> % Story Points with AGENTIC_AI_CODE label (or Implemented by AI Agent = Yes) / Total Sprint Story Points. S192★ shows planned AI % (delivered SP still accumulating).
+      IEX Core uses WFM_2026.PI2 sprint naming; ESP, CXone Integrations, CXone WFM use CX.26.3 sprints.
+    </div>
+    <div class="chart-wrap"><canvas id="trendChart"></canvas></div>
+    <div class="chart-legend" id="trendLegend"></div>
+  </div>
+</div>
+
+<!-- SECTION 2: PER-PRODUCT VERDICT CARDS -->
+<div class="sec">
+  <div class="sec-hdr"><div class="sec-num">2</div><div class="sec-title">Per-Product AI Adoption Profile</div></div>
+  <div class="prod-grid" id="prodCards"></div>
+</div>
+
+<!-- SECTION 3: SPRINT DELTA TABLE -->
+<div class="sec">
+  <div class="sec-hdr"><div class="sec-num">3</div><div class="sec-title">Sprint-by-Sprint Delta Table</div></div>
+  <div class="card">
+    <table class="delta-table">
+      <thead>
+        <tr>
+          <th>Product</th>
+          <th>PI2.S1 (S189 Apr)</th>
+          <th>Δ</th>
+          <th>PI2.S2 (S190 May)</th>
+          <th>Δ</th>
+          <th>PI2.S3 (S191 Jun)</th>
+          <th>Δ</th>
+          <th>PI2.S4★ (S192 Jun+)</th>
+        </tr>
+      </thead>
+      <tbody id="deltaTableBody"></tbody>
+    </table>
+  </div>
+</div>
+
+<!-- SECTION 4: EPIC COVERAGE TABLE -->
+<div class="sec">
+  <div class="sec-hdr"><div class="sec-num">4</div><div class="sec-title">Epic-Level AI Coverage (PI2 Committed)</div></div>
+  <div class="card">
+    <table class="epic-table">
+      <thead>
+        <tr>
+          <th>Product</th>
+          <th class="r">Epics with AI</th>
+          <th class="r">Total Epics</th>
+          <th>% AI Planned</th>
+          <th class="r">Epics Closed</th>
+          <th>% Delivered</th>
+          <th>Sprint Filter</th>
+        </tr>
+      </thead>
+      <tbody id="epicTableBody"></tbody>
+    </table>
+  </div>
+</div>
+
+<!-- SECTION 5: CORRELATION MATRIX -->
+<div class="sec">
+  <div class="sec-hdr"><div class="sec-num">5</div><div class="sec-title">Cross-Product Correlation (Sprint AI% Trends)</div></div>
+  <div class="card">
+    <div class="data-note">Pearson r computed on closed-sprint AI%. Pairs with fewer than 3 matching sprints are shown as N/A (insufficient data). All values are indicative given the short 3-sprint PI2 window.</div>
+    <table class="corr-matrix">
+      <thead><tr id="corrHead"></tr></thead>
+      <tbody id="corrBody"></tbody>
+    </table>
+  </div>
+</div>
+
+<!-- SECTION 6: SYNTHESIS -->
+<div class="sec">
+  <div class="sec-hdr"><div class="sec-num">6</div><div class="sec-title">Synthesis & Takeaways</div></div>
+  <div class="synth-grid">
+    <div class="synth-item">
+      <h4>Top performers (90%+)</h4>
+      <p>IEX Core peaked at <strong>97%</strong> in PI2.S2 — the highest single-sprint AI usage recorded across all products this PI. ESP maintains a rock-solid <strong>89-95%</strong> band with no dips, suggesting mature AI-first culture in Ninja/Thundercats teams.</p>
+    </div>
+    <div class="synth-item">
+      <h4>Stable mid-range</h4>
+      <p>CXone Integrations (WFM Integrations) shows a remarkably flat <strong>74-77%</strong> band across S1-S3, dropping slightly to 63% planned in S192. CXone WFM improved from 75% → 80% S1→S2 with the largest epic portfolio (109 AI-tagged epics).</p>
+    </div>
+    <div class="synth-item">
+      <h4>S192 signal</h4>
+      <p>All products are in early S192 delivery. IEX Core leads at 87% planned; ESP holds 95% planned. CXone Integrations shows lower planned AI rate (63%) suggesting more non-AI work in this sprint cycle. Delivery rates remain low (5-14%) — expect final numbers by 1 Jul.</p>
+    </div>
+    <div class="synth-item">
+      <h4>Epic coverage vs sprint delivery</h4>
+      <p>IEX Core has highest epic AI% (93%) with the tightest delivery at 32% closed. CXone WFM leads epic closure at 46% (74 of 162). ESP has the best epic delivery rate at 43% despite fewer absolute epics — suggesting smaller, faster-closing epics.</p>
+    </div>
+  </div>
+</div>
+
+</div><!-- /main -->
+</div><!-- /page1 -->
+
+<!-- ═══════════════════════════════════════════════════════════ PAGE 2 ═══ -->
+<div id="page2" style="display:none">
+
+<div class="s2-hdr">
+  <div class="hdr-top">
+    <div>
+      <h1>WFM Integrations — AI Adoption Deep-Dive</h1>
+      <div class="sub">5-Sprint View: S188–S192★ · CX.26.3 Board · CXINT + INT + WFM (Rajgad/Shivneri) · 23 Jun 2026</div>
+    </div>
+    <div class="badges">
+      <div class="badge"><div class="bv">56→74→77→74%</div><div class="bl">S188→S189→S190→S191</div></div>
+      <div class="badge" style="border-color:rgba(251,191,36,.5);background:rgba(251,191,36,.2)"><div class="bv" style="color:#fbbf24">63%</div><div class="bl">S192★ AI planned</div></div>
+      <div class="badge"><div class="bv">0.86</div><div class="bl">Team avg r (S188-S191)</div></div>
+    </div>
+  </div>
+  <div class="pills">
+    <div class="pill">✅ S188 (18-Mar-26) — completed · 56% AI</div>
+    <div class="pill">✅ S189 (15-Apr-26) — completed · 74% AI</div>
+    <div class="pill">✅ S190 (06-May-26) — completed · 77% AI</div>
+    <div class="pill">✅ S191 (16-Jun-26) — completed · 74% AI</div>
+    <div class="pill active">★ S192 (17-Jun-26) — ACTIVE · 63% planned · 5% done</div>
+  </div>
+</div>
+<div class="kib">
+  💡 <strong>S192 status:</strong> 149/238 SP planned with AI (63%). Only 7 AI-SP done of 12 completed (5% delivery). Torna 100% planned, Rajgad only 16% — expect late-sprint acceleration (historical pattern). <strong>Best r: Sinhagad (0.99), Devgiri (0.95).</strong>
+</div>
+
+<div class="main">
+
+<!-- S192 LIVE BANNER -->
+<div class="s192-banner">
+  <strong>★ Sprint S192 Live Status</strong> — CX.26.3.192 (17 Jun → ~7 Jul 2026)
+  <div class="s192-team-grid" id="s192Teams"></div>
+</div>
+
+<!-- SECTION 1: 5-SPRINT TREND CHART -->
+<div class="sec">
+  <div class="sec-hdr"><div class="sec-num">1</div><div class="sec-title">AI Adoption Trend — 5 Sprints (S188–S192★)</div></div>
+  <div class="card">
+    <div class="method">% AI Story Points Delivered (closed sprints) or % AI SP Planned (S192★ active sprint). Data source: WFM Agentic Development Dashboard (EazyBI), Jira projects: CXINT + INT + WFM (Rajgad/Shivneri teams).</div>
+    <div class="chart-wrap"><canvas id="wfmTrendChart"></canvas></div>
+    <div class="chart-legend" id="wfmLegend"></div>
+  </div>
+</div>
+
+<!-- SECTION 2: TEAM TREND CARDS -->
+<div class="sec">
+  <div class="sec-hdr"><div class="sec-num">2</div><div class="sec-title">Team-Level Sprint Trends (S188–S192★)</div></div>
+  <div class="trend-grid" id="trendGrid"></div>
+</div>
+
+<!-- SECTION 3: SPRINT-BY-SPRINT TABLE -->
+<div class="sec">
+  <div class="sec-hdr"><div class="sec-num">3</div><div class="sec-title">Sprint-by-Sprint Delivery Table</div></div>
+  <div class="card">
+    <table class="sp-table">
+      <thead>
+        <tr>
+          <th>Team</th>
+          <th>S188 (18-Mar)</th>
+          <th>S189 (15-Apr)</th>
+          <th>S190 (06-May)</th>
+          <th>S191 (16-Jun)</th>
+          <th class="s192-col">S192★ AI Planned%</th>
+          <th class="s192-col">S192★ Done%</th>
+        </tr>
+      </thead>
+      <tbody id="spTableBody"></tbody>
+    </table>
+  </div>
+</div>
+
+<!-- SECTION 4: CORRELATION CARDS -->
+<div class="sec">
+  <div class="sec-hdr"><div class="sec-num">4</div><div class="sec-title">Team Correlation Analysis (S188–S191)</div></div>
+  <div class="card">
+    <div class="method">Pearson r of each team's AI % vs sprint sequence (1=S188, 2=S189, 3=S190, 4=S191). r > 0.7 = strong positive trend; r &lt; -0.3 = declining.</div>
+    <div id="corrCards" style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:4px;"></div>
+  </div>
+</div>
+
+<!-- SECTION 5: DELTA TABLE (5 SPRINTS) -->
+<div class="sec">
+  <div class="sec-hdr"><div class="sec-num">5</div><div class="sec-title">Sprint Delta Table (S188 → S192★)</div></div>
+  <div class="card">
+    <table class="delta-table">
+      <thead>
+        <tr>
+          <th>Team</th>
+          <th>S188</th><th>Δ</th>
+          <th>S189</th><th>Δ</th>
+          <th>S190</th><th>Δ</th>
+          <th>S191</th><th>Δ</th>
+          <th>S192★ Planned</th>
+        </tr>
+      </thead>
+      <tbody id="wfmDeltaBody"></tbody>
+    </table>
+  </div>
+</div>
+
+<!-- SECTION 6: OUTLOOK -->
+<div class="sec">
+  <div class="sec-hdr"><div class="sec-num">6</div><div class="sec-title">S192 Outlook & What to Watch</div></div>
+  <div class="outlook-grid">
+    <div class="outlook-card good">
+      <h4>✅ Strong AI commitment</h4>
+      <p>Torna (100% planned) and Shivneri (88%) enter S192 with maximum AI scope. Devgiri (70%) sustains the strong upward trajectory from S191 (94%). Sinhagad (59%) and Integrations (62%) maintain solid mid-range.</p>
+    </div>
+    <div class="outlook-card watch">
+      <h4>⚠️ Rajgad: low planned AI (16%)</h4>
+      <p>Only 7/44 SP planned with AI label in S192 vs 82% delivered in S191. This is a significant drop. Rajgad shows extreme back-loading historically (0 SP → 23 SP in final 8 days of S191). Monitor closely through sprint close.</p>
+    </div>
+    <div class="outlook-card mod">
+      <h4>📊 Total at 63% planned vs 74% S191</h4>
+      <p>The planned AI rate is 11pp below S191's final delivery. This reflects Rajgad's low AI scope and early-sprint state. Historical pattern: CXone Integrations consistently delivers in the last 30-40% of sprint duration. Final delivery expected 70%+.</p>
+    </div>
+    <div class="outlook-card good">
+      <h4>📈 Overall PI2 trajectory</h4>
+      <p>S188=56% → S189=74% → S190=77% → S191=74% — the team has sustained 74-77% AI delivery for 3 consecutive sprints. Devgiri (0→94%) and Sinhagad (29→80%) are model trajectories. Total r=0.86 over S188-S191 confirms durable AI adoption.</p>
+    </div>
+  </div>
+</div>
+
+</div><!-- /main -->
+</div><!-- /page2 -->
+
+<script>
+// ── DATA ─────────────────────────────────────────────────────────────────────
+const CP_SPRINTS = ['PI2.S1\n(S189 Apr)', 'PI2.S2\n(S190 May)', 'PI2.S3\n(S191 Jun)', 'PI2.S4★\n(S192 Jun+)'];
+const CP_SPRINT_LABELS = ['PI2.S1 (S189)', 'PI2.S2 (S190)', 'PI2.S3 (S191)', 'PI2.S4★ (S192)'];
+
+// pcts: [S189, S190, S191, S192-planned]. null = not available
+// s192: {planned:%, done:%} — current sprint delivery
+const CP_PRODUCTS = [
+  {
+    id:'iem', name:'IEX Core', color:'#1e40af', shortName:'IEX',
+    pcts:[85, 97, 73, 87],
+    s192:{planned:87, done:14, note:'44/303 SP done'},
+    verdict:'mod', verdictLabel:'Peaked → Correcting',
+    epics:{ai:26, total:28, aiPct:93, closed:9, closedPct:32, filter:'PI.WFM.2026.2'},
+    note:'PI2.S2 peak at 97% — highest single-sprint value. S3 correction to 73% (back to S1 baseline). S4 recovering to 87% planned. Strong overall.',
+    r: -0.50  // S1-S3 Pearson vs sprint sequence
+  },
+  {
+    id:'esp', name:'ESP', color:'#7c3aed', shortName:'ESP',
+    pcts:[89, 95, null, 95],
+    s192:{planned:95, done:7, note:'11/148 SP done'},
+    verdict:'good', verdictLabel:'Strong & Stable',
+    epics:{ai:20, total:23, aiPct:87, closed:10, closedPct:43, filter:'ESP26.3'},
+    note:'Consistent 89-95% AI adoption. Ninja=100% AI planned in S192; Thundercats=92%. Best-in-class consistency. S191 data not captured.',
+    r: null
+  },
+  {
+    id:'cxint', name:'CXone Integrations', color:'#059669', shortName:'CXone Int',
+    pcts:[74, 77, 74, 63],
+    s192:{planned:63, done:5, note:'7/149 AI-SP done of 238 total'},
+    verdict:'mod', verdictLabel:'Stable Mid-Range',
+    epics:{ai:30, total:50, aiPct:60, closed:16, closedPct:32, filter:'26.3 All Projects'},
+    note:'Rock-steady 74-77% for 3 closed sprints. S192 lower planned rate (63%) — Rajgad only 16% AI planned, pulling total down. Historical back-loading expected.',
+    r: 0.00  // [74,77,74] — flat
+  },
+  {
+    id:'cxwfm', name:'CXone WFM', color:'#dc2626', shortName:'CXone WFM',
+    pcts:[75, 80, null, null],
+    s192:{planned:null, done:null, note:'S192 not captured'},
+    verdict:'good', verdictLabel:'Rising (S1→S2)',
+    epics:{ai:109, total:162, aiPct:67, closed:74, closedPct:46, filter:'26.3 Committed'},
+    note:'S1=75% → S2=80% improving trend. Largest epic portfolio in PI2 (109 AI-tagged out of 162). Monsters=95% epic AI coverage. S191/S192 not captured from dashboard.',
+    r: null
+  }
+];
+
+// WFM Integrations 5-sprint team data
+const WFM_SPRINTS = ['S188\n(18-Mar)','S189\n(15-Apr)','S190\n(06-May)','S191\n(16-Jun)','S192★\n(17-Jun)'];
+const WFM_SPRINT_LABELS = ['S188 (18-Mar)','S189 (15-Apr)','S190 (06-May)','S191 (16-Jun)','S192★ (17-Jun)'];
+
+// pcts: [S188, S189, S190, S191, S192-planned]
+// s192: {aiSP, totalSP, done, donePct}
+const WFM_TEAMS = [
+  {
+    id:'torna', name:'Torna', r:0.65, verdict:'good', verdictLabel:'Good',
+    pcts:[69,100,100,85,100],
+    s192:{aiSP:31, totalSP:31, done:0, donePct:0},
+    note:'100% AI planned in S192 (31/31 SP). 0 SP done — typical front-heavy planning, back-loaded delivery. S191=85%, slight dip from 100% peak.'
+  },
+  {
+    id:'devgiri', name:'Devgiri', r:0.95, verdict:'good', verdictLabel:'Excellent',
+    pcts:[0,78,80,94,70],
+    s192:{aiSP:42, totalSP:60, done:3, donePct:7},
+    note:'Model trajectory: 0%→94% in 4 sprints. S192 at 70% planned (42/60 SP). 3 SP done (7% early delivery). Strongest correlation r=0.95.'
+  },
+  {
+    id:'integrations', name:'Integrations', r:-0.10, verdict:'mod', verdictLabel:'Moderate',
+    pcts:[48,63,43,44,62],
+    s192:{aiSP:16, totalSP:26, done:1, donePct:6},
+    note:'Volatile but recovering: 44%→62% planned in S192 (16/26 SP). Environment-dependent work limits AI. 1 SP done (6%). Pattern: independent of sprint timing.'
+  },
+  {
+    id:'sinhagad', name:'Sinhagad', r:0.99, verdict:'good', verdictLabel:'Excellent',
+    pcts:[29,63,79,80,59],
+    s192:{aiSP:30, totalSP:51, done:3, donePct:10},
+    note:'Best r=0.99 (near-perfect trend S188→S191). S192 slightly lower at 59% planned (30/51 SP). 3 SP done (10%). Back-loading expected based on history.'
+  },
+  {
+    id:'rajgad', name:'Rajgad', r:-0.20, verdict:'mod', verdictLabel:'Recovering',
+    pcts:[83,65,71,82,16],
+    s192:{aiSP:7, totalSP:44, done:0, donePct:0},
+    note:'S192 sharp drop: only 16% planned (7/44 SP). Historical extreme back-loading: 0 SP → 23 SP in final 8 days of S191. Expect late-sprint surge. Watch closely.'
+  },
+  {
+    id:'shivneri', name:'Shivneri', r:0.40, verdict:'bad', verdictLabel:'Concern',
+    pcts:[64,100,100,41,88],
+    s192:{aiSP:23, totalSP:26, done:0, donePct:0},
+    note:'Strong planned AI (88%, 23/26 SP) in S192 — potential recovery from S191 collapse (41%). 0 done yet. Sprint health remains fragile (50% in S191). Watch capacity.'
+  }
+];
+
+const WFM_TOTAL = {
+  name:'WFM Integrations (Total)', r:0.86,
+  pcts:[56,74,77,74,63],
+  s192:{aiSP:149, totalSP:238, done:7, donePct:5},
+  note:'Consistent 74-77% for 3 sprints post-ramp. S192 early (5% done). Team r=0.86 confirms durable AI adoption trend across S188-S191.'
+};
+
+// ── HELPERS ──────────────────────────────────────────────────────────────────
+function rColor(r){return r===null?'#94a3b8':r>=0.7?'#16a34a':r>=0.3?'#ca8a04':r<0?'#dc2626':'#64748b';}
+function pctColor(p){return p===null?'#94a3b8':p>=85?'#16a34a':p>=65?'#ca8a04':'#dc2626';}
+function pctBg(p){return p===null?'#f8fafc':p>=85?'#f0fdf4':p>=65?'#fefce8':'#fef2f2';}
+function deltaClass(d){return d===null?'d-fl':d>2?'d-up':d<-2?'d-dn':'d-fl';}
+function deltaStr(d){return d===null?'—':(d>0?'+':'')+d+'pp';}
+function pearsonR(xs, ys) {
+  const n=xs.length; if(n<3)return null;
+  const mx=xs.reduce((a,b)=>a+b)/n, my=ys.reduce((a,b)=>a+b)/n;
+  let num=0,dx2=0,dy2=0;
+  for(let i=0;i<n;i++){num+=(xs[i]-mx)*(ys[i]-my);dx2+=(xs[i]-mx)**2;dy2+=(ys[i]-my)**2;}
+  if(dx2===0||dy2===0)return null;
+  return Math.round(num/Math.sqrt(dx2*dy2)*100)/100;
+}
+
+function showPage(n){
+  document.getElementById('page1').style.display=n===1?'':'none';
+  document.getElementById('page2').style.display=n===2?'':'none';
+  document.getElementById('btn1').className='pnav-btn'+(n===1?' active':'');
+  document.getElementById('btn2').className='pnav-btn'+(n===2?' active':'');
+}
+
+// ── PAGE 1 — SECTION 1: TREND CHART ─────────────────────────────────────────
+(function(){
+  const ctx=document.getElementById('trendChart').getContext('2d');
+  const labels=['PI2.S1 (S189\nApr)','PI2.S2 (S190\nMay)','PI2.S3 (S191\nJun)','PI2.S4★ (S192\nJun+)'];
+
+  const datasets = CP_PRODUCTS.map(p=>{
+    const isS192Active = p.pcts[3] !== null;
+    return {
+      label: p.name,
+      data: p.pcts.map((v,i)=> v),
+      borderColor: p.color,
+      backgroundColor: p.color+'22',
+      borderWidth: 2,
+      pointRadius: [4,4,4,5],
+      pointStyle: ['circle','circle','circle','rectRot'],
+      tension: 0.3,
+      spanGaps: false,
+      segment: {
+        borderDash: (ctx)=> ctx.p1DataIndex === 3 ? [5,4] : []
+      }
+    };
+  });
+
+  new Chart(ctx,{
+    type:'line',
+    data:{labels:['PI2.S1\n(S189 Apr)','PI2.S2\n(S190 May)','PI2.S3\n(S191 Jun)','PI2.S4★\n(S192 Jun+)'], datasets},
+    options:{
+      responsive:true, maintainAspectRatio:false,
+      interaction:{mode:'index', intersect:false},
+      plugins:{
+        legend:{display:false},
+        tooltip:{
+          callbacks:{
+            label:c=>{
+              const p=CP_PRODUCTS[c.datasetIndex];
+              const v=c.raw;
+              if(v===null)return `${p.name}: —`;
+              const suffix = c.dataIndex===3 ? ' (planned★)' : '%';
+              return `${p.name}: ${v}${suffix}`;
+            }
+          }
+        }
+      },
+      scales:{
+        y:{min:40,max:105,ticks:{callback:v=>v+'%',font:{size:11}},grid:{color:'#f1f5f9'}},
+        x:{ticks:{font:{size:10}},grid:{display:false}}
+      }
+    }
+  });
+
+  // Legend
+  const leg=document.getElementById('trendLegend');
+  CP_PRODUCTS.forEach(p=>{
+    leg.innerHTML+=`<div class="cl-item"><div class="cl-dot" style="background:${p.color}"></div>${p.name}</div>`;
+  });
+})();
+
+// ── PAGE 1 — SECTION 2: PRODUCT CARDS ───────────────────────────────────────
+(function(){
+  const grid=document.getElementById('prodCards');
+  CP_PRODUCTS.forEach(p=>{
+    const closedPcts = p.pcts.filter(v=>v!==null && p.pcts.indexOf(v)<3);
+    const validPcts = p.pcts.slice(0,3).filter(v=>v!==null);
+    const avgPct = validPcts.length ? Math.round(validPcts.reduce((a,b)=>a+b,0)/validPcts.length) : null;
+    const trend = p.pcts.slice(0,3).filter(v=>v!==null);
+    const trendStr = trend.map((v,i)=>{
+      const d = i>0&&trend[i-1]!==null ? v-trend[i-1] : null;
+      const cls = d===null?'flat':d>0?'up':'dn';
+      return `<span class="pc-sp" style="background:${pctBg(v)};color:${pctColor(v)}">${v}%</span>`;
+    }).join('<span style="color:#94a3b8;margin:0 2px">→</span>');
+
+    const badgeCls = p.verdict==='good'?'good':p.verdict==='mod'?'mod':'watch';
+    grid.innerHTML+=`
+    <div class="pc-card ${badgeCls}">
+      <div class="pc-top">
+        <div class="pc-name">${p.name}</div>
+        <span class="pc-badge ${badgeCls}">${p.verdictLabel}</span>
+      </div>
+      <div class="pc-stats">
+        <div class="pc-stat"><div class="psv" style="color:${pctColor(avgPct)}">${avgPct!==null?avgPct+'%':'—'}</div><div class="psl">Avg AI %<br>S1-S3</div></div>
+        <div class="pc-stat"><div class="psv" style="color:${pctColor(p.s192.planned)}">${p.s192.planned!==null?p.s192.planned+'%':'—'}</div><div class="psl">S192★<br>Planned</div></div>
+        <div class="pc-stat"><div class="psv">${p.epics.ai!==null?p.epics.aiPct+'%':'—'}</div><div class="psl">Epic AI<br>Coverage</div></div>
+      </div>
+      <div class="pc-trend">${trendStr}${p.pcts[3]!==null?'<span style="color:#94a3b8;margin:0 2px">⤑</span><span class="pc-sp" style="background:#fffbeb;color:#92400e;border:1px solid #fbbf24">${p.pcts[3]}%★</span>':''}</div>
+      ${p.s192.done!==null?`<div class="pc-s192">S192: ${p.s192.done}% delivered · ${p.s192.note}</div>`:''}
+      <div class="pc-note">${p.note}</div>
+    </div>`;
+  });
+})();
+
+// ── PAGE 1 — SECTION 3: DELTA TABLE ─────────────────────────────────────────
+(function(){
+  const tbody=document.getElementById('deltaTableBody');
+  CP_PRODUCTS.forEach(p=>{
+    const [s1,s2,s3,s4]=p.pcts;
+    const d1=s1!==null&&s2!==null?s2-s1:null;
+    const d2=s2!==null&&s3!==null?s3-s2:null;
+    const d3=s3!==null&&s4!==null?s4-s3:null;
+    const fmtPct=(v)=>v!==null?`<span class="pct-val" style="color:${pctColor(v)}">${v}%</span>`:`<span class="na-cell">N/A</span>`;
+    const fmtD=(d)=>d!==null?`<span class="delta-pp ${deltaClass(d)}">${deltaStr(d)}</span>`:`<span class="na-cell">—</span>`;
+    const fmtS192=(v)=>v!==null?`<span class="pct-val" style="color:#92400e">${v}%★</span>`:`<span class="na-cell">N/A</span>`;
+    tbody.innerHTML+=`<tr>
+      <td>${p.name}</td>
+      <td>${fmtPct(s1)}</td><td>${fmtD(d1)}</td>
+      <td>${fmtPct(s2)}</td><td>${fmtD(d2)}</td>
+      <td>${fmtPct(s3)}</td><td>${fmtD(d3)}</td>
+      <td class="s192-cell">${fmtS192(s4)}</td>
+    </tr>`;
+  });
+})();
+
+// ── PAGE 1 — SECTION 4: EPIC TABLE ──────────────────────────────────────────
+(function(){
+  const tbody=document.getElementById('epicTableBody');
+  CP_PRODUCTS.forEach(p=>{
+    const e=p.epics;
+    if(!e.ai){tbody.innerHTML+=`<tr><td>${p.name}</td><td colspan="6" class="na-cell">Data not captured — see live dashboard</td></tr>`;return;}
+    const color1=e.aiPct>=80?'#16a34a':e.aiPct>=60?'#ca8a04':'#dc2626';
+    const color2=e.closedPct>=50?'#16a34a':e.closedPct>=30?'#ca8a04':'#dc2626';
+    tbody.innerHTML+=`<tr>
+      <td><strong>${p.name}</strong></td>
+      <td class="r"><strong>${e.ai}</strong></td>
+      <td class="r">${e.total}</td>
+      <td>
+        <div class="prog-bar">
+          <div class="pb-bg"><div class="pb-fg" style="width:${e.aiPct}%;background:${color1}"></div></div>
+          <span class="pb-pct" style="color:${color1}">${e.aiPct}%</span>
+        </div>
+      </td>
+      <td class="r"><strong>${e.closed}</strong></td>
+      <td>
+        <div class="prog-bar">
+          <div class="pb-bg"><div class="pb-fg" style="width:${e.closedPct}%;background:${color2}"></div></div>
+          <span class="pb-pct" style="color:${color2}">${e.closedPct}%</span>
+        </div>
+      </td>
+      <td><span style="font-size:11px;color:#475569">${e.filter}</span></td>
+    </tr>`;
+  });
+})();
+
+// ── PAGE 1 — SECTION 5: CORRELATION MATRIX ──────────────────────────────────
+(function(){
+  const products = CP_PRODUCTS;
+  const head=document.getElementById('corrHead');
+  const body=document.getElementById('corrBody');
+  head.innerHTML='<th></th>'+products.map(p=>`<th>${p.shortName}</th>`).join('');
+  products.forEach((p1,i)=>{
+    let row=`<tr><th>${p1.shortName}</th>`;
+    products.forEach((p2,j)=>{
+      if(i===j){row+=`<td style="background:#f8fafc;color:#94a3b8">—</td>`;return;}
+      // Find matching sprints (both non-null, closed only S189-S191 = indices 0-2)
+      const pairs=[];
+      for(let k=0;k<3;k++){
+        if(p1.pcts[k]!==null && p2.pcts[k]!==null) pairs.push([p1.pcts[k],p2.pcts[k]]);
+      }
+      if(pairs.length<3){
+        row+=`<td><span class="na-chip">N/A<br>(${pairs.length} pts)</span></td>`;
+      } else {
+        const r=pearsonR(pairs.map(p=>p[0]),pairs.map(p=>p[1]));
+        row+=`<td><span class="r-chip" style="background:${rColor(r)}">${r!==null?r.toFixed(2):'—'}</span></td>`;
+      }
+    });
+    row+='</tr>';
+    body.innerHTML+=row;
+  });
+})();
+
+// ══════════════════════════════════════════════════════════════════════════════
+// PAGE 2 — WFM INTEGRATIONS
+// ══════════════════════════════════════════════════════════════════════════════
+
+// S192 Teams Banner
+(function(){
+  const grid=document.getElementById('s192Teams');
+  [...WFM_TEAMS, WFM_TOTAL].forEach(t=>{
+    const isTotal=(t.name===WFM_TOTAL.name);
+    const pct=t.pcts[4];
+    const done=t.s192.donePct;
+    grid.innerHTML+=`<div class="s192-team">
+      <div class="stn">${t.name}</div>
+      <div class="stv">${pct!==null?pct+'%':'—'}</div>
+      <div class="sts">AI planned · ${done!==null?done+'% done':'—'}</div>
+      <div style="height:3px;background:rgba(255,255,255,.15);border-radius:2px;margin-top:5px;overflow:hidden">
+        <div style="height:3px;background:#fbbf24;border-radius:2px;width:${pct!==null?pct:0}%"></div>
+      </div>
+    </div>`;
+  });
+})();
+
+// WFM Trend Chart
+(function(){
+  const ctx=document.getElementById('wfmTrendChart').getContext('2d');
+  const COLORS={torna:'#1e40af',devgiri:'#16a34a',integrations:'#dc2626',sinhagad:'#7c3aed',rajgad:'#d97706',shivneri:'#0891b2',total:'#1e293b'};
+
+  const allTeams=[...WFM_TEAMS,WFM_TOTAL];
+  const datasets=allTeams.map(t=>{
+    const color=COLORS[t.id]||(t===WFM_TOTAL?'#1e293b':'#64748b');
+    return {
+      label:t.name,
+      data:t.pcts,
+      borderColor:color,
+      backgroundColor:color+'22',
+      borderWidth:t===WFM_TOTAL?3:2,
+      borderDash:t===WFM_TOTAL?[6,3]:[],
+      pointRadius:[4,4,4,4,6],
+      tension:0.3,
+      spanGaps:false,
+      segment:{borderDash:(ctx)=>ctx.p1DataIndex===4?[5,4]:[]}
+    };
+  });
+
+  new Chart(ctx,{
+    type:'line',
+    data:{labels:['S188\n(18-Mar)','S189\n(15-Apr)','S190\n(06-May)','S191\n(16-Jun)','S192★\n(17-Jun)'],datasets},
+    options:{
+      responsive:true,maintainAspectRatio:false,
+      interaction:{mode:'index',intersect:false},
+      plugins:{
+        legend:{display:false},
+        tooltip:{callbacks:{label:c=>{const v=c.raw;return `${allTeams[c.datasetIndex].name}: ${v!==null?v+'%':'—'}${c.dataIndex===4?' (planned★)':''}`;}}
+      }},
+      scales:{
+        y:{min:0,max:110,ticks:{callback:v=>v+'%',font:{size:11}},grid:{color:'#f1f5f9'}},
+        x:{ticks:{font:{size:10}},grid:{display:false}}
+      }
+    }
+  });
+
+  // WFM Legend
+  const leg=document.getElementById('wfmLegend');
+  allTeams.forEach(t=>{
+    const color=COLORS[t.id]||(t===WFM_TOTAL?'#1e293b':'#64748b');
+    leg.innerHTML+=`<div class="cl-item"><div class="cl-dot" style="background:${color}"></div>${t.name}</div>`;
+  });
+})();
+
+// WFM Team Trend Cards
+(function(){
+  const grid=document.getElementById('trendGrid');
+  const COLORS={torna:'#1e40af',devgiri:'#16a34a',integrations:'#dc2626',sinhagad:'#7c3aed',rajgad:'#d97706',shivneri:'#0891b2'};
+  WFM_TEAMS.forEach(t=>{
+    const color=COLORS[t.id]||'#64748b';
+    const peak=Math.max(...t.pcts.slice(0,4).filter(v=>v!==null));
+    const s191=t.pcts[3]; const s192p=t.pcts[4];
+    const delta=s191!==null&&t.pcts[2]!==null?s191-t.pcts[2]:null;
+    const vo={good:{c:t.verdict==='good'?'#16a34a':t.verdict==='bad'?'#dc2626':'#ca8a04',bg:t.verdict==='good'?'#f0fdf4':t.verdict==='bad'?'#fef2f2':'#fefce8'}};
+    const vc=t.verdict==='good'?'v-good':t.verdict==='bad'?'v-bad':'v-mod';
+    const card=document.createElement('div');
+    card.className='tc';
+    card.innerHTML=`
+      <div class="tc-head">
+        <div class="tc-name">${t.name}</div>
+        <span class="r-chip" style="background:${rColor(t.r)}">${t.r.toFixed(2)}</span>
+      </div>
+      <div class="tc-chart"><canvas id="tc_${t.id}"></canvas></div>
+      <div class="tc-foot">
+        <div class="tc-stat"><div class="tv" style="color:${pctColor(peak)}">${peak}%</div><div class="tl">Peak (S188–S191)</div></div>
+        <div class="tc-stat"><div class="tv" style="color:#f59e0b">${s192p!==null?s192p+'%★':'—'}</div><div class="tl">S192★ Planned</div></div>
+        <div class="tc-stat"><div class="tv ${delta!==null?(delta>=0?'up':'dn'):'flat'}">${delta!==null?(delta>=0?'+':'')+delta+'pp':'—'}</div><div class="tl">S190→S191</div></div>
+      </div>
+      <div class="tc-note">${t.note}</div>
+    `;
+    grid.appendChild(card);
+    setTimeout(()=>{
+      const cx=document.getElementById(`tc_${t.id}`).getContext('2d');
+      new Chart(cx,{
+        type:'line',
+        data:{
+          labels:['S188','S189','S190','S191','S192★'],
+          datasets:[{
+            data:t.pcts,
+            borderColor:color,backgroundColor:color+'22',borderWidth:2,
+            pointRadius:[3,3,3,3,5],
+            tension:0.3,spanGaps:false,
+            segment:{borderDash:(ctx)=>ctx.p1DataIndex===4?[4,3]:[]}
+          }]
+        },
+        options:{
+          responsive:true,maintainAspectRatio:false,
+          plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>`${c.raw!==null?c.raw+'%':'—'}${c.dataIndex===4?' planned':''}`}}},
+          scales:{
+            y:{min:0,max:110,ticks:{callback:v=>v+'%',font:{size:9}},grid:{color:'#f8fafc'}},
+            x:{ticks:{font:{size:9}},grid:{display:false}}
+          }
+        }
+      });
+    },50);
+  });
+})();
+
+// WFM Sprint Table
+(function(){
+  const tbody=document.getElementById('spTableBody');
+  [...WFM_TEAMS,WFM_TOTAL].forEach(t=>{
+    const isTotal=(t===WFM_TOTAL);
+    const [s188,s189,s190,s191,s192p]=t.pcts;
+    const done=t.s192.donePct;
+    const fmtP=(v)=>v!==null?`<span class="sp-pct" style="color:${pctColor(v)}">${v}%</span>`:`<span class="na-cell">—</span>`;
+    tbody.innerHTML+=`<tr${isTotal?' class="total-row"':''}>
+      <td>${t.name}</td>
+      <td>${fmtP(s188)}</td>
+      <td>${fmtP(s189)}</td>
+      <td>${fmtP(s190)}</td>
+      <td>${fmtP(s191)}</td>
+      <td class="s192-col">${fmtP(s192p)}</td>
+      <td class="s192-col">${done!==null?`<span style="color:#92400e;font-weight:700">${done}%</span>`:`<span class="na-cell">—</span>`}</td>
+    </tr>`;
+  });
+})();
+
+// WFM Correlation Cards
+(function(){
+  const container=document.getElementById('corrCards');
+  [...WFM_TEAMS,WFM_TOTAL].forEach(t=>{
+    const vc=t.verdict==='good'?'v-good':t.verdict==='bad'?'v-bad':'v-mod';
+    const verdictLabel=t.verdictLabel||'Total';
+    container.innerHTML+=`<div style="background:#fff;border-radius:8px;padding:12px 14px;border:1px solid var(--gb)">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
+        <span style="font-size:13px;font-weight:700">${t.name}</span>
+        <span class="r-chip" style="background:${rColor(t.r)}">${t.r!==null?t.r.toFixed(2):'—'}</span>
+      </div>
+      <span class="v-chip ${vc}">${verdictLabel}</span>
+      <div style="font-size:11px;color:#475569;margin-top:6px;line-height:1.5">${t.pcts.slice(0,4).map((v,i)=>v!==null?`<span style="color:${pctColor(v)}">${['S188','S189','S190','S191'][i]}=${v}%</span>`:'').filter(Boolean).join(' → ')}</div>
+    </div>`;
+  });
+})();
+
+// WFM Delta Table
+(function(){
+  const tbody=document.getElementById('wfmDeltaBody');
+  [...WFM_TEAMS,WFM_TOTAL].forEach(t=>{
+    const isTotal=(t===WFM_TOTAL);
+    const ps=t.pcts;
+    const deltas=[1,2,3,4].map(i=>ps[i]!==null&&ps[i-1]!==null?ps[i]-ps[i-1]:null);
+    const fmtP=(v,active)=>v!==null?`<span class="pct-val" style="color:${active?'#92400e':pctColor(v)}">${v}%${active?'★':''}</span>`:`<span class="na-cell">—</span>`;
+    const fmtD=(d)=>d!==null?`<span class="delta-pp ${deltaClass(d)}">${deltaStr(d)}</span>`:`<span class="na-cell">—</span>`;
+    tbody.innerHTML+=`<tr${isTotal?' class="total-row"':''}>
+      <td>${t.name}</td>
+      <td>${fmtP(ps[0],false)}</td><td>${fmtD(deltas[0])}</td>
+      <td>${fmtP(ps[1],false)}</td><td>${fmtD(deltas[1])}</td>
+      <td>${fmtP(ps[2],false)}</td><td>${fmtD(deltas[2])}</td>
+      <td>${fmtP(ps[3],false)}</td><td>${fmtD(deltas[3])}</td>
+      <td class="s192-cell">${fmtP(ps[4],true)}</td>
+    </tr>`;
+  });
+})();
+</script>
+</body>
+</html>
