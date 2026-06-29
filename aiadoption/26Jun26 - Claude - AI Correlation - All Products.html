@@ -70,7 +70,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .vc-name{font-size:15px;font-weight:700}
 .vc-chips{display:flex;gap:6px;align-items:center;flex-wrap:wrap}
 .vc-badge{font-size:11px;font-weight:700;border-radius:4px;padding:3px 8px;color:#fff}
-.vc-chart-wrap{position:relative;height:90px;width:100%;margin:8px 0}
+.vc-chart-wrap{position:relative;height:120px;width:100%;margin:8px 0}
 .vc-mini-tbl{font-size:11px;width:100%;border-collapse:collapse;margin-bottom:8px}
 .vc-mini-tbl th{background:#f8fafc;padding:3px 6px;border:1px solid var(--gb);text-align:center;font-weight:600}
 .vc-mini-tbl td{padding:3px 6px;border:1px solid var(--gb);text-align:center}
@@ -211,6 +211,7 @@ const SPRINTS = ['S189','S190','S191','S192★'];
 const PRODUCTS = [
   {id:'iex', name:'IEX WFM', color:'#1e40af', shortName:'IEX',
    pcts:[85,97,73,87],
+   sp:[[28,33],[341,350],[153,209],[265,303]],
    s192:{planned:87,donePct:17,note:'44/303 SP done (PI2.S4)'},
    epics:{ai:18,total:71,aiPct:25,closed:9,closedPct:13,spAiPct:null},
    verdict:'mod', verdictLabel:'Peaked → Correcting', r:-0.50,
@@ -218,6 +219,7 @@ const PRODUCTS = [
   },
   {id:'esp', name:'ESP', color:'#7c3aed', shortName:'ESP',
    pcts:[89,97,98,95],
+   sp:[[121,136],[83,86],[119,122],[141,148]],
    s192:{planned:95,donePct:8,note:'11 SP done'},
    epics:{ai:20,total:23,aiPct:87,closed:10,closedPct:43,spAiPct:97},
    verdict:'good', verdictLabel:'Strong & Stable', r:0.91,
@@ -225,6 +227,7 @@ const PRODUCTS = [
   },
   {id:'wfmint', name:'WFM Integrations', color:'#059669', shortName:'WFM Int',
    pcts:[74,77,78,70],
+   sp:[[108,146],[146,190],[159,204],[176,251]],
    s192:{planned:70,donePct:11,note:'20 SP done (176/251 AI SP)'},
    epics:{ai:29,total:50,aiPct:58,closed:16,closedPct:32,spAiPct:70},
    verdict:'good', verdictLabel:'Steadily Rising', r:0.96,
@@ -232,6 +235,7 @@ const PRODUCTS = [
   },
   {id:'eem', name:'EEM', color:'#d97706', shortName:'EEM',
    pcts:[79,89,88,76],
+   sp:[[112,141],[166,186],[121,137],[157,206]],
    s192:{planned:76,donePct:31,note:'49 SP done (157/206 AI SP)'},
    epics:{ai:31,total:37,aiPct:84,closed:5,closedPct:14,spAiPct:80},
    verdict:'good', verdictLabel:'Rising, Stabilising', r:0.82,
@@ -239,6 +243,7 @@ const PRODUCTS = [
   },
   {id:'cxwfm', name:'CXone WFM', color:'#dc2626', shortName:'CXone WFM',
    pcts:[76,81,78,60],
+   sp:[[410.5,543.5],[485,597],[626.5,804],[387.5,650.5]],
    s192:{planned:60,donePct:6,note:'25 SP done (387.5/650.5 AI SP)'},
    epics:{ai:108,total:161,aiPct:67,closed:74,closedPct:46,spAiPct:70},
    verdict:'good', verdictLabel:'Gentle Rise', r:0.40,
@@ -246,6 +251,7 @@ const PRODUCTS = [
   },
   {id:'cia', name:'CIA', color:'#0891b2', shortName:'CIA',
    pcts:[64,80,65,65],
+   sp:[[203,315],[287,359],[222,343.5],[235,364]],
    s192:{planned:65,donePct:1,note:'3 SP done (235/364 AI SP)'},
    epics:{ai:50,total:90,aiPct:54,closed:30,closedPct:33,spAiPct:80},
    verdict:'mod', verdictLabel:'Spike S190, No Net Trend', r:0.06,
@@ -253,6 +259,7 @@ const PRODUCTS = [
   },
   {id:'pvx', name:'Playvox', color:'#7c2d12', shortName:'Playvox',
    pcts:[83,98,100,88],
+   sp:[[197,237],[313,320],[291,292],[259,296]],
    s192:{planned:88,donePct:8,note:'22 SP done (259/296 AI SP)'},
    epics:{ai:59,total:64,aiPct:92,closed:52,closedPct:81,spAiPct:91},
    verdict:'good', verdictLabel:'Excellent Rising', r:0.92,
@@ -260,6 +267,7 @@ const PRODUCTS = [
   },
   {id:'pm', name:'PM', color:'#4d7c0f', shortName:'PM',
    pcts:[63,94,null,79],
+   sp:[[302,481],[374,400],[null,null],[260,329]],
    s192:{planned:79,donePct:29,note:'75 SP done (260/329 AI SP)'},
    epics:{ai:45,total:69,aiPct:65,closed:32,closedPct:46,spAiPct:68},
    verdict:'good', verdictLabel:'Rapid Ramp', r:null,
@@ -354,17 +362,22 @@ function vcClass(v){return v==='good'?'v-good':v==='mod'?'v-mod':v==='bad'?'v-ba
 // ═══════════════════════════════════════════════════════════
 (function(){
   const tbody=document.getElementById('deltaBody');
-  const fmtP=v=>v!==null?`<span class="pct-val" style="color:${pctColor(v)}">${v}%</span>`:`<span class="na-cell">—</span>`;
+  const fmtP=(v,sp)=>{
+    if(v===null)return`<span class="na-cell">—</span>`;
+    const spNote=sp&&sp[1]!==null?`<br><span style="font-size:10px;color:#94a3b8">${sp[0]}/${sp[1]} SP</span>`:'';
+    return`<span class="pct-val" style="color:${pctColor(v)}">${v}%</span>${spNote}`;
+  };
   const fmtD=d=>d!==null?`<span class="delta-pp ${d>0?'delta-up':d<0?'delta-dn':'delta-flat'}">${d>0?'+':''}${d}pp</span>`:`<span class="na-cell">—</span>`;
   PRODUCTS.forEach(p=>{
     const [s1,s2,s3,s4]=p.pcts;
+    const [sp1,sp2,sp3,sp4]=p.sp;
     const d1=s1!==null&&s2!==null?s2-s1:null;
     const d2=s2!==null&&s3!==null?s3-s2:null;
     tbody.innerHTML+=`<tr>
       <td><strong style="color:${p.color}">${p.name}</strong></td>
-      <td>${fmtP(s1)}</td><td>${fmtP(s2)}</td><td>${fmtD(d1)}</td>
-      <td>${fmtP(s3)}</td><td>${fmtD(d2)}</td>
-      <td class="s192-cell">${fmtP(s4)}</td>
+      <td>${fmtP(s1,sp1)}</td><td>${fmtP(s2,sp2)}</td><td>${fmtD(d1)}</td>
+      <td>${fmtP(s3,sp3)}</td><td>${fmtD(d2)}</td>
+      <td class="s192-cell">${fmtP(s4,sp4)}</td>
       <td class="s192-cell">${p.s192.donePct!==null?`<span style="color:#92400e;font-weight:700">${p.s192.donePct}%</span>  <span style="font-size:10px;color:#94a3b8">(${p.s192.note})</span>`:`<span class="na-cell">—</span>`}</td>
     </tr>`;
   });
@@ -434,35 +447,65 @@ function vcClass(v){return v==='good'?'v-good':v==='mod'?'v-mod':v==='bad'?'v-ba
       </div>
       <div class="vc-chart-wrap"><canvas id="vc_${p.id}"></canvas></div>
       <table class="vc-mini-tbl">
-        <tr><th>S189</th><th>S190</th><th>S191</th><th class="vc-s192">S192★</th><th class="vc-s192">Done%</th></tr>
+        <tr><th></th><th>S189</th><th>S190</th><th>S191</th><th class="vc-s192">S192★</th><th class="vc-s192">Done%</th></tr>
         <tr>
+          <td style="font-size:9px;color:#64748b">AI%</td>
           <td>${p.pcts[0]!==null?p.pcts[0]+'%':'—'}</td>
           <td>${p.pcts[1]!==null?p.pcts[1]+'%':'—'}</td>
           <td>${p.pcts[2]!==null?p.pcts[2]+'%':'—'}</td>
           <td class="vc-s192">${p.pcts[3]!==null?p.pcts[3]+'%':'—'}</td>
           <td class="vc-s192">${p.s192.donePct}%</td>
         </tr>
+        <tr style="font-size:10px;color:#64748b">
+          <td style="font-size:9px">SP</td>
+          <td>${p.sp[0]&&p.sp[0][1]!==null?p.sp[0][1]:'—'}</td>
+          <td>${p.sp[1]&&p.sp[1][1]!==null?p.sp[1][1]:'—'}</td>
+          <td>${p.sp[2]&&p.sp[2][1]!==null?p.sp[2][1]:'—'}</td>
+          <td class="vc-s192">${p.sp[3]&&p.sp[3][1]!==null?p.sp[3][1]:'—'}</td>
+          <td class="vc-s192"></td>
+        </tr>
       </table>
       <div class="vc-epic">Epics: <strong>${p.epics.ai}</strong> AI-tagged / ${p.epics.total} total (<strong>${p.epics.aiPct}%</strong>) · <strong>${p.epics.closed}</strong> closed (<strong>${p.epics.closedPct}%</strong>)${p.epics.spAiPct?` · Epic SP AI: <strong>${p.epics.spAiPct}%</strong>`:''}</div>
+      <div style="font-size:10.5px;color:#0e7490;font-style:italic;border-left:3px solid #06b6d4;padding-left:8px;margin-bottom:6px">
+        ${(()=>{const s=p.sp,pc=p.pcts,v=s.filter(x=>x&&x[1]!==null).map(x=>x[1]),a=s.filter(x=>x&&x[1]!==null).map(x=>x[0]),pv=pc.filter(x=>x!==null);
+        const vTrend=v.length>=2?(v[v.length-1]-v[0])>0?'up':(v[v.length-1]-v[0])<0?'down':'flat':'?';
+        const pTrend=pv.length>=2?(pv[pv.length-1]-pv[0])>0?'up':(pv[pv.length-1]-pv[0])<0?'down':'flat':'?';
+        const vStr=v.join(' → ')+' SP';const pStr=pv.join(' → ')+'%';
+        const msg=vTrend==='up'&&pTrend==='up'?'Healthy — velocity and AI adoption both growing'
+          :vTrend==='up'&&pTrend==='down'?'Velocity growing but AI% falling — non-AI scope diluting ratio'
+          :vTrend==='down'&&pTrend==='up'?'Caution: AI% rise partly reflects lower total velocity'
+          :vTrend==='down'&&pTrend==='down'?'Both velocity and AI share declining — needs attention'
+          :'Mixed signals — sprint variance masks the trend';
+        return 'Velocity: '+vStr+' · AI%: '+pStr+'<br>'+msg;})()}
+      </div>
       <div class="vc-note">${p.note}</div>
     `;
     grid.appendChild(el);
     setTimeout(()=>{
       const cx=document.getElementById(`vc_${p.id}`).getContext('2d');
+      const sp=p.sp;
       new Chart(cx,{
-        type:'line',
+        type:'bar',
         data:{
           labels:SPRINTS,
-          datasets:[{data:p.pcts,borderColor:p.color,backgroundColor:p.color+'20',borderWidth:2,
-            pointRadius:[3,3,3,5],tension:0.3,spanGaps:true,
-            segment:{borderDash:ctx=>ctx.p1DataIndex===3?[4,3]:[]}}]
+          datasets:[
+            {type:'bar',label:'AI SP',data:sp.map(s=>s&&s[1]!==null?s[0]:null),backgroundColor:p.color+'bb',yAxisID:'ySP',order:2,stack:'sp'},
+            {type:'bar',label:'Non-AI SP',data:sp.map(s=>s&&s[1]!==null?s[1]-s[0]:null),backgroundColor:'#94a3b8',yAxisID:'ySP',order:2,stack:'sp'},
+            {type:'line',label:'AI %',data:p.pcts,borderColor:p.color,backgroundColor:'transparent',
+              borderWidth:2,pointRadius:[3,3,3,5],tension:0.3,spanGaps:true,yAxisID:'yPct',order:1,
+              segment:{borderDash:ctx=>ctx.p1DataIndex===3?[4,3]:[]}}
+          ]
         },
         options:{
           responsive:true,maintainAspectRatio:false,
-          plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>`${c.raw!==null?c.raw+'%':'—'}${c.dataIndex===3?' ★planned':''}`}}},
+          plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>{
+            if(c.dataset.yAxisID==='yPct')return`AI%: ${c.raw!==null?c.raw+'%':'—'}${c.dataIndex===3?' ★planned':''}`;
+            return`${c.dataset.label}: ${c.raw}`;
+          }}}},
           scales:{
-            y:{min:0,max:110,ticks:{callback:v=>v+'%',font:{size:9}},grid:{color:'#f8fafc'}},
-            x:{ticks:{font:{size:9}},grid:{display:false}}
+            ySP:{position:'left',stacked:true,ticks:{font:{size:9},maxTicksLimit:4},grid:{color:'#f8fafc'}},
+            yPct:{position:'right',min:0,max:115,ticks:{callback:v=>v+'%',font:{size:9},maxTicksLimit:5},grid:{drawOnChartArea:false}},
+            x:{stacked:true,ticks:{font:{size:9}},grid:{display:false}}
           }
         }
       });

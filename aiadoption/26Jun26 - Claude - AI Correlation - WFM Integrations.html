@@ -64,7 +64,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .vb-mod{background:var(--mod-bg);color:var(--mod);border:1px solid var(--mod-b)}
 .vb-watch{background:var(--watch-bg);color:var(--watch);border:1px solid var(--watch-b)}
 .vb-bad{background:var(--bad-bg);color:var(--bad);border:1px solid var(--bad-b)}
-.vc-chart-wrap{position:relative;height:120px;width:100%;margin-bottom:8px}
+.vc-chart-wrap{position:relative;height:150px;width:100%;margin-bottom:8px}
 .vc-mini-tbl{width:100%;border-collapse:collapse;font-size:11px;margin-bottom:8px}
 .vc-mini-tbl th{background:#f8fafc;padding:4px 6px;border:1px solid var(--gb);font-weight:600;text-align:center}
 .vc-mini-tbl td{padding:4px 6px;border:1px solid var(--gb);text-align:center;font-weight:700}
@@ -196,38 +196,45 @@ const SPRINTS5 = ['S188','S189','S190','S191','S192★'];
 const TEAMS = [
   {id:'torna', name:'Torna', color:'#1e40af', shortName:'Torna',
    pcts:[69,100,100,81,68], r:0.30, s192done:0, s192donePct:0,
+   sprintSP:[[36,52],[34,34],[27,27],[29,36],[23,34]],
    verdict:'good', verdictLabel:'Stable High',
    epics:{ai:6,total:6,aiPct:100,closed:4,closedPct:67,spAiPct:100},
    note:'S189–S190 at 100% — peak adoption reached. S191 dip to 81% and S192 planned 68% signals slight pullback, possibly non-AI scope entering backlog. Epic foundation is best-in-team: 100% AI planned, 100% SP AI%. 0 SP done in S192 so far.'},
   {id:'devgiri', name:'Devgiri', color:'#16a34a', shortName:'Devgiri',
    pcts:[0,78,80,90,70], r:0.84, s192done:3, s192donePct:null,
+   sprintSP:[[0,null],[18,23],[44,55],[47,52],[42,60]],
    verdict:'good', verdictLabel:'Strongest Ramp',
    epics:{ai:6,total:11,aiPct:55,closed:2,closedPct:18,spAiPct:59},
    note:'Steepest AI adoption ramp in cohort — 0% to 90% across 4 sprints. Model team for what deliberate AI adoption looks like. S191 best-ever at 90%. 3 SP delivered early in S192. Epic AI commitment at 55% has room to grow to match sprint-level performance.'},
   {id:'integrations', name:'Integrations', color:'#dc2626', shortName:'Integ',
    pcts:[48,63,43,52,62], r:-0.12, s192done:1, s192donePct:null,
+   sprintSP:[[13,27],[15,24],[10,23],[12,23],[16,26]],
    verdict:'watch', verdictLabel:'Volatile',
    epics:{ai:5,total:11,aiPct:45,closed:2,closedPct:18,spAiPct:49},
    note:'Environment-dependent work causes sprint-to-sprint swings — S190 dip to 43% then partial S191 recovery (52%). S192=62% planned, 1 SP done. Lowest epic AI commitment in team (45% planned, 49% SP AI%). Focus area: raise epic-level AI strategy to match peer teams.'},
   {id:'sinhagad', name:'Sinhagad', color:'#7c3aed', shortName:'Sinhagad',
    pcts:[29,63,79,83,62], r:0.94, s192done:12, s192donePct:36,
+   sprintSP:[[9,31],[20,32],[31,39],[35,42],[33,53]],
    verdict:'good', verdictLabel:'Best Trend',
    epics:{ai:11,total:17,aiPct:65,closed:6,closedPct:35,spAiPct:84},
    note:'Near-perfect linear AI adoption growth 29%→83% — highest trend r in team (0.94). Best early-sprint S192 delivery: 12 SP done = 36% of sprint already completed. Epic SP AI% at 84% reflects commitment at all delivery levels. Team to watch as the model for consistent growth.'},
   {id:'rajgad', name:'Rajgad', color:'#d97706', shortName:'Rajgad',
    pcts:[83,65,71,72,82], r:-0.46, s192done:1, s192donePct:null,
+   sprintSP:[[5,6],[20,31],[30,42],[23,32],[37,45]],
    verdict:'watch', verdictLabel:'Back-Loader',
    epics:{ai:3,total:6,aiPct:50,closed:2,closedPct:33,spAiPct:100},
    note:'Declining trend across PI2 despite strong S188 start (83%). Back-loading pattern documented: 0 SP mid-sprint then 23 SP delivered at end. S192=82% planned — potential reversal — only 1 SP done. Epic SP AI%=100% shows commitment exists; sprint process front-loading is the fix needed.'},
   {id:'shivneri', name:'Shivneri', color:'#0891b2', shortName:'Shivneri',
    pcts:[64,50,100,68,76], r:0.38, s192done:3, s192donePct:null,
+   sprintSP:[[18,28],[1,2],[4,4],[13,19],[25,33]],
    verdict:'mod', verdictLabel:'Volatile',
    epics:{ai:0,total:1,aiPct:0,closed:0,closedPct:0,spAiPct:0},
    note:'High variance sprint-to-sprint: 64→50→100→68%. S192=76% planned, 3 SP done. Zero AI epics — AI work happening at story level only, no epic-level AI commitment. Capacity constraints likely limiting consistency. Key action: create at least one AI epic to anchor AI strategy at the planning level.'},
 ];
 
 const TOTAL = {
-  pcts:[56,74,77,78,70], r:0.86, s192done:20, s192doneSP:176, s192totalSP:251
+  pcts:[56,74,77,78,70], r:0.86, s192done:20, s192doneSP:176, s192totalSP:251,
+  sprintSP:[[81,144],[108,146],[146,190],[159,204],[176,251]]
 };
 
 // ═══════════════════════════════════════════════════════════
@@ -448,35 +455,65 @@ function fmtDelta(a,b){
       </div>
       <div class="vc-chart-wrap"><canvas id="vc_${p.id}"></canvas></div>
       <table class="vc-mini-tbl">
-        <tr><th>S188</th><th>S189</th><th>S190</th><th>S191</th><th class="vc-s192">S192★</th></tr>
+        <tr><th></th><th>S188</th><th>S189</th><th>S190</th><th>S191</th><th class="vc-s192">S192★</th></tr>
         <tr>
+          <td style="font-size:9px;color:#64748b">AI%</td>
           <td>${p.pcts[0]!==null?p.pcts[0]+'%':'—'}</td>
           <td>${p.pcts[1]!==null?p.pcts[1]+'%':'—'}</td>
           <td>${p.pcts[2]!==null?p.pcts[2]+'%':'—'}</td>
           <td>${p.pcts[3]!==null?p.pcts[3]+'%':'—'}</td>
           <td class="vc-s192">${p.pcts[4]!==null?p.pcts[4]+'%':'—'}</td>
         </tr>
+        <tr style="font-size:10px;color:#64748b;font-weight:400">
+          <td style="font-size:9px">SP</td>
+          <td>${p.sprintSP[0]&&p.sprintSP[0][1]!==null?p.sprintSP[0][1]:'—'}</td>
+          <td>${p.sprintSP[1]&&p.sprintSP[1][1]!==null?p.sprintSP[1][1]:'—'}</td>
+          <td>${p.sprintSP[2]&&p.sprintSP[2][1]!==null?p.sprintSP[2][1]:'—'}</td>
+          <td>${p.sprintSP[3]&&p.sprintSP[3][1]!==null?p.sprintSP[3][1]:'—'}</td>
+          <td class="vc-s192">${p.sprintSP[4]&&p.sprintSP[4][1]!==null?p.sprintSP[4][1]:'—'}</td>
+        </tr>
       </table>
       <div class="vc-epic">Epics: <strong>${p.epics.ai}</strong> AI-tagged / ${p.epics.total} total (<strong>${p.epics.aiPct}%</strong>) · <strong>${p.epics.closed}</strong> closed (<strong>${p.epics.closedPct}%</strong>) · SP AI: <strong>${p.epics.spAiPct}%</strong></div>
+      <div style="font-size:10.5px;color:#0e7490;font-style:italic;border-left:3px solid #06b6d4;padding-left:8px;margin-bottom:6px">
+        ${(()=>{const s=p.sprintSP,pc=p.pcts,v=s.filter(x=>x&&x[1]!==null).map(x=>x[1]),a=s.filter(x=>x&&x[1]!==null).map(x=>x[0]),pv=pc.slice(0,4).filter(x=>x!==null);
+        const vTrend=v.length>=2?(v[v.length-1]-v[0])>0?'up':(v[v.length-1]-v[0])<0?'down':'flat':'?';
+        const pTrend=pv.length>=2?(pv[pv.length-1]-pv[0])>0?'up':(pv[pv.length-1]-pv[0])<0?'down':'flat':'?';
+        const vStr=v.join(' → ')+' SP';const pStr=pv.join(' → ')+'%';
+        const msg=vTrend==='up'&&pTrend==='up'?'Healthy — velocity and AI adoption both growing'
+          :vTrend==='up'&&pTrend==='down'?'Velocity growing but AI% falling — non-AI scope diluting ratio'
+          :vTrend==='down'&&pTrend==='up'?'Caution: AI% rise partly reflects lower total velocity'
+          :vTrend==='down'&&pTrend==='down'?'Both velocity and AI share declining — needs attention'
+          :'Mixed signals — sprint variance masks the trend';
+        return 'Velocity: '+vStr+' · AI%: '+pStr+'<br>'+msg;})()}
+      </div>
       <div class="vc-note">${p.note}</div>
     `;
     grid.appendChild(el);
     setTimeout(()=>{
       const cx=document.getElementById(`vc_${p.id}`).getContext('2d');
+      const sp=p.sprintSP;
       new Chart(cx,{
-        type:'line',
+        type:'bar',
         data:{
           labels:SPRINTS5,
-          datasets:[{data:p.pcts,borderColor:p.color,backgroundColor:p.color+'20',borderWidth:2,
-            pointRadius:[3,3,3,3,5],tension:0.3,spanGaps:true,
-            segment:{borderDash:c=>c.p1DataIndex===4?[4,3]:[]}}]
+          datasets:[
+            {type:'bar',label:'AI SP',data:sp.map(s=>s&&s[1]!==null?s[0]:null),backgroundColor:p.color+'bb',yAxisID:'ySP',order:2,stack:'sp'},
+            {type:'bar',label:'Non-AI SP',data:sp.map(s=>s&&s[1]!==null?s[1]-s[0]:null),backgroundColor:'#94a3b8',yAxisID:'ySP',order:2,stack:'sp'},
+            {type:'line',label:'AI %',data:p.pcts,borderColor:p.color,backgroundColor:'transparent',
+              borderWidth:2,pointRadius:[3,3,3,3,5],tension:0.3,spanGaps:true,yAxisID:'yPct',order:1,
+              segment:{borderDash:c=>c.p1DataIndex===4?[4,3]:[]}}
+          ]
         },
         options:{
           responsive:true,maintainAspectRatio:false,
-          plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>`${c.raw!==null?c.raw+'%':'—'}${c.dataIndex===4?' ★planned':''}`}}},
+          plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>{
+            if(c.dataset.yAxisID==='yPct')return`AI%: ${c.raw!==null?c.raw+'%':'—'}${c.dataIndex===4?' ★planned':''}`;
+            return`${c.dataset.label}: ${c.raw}`;
+          }}}},
           scales:{
-            y:{min:0,max:115,ticks:{callback:v=>v+'%',font:{size:9}},grid:{color:'#f8fafc'}},
-            x:{ticks:{font:{size:9}},grid:{display:false}}
+            ySP:{position:'left',stacked:true,ticks:{font:{size:9},maxTicksLimit:4},grid:{color:'#f8fafc'}},
+            yPct:{position:'right',min:0,max:115,ticks:{callback:v=>v+'%',font:{size:9},maxTicksLimit:5},grid:{drawOnChartArea:false}},
+            x:{stacked:true,ticks:{font:{size:9}},grid:{display:false}}
           }
         }
       });
