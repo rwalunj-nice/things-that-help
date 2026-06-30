@@ -82,9 +82,57 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .synth-title{font-size:13px;font-weight:700;margin-bottom:8px}
 .synth-body{font-size:12px;line-height:1.65}
 .note-bar{background:#eff6ff;border:1px solid #bfdbfe;border-radius:6px;padding:8px 12px;font-size:11px;color:#1e40af;margin-top:8px}
+.info-icon{display:inline-flex;align-items:center;justify-content:center;width:15px;height:15px;border-radius:50%;background:#dbeafe;color:#2563eb;font-size:10px;font-weight:700;cursor:pointer;margin-left:4px;vertical-align:middle;line-height:1;transition:background .15s}
+.info-icon:hover{background:#bfdbfe}
+.lb-overlay{position:fixed;inset:0;background:rgba(15,23,42,.55);z-index:9999;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .2s}
+.lb-overlay.show{opacity:1;pointer-events:auto}
+.lb-box{background:#fff;border-radius:12px;padding:24px 28px;max-width:480px;width:90%;box-shadow:0 8px 30px rgba(0,0,0,.18);position:relative;max-height:80vh;overflow-y:auto}
+.lb-close{position:absolute;top:12px;right:16px;background:none;border:none;font-size:20px;color:#64748b;cursor:pointer;line-height:1}
+.lb-close:hover{color:#1e293b}
+.lb-title{font-size:15px;font-weight:700;color:#1e293b;margin-bottom:10px;padding-right:28px}
+.lb-body{font-size:13px;color:#475569;line-height:1.7}
+.lb-body strong{color:#1e293b}
+.lb-body code{background:#f1f5f9;padding:1px 5px;border-radius:3px;font-size:12px}
 </style>
 </head>
 <body>
+
+<div class="lb-overlay" id="lbOverlay" onclick="if(event.target===this)closeLb()">
+  <div class="lb-box">
+    <button class="lb-close" onclick="closeLb()">&times;</button>
+    <div class="lb-title" id="lbTitle"></div>
+    <div class="lb-body" id="lbBody"></div>
+  </div>
+</div>
+
+<script>
+function openLb(col){
+  var d=colDefs[col];if(!d)return;
+  document.getElementById('lbTitle').textContent=d.title;
+  document.getElementById('lbBody').innerHTML=d.body;
+  document.getElementById('lbOverlay').classList.add('show');
+}
+function closeLb(){document.getElementById('lbOverlay').classList.remove('show')}
+document.addEventListener('keydown',function(e){if(e.key==='Escape')closeLb()});
+
+var colDefs={
+  product:{title:'Product',body:'<strong>Purpose:</strong> The product or business unit being tracked.<br><br><strong>Products:</strong> IEX WFM, ESP, WFM Integrations, EEM, CXone WFM, CIA, Playvox, PM. Each product has its own sprint cadence aligned to PI2 (Apr–Jul 2026).'},
+  s189:{title:'S189 — First Closed Sprint',body:'<strong>Purpose:</strong> % AI Story Points delivered in the first closed sprint of PI2.<br><br><strong>Calculation:</strong><br><code>AI SP Delivered ÷ Total SP Delivered × 100</code><br><br>Sprint labels vary by product: CX.26.3.189, WFM_2026.PI2.S1, or EEM.26.S04 — aligned by time period for cross-product comparison.'},
+  s190:{title:'S190 — Second Closed Sprint',body:'<strong>Purpose:</strong> % AI Story Points delivered in the second closed sprint.<br><br><strong>Calculation:</strong><br><code>AI SP Delivered ÷ Total SP Delivered × 100</code>'},
+  d190:{title:'Δ S189→190',body:'<strong>Purpose:</strong> Change in AI adoption % from S189 to S190, measured in percentage points (pp).<br><br><strong>Calculation:</strong><br><code>S190% − S189%</code><br><br><strong>Colour coding:</strong><br>Green = positive (adoption rising)<br>Red = negative (adoption falling)<br>Gray = no change'},
+  s191:{title:'S191 — Third Closed Sprint',body:'<strong>Purpose:</strong> % AI Story Points delivered in the third closed sprint.<br><br><strong>Calculation:</strong><br><code>AI SP Delivered ÷ Total SP Delivered × 100</code><br><br>PM shows "—" because S191 data was not available in the PPTX source.'},
+  d191:{title:'Δ S190→191',body:'<strong>Purpose:</strong> Sprint-over-sprint change in AI% from S190 to S191 in percentage points.<br><br><strong>Calculation:</strong><br><code>S191% − S190%</code>'},
+  s192:{title:'S192★ Planned',body:'<strong>Purpose:</strong> <em>Planned</em> % AI Story Points for the current in-progress sprint.<br><br><strong>Calculation:</strong><br><code>Planned AI SP ÷ Total Planned SP × 100</code><br><br>★ indicates this sprint is still active. The value reflects committed scope, not completed work.'},
+  done:{title:'S192★ Done%',body:'<strong>Purpose:</strong> Percentage of S192 planned story points already completed.<br><br><strong>Calculation:</strong><br><code>S192 Completed SP ÷ S192 Total Planned SP × 100</code><br><br>Tracks early-sprint momentum. Higher values mid-sprint signal the product is on track.'},
+  epic_product:{title:'Product',body:'<strong>Purpose:</strong> The product or business unit. Epic data is filtered to the PI2 / 26.3 planning increment.'},
+  ai_epics:{title:'AI Epics',body:'<strong>Purpose:</strong> Count of epics tagged with the AI label (<code>AGENTIC_AI_CODE</code>) in PI2 26.3.<br><br>Measures how many epics the product has committed to AI at the planning level.'},
+  total_issues:{title:'Total Issues',body:'<strong>Purpose:</strong> Total number of epic-level issues (AI + non-AI) in PI2 26.3 for this product.<br><br>This is the denominator for calculating %AI Usage Planned.'},
+  ai_planned:{title:'%AI Usage Planned',body:'<strong>Purpose:</strong> What proportion of the product\'s epic portfolio is AI-committed.<br><br><strong>Calculation:</strong><br><code>AI Epics ÷ Total Issues × 100</code><br><br>Higher values indicate the product is structurally committing to AI at the planning level.'},
+  closed:{title:'Epics Closed',body:'<strong>Purpose:</strong> Number of AI-tagged epics that have been completed (status = Closed/Done).<br><br>Tracks epic-level delivery progress within the PI.'},
+  delivered:{title:'%Epics Delivered',body:'<strong>Purpose:</strong> Proportion of total epic issues that have been closed.<br><br><strong>Calculation:</strong><br><code>Closed ÷ Total Issues × 100</code><br><br>Measures execution velocity at the epic level — how much of the planned portfolio has shipped.'},
+  sp_ai_pct:{title:'Epic SP AI%',body:'<strong>Purpose:</strong> Percentage of story points <em>within AI-tagged epics</em> that are themselves AI story points.<br><br><strong>Calculation:</strong><br><code>AI SP inside AI Epics ÷ Total SP inside AI Epics × 100</code><br><br>Reveals whether "AI epics" truly contain AI work or are just labelled as AI with mostly non-AI stories inside.'}
+};
+</script>
 
 <div class="hdr">
   <h1>AI Adoption · All Products · 26 Jun 2026</h1>
@@ -120,11 +168,11 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
     <table class="tbl">
       <thead>
         <tr>
-          <th>Product</th>
-          <th>S189</th><th>S190</th><th>Δ S189→190</th>
-          <th>S191</th><th>Δ S190→191</th>
-          <th class="s192-cell">S192★ Planned</th>
-          <th class="s192-cell">S192★ Done%</th>
+          <th>Product <span class="info-icon" onclick="openLb('product')">i</span></th>
+          <th>S189 <span class="info-icon" onclick="openLb('s189')">i</span></th><th>S190 <span class="info-icon" onclick="openLb('s190')">i</span></th><th>Δ S189→190 <span class="info-icon" onclick="openLb('d190')">i</span></th>
+          <th>S191 <span class="info-icon" onclick="openLb('s191')">i</span></th><th>Δ S190→191 <span class="info-icon" onclick="openLb('d191')">i</span></th>
+          <th class="s192-cell">S192★ Planned <span class="info-icon" onclick="openLb('s192')">i</span></th>
+          <th class="s192-cell">S192★ Done% <span class="info-icon" onclick="openLb('done')">i</span></th>
         </tr>
       </thead>
       <tbody id="deltaBody"></tbody>
@@ -139,13 +187,13 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
     <table class="tbl">
       <thead>
         <tr>
-          <th>Product</th>
-          <th>AI Epics</th>
-          <th>Total Issues</th>
-          <th style="min-width:150px">%AI Usage Planned</th>
-          <th>Epics Closed</th>
-          <th style="min-width:150px">%Epics Delivered</th>
-          <th>Epic SP AI%</th>
+          <th>Product <span class="info-icon" onclick="openLb('epic_product')">i</span></th>
+          <th>AI Epics <span class="info-icon" onclick="openLb('ai_epics')">i</span></th>
+          <th>Total Issues <span class="info-icon" onclick="openLb('total_issues')">i</span></th>
+          <th style="min-width:150px">%AI Usage Planned <span class="info-icon" onclick="openLb('ai_planned')">i</span></th>
+          <th>Epics Closed <span class="info-icon" onclick="openLb('closed')">i</span></th>
+          <th style="min-width:150px">%Epics Delivered <span class="info-icon" onclick="openLb('delivered')">i</span></th>
+          <th>Epic SP AI% <span class="info-icon" onclick="openLb('sp_ai_pct')">i</span></th>
         </tr>
       </thead>
       <tbody id="epicBody"></tbody>
@@ -153,17 +201,35 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
   </div>
 </div>
 
-<!-- CORRELATION MATRIX -->
+<!-- SPRINT HEATMAP -->
 <div class="section">
-  <div class="section-title">Cross-Product Correlation Matrix — Pearson r (S189–S191)</div>
+  <div class="section-title">Sprint-over-Sprint Heatmap — AI% by Product</div>
   <div class="card">
-    <div class="matrix-wrap">
-      <table class="corr-tbl">
-        <thead id="corrHead"></thead>
-        <tbody id="corrBody"></tbody>
-      </table>
+    <table class="tbl" id="heatmapTbl" style="border-collapse:separate;border-spacing:3px">
+      <thead>
+        <tr>
+          <th>Product</th>
+          <th>S189</th>
+          <th>S190</th>
+          <th>S191</th>
+          <th class="s192-cell">S192★</th>
+        </tr>
+      </thead>
+      <tbody id="heatmapBody"></tbody>
+    </table>
+    <div style="display:flex;align-items:center;gap:8px;margin-top:10px;font-size:11px;color:var(--gray)">
+      <span>Low AI%</span>
+      <div style="display:flex;height:8px;border-radius:4px;overflow:hidden;width:160px">
+        <div style="flex:1;background:#fca5a5"></div>
+        <div style="flex:1;background:#fdba74"></div>
+        <div style="flex:1;background:#fde047"></div>
+        <div style="flex:1;background:#bef264"></div>
+        <div style="flex:1;background:#86efac"></div>
+        <div style="flex:1;background:#16a34a"></div>
+      </div>
+      <span>High AI%</span>
+      <span style="margin-left:8px">· Dashed border = in-progress sprint</span>
     </div>
-    <div class="note-bar" style="margin-top:10px">PM excluded (only 2 closed sprints — insufficient for Pearson r). Green ≥ 0.70 | Red ≤ −0.30 | Gray = neutral. Positive r = products move in sync; negative = diverge.</div>
   </div>
 </div>
 
@@ -178,7 +244,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
   <div class="section-title">Synthesis</div>
   <div class="synth-card" style="background:#f0fdf4;border-color:#bbf7d0;border:1px solid;border-radius:8px;padding:16px 18px;margin-bottom:12px">
     <div class="synth-title" style="color:#059669;font-size:14px">⭐ WFM Integrations — Highest Cohort Trend (r = 0.96), Internally Polarised</div>
-    <div class="synth-body"><strong>WFM Integrations holds the strongest sustained upward trend of all 8 products</strong> — r=0.96 is the highest in the cohort, reflecting a near-linear climb from 56% (S188) to 78% (S191). Unlike IEX or CIA which spiked and dropped, this growth is structurally consistent. However, the 78% headline masks a three-way internal split. <strong>Rising pair</strong> (Devgiri r=0.84, Sinhagad r=0.94): driving the number — Devgiri went 0%→90%, the steepest team ramp across all products; Sinhagad already 36% into S192 delivery. <strong>Stalling pair</strong> (Torna, Shivneri): Torna peaked at 100% but is now sliding to 68% S192 planned; Shivneri has zero AI epics — no strategic planning, only story-level execution. <strong>Declining pair</strong> (Rajgad r=−0.46, Integrations r=−0.12): negative trends, back-loading risk, lowest epic AI commitment. S192 planned dropped to 70% — a 8pp dip from S191 — and early delivery is weak outside Sinhagad. If Rajgad and Integrations do not reverse, the cohort-leading r will erode by PI2 end. See WFM Integrations Deep-Dive HTML for full team breakdown.</div>
+    <div class="synth-body"><strong>WFM Integrations holds the strongest sustained upward trend of all 8 products</strong> — r=0.96 is the highest in the cohort, reflecting a near-linear climb from 56% (S188) to 78% (S191), now extending to 81% S192 planned. Unlike IEX or CIA which spiked and dropped, this growth is structurally consistent. The 78% S191 headline masks a three-way internal split, but S192 signals are encouraging. <strong>Rising pair</strong> (Devgiri r=0.84, Sinhagad r=0.94): driving the number — Devgiri went 0%→91%, the steepest team ramp across all products; both lead S192 delivery with 15 SP each (31% and 44% done). <strong>Recovering pair</strong> (Torna, Shivneri): Torna peaked at 100% but rebounds to 91% S192 planned; Shivneri jumps to 88% planned with velocity growth. <strong>Improving pair</strong> (Rajgad r=−0.46, Integrations r=−0.12): negative trends historically, but S192 planned at 82% and 73% respectively — both best-ever for these teams. S192 total planned rose to 81% — a 3pp gain from S191 — with 48 SP done (23%). See WFM Integrations Deep-Dive HTML for full team breakdown.</div>
   </div>
   <div class="synth-grid">
     <div class="synth-card" style="background:var(--good-bg);border-color:var(--good-b)">
@@ -226,12 +292,12 @@ const PRODUCTS = [
    note:'Steady 89%→97%→98% — strongest consistent performer. Thundercats accessibility SC scope in S192. 97% epic SP AI usage — highest story-point AI density in the cohort. Ninja=100% both epics and sprint.'
   },
   {id:'wfmint', name:'WFM Integrations', color:'#059669', shortName:'WFM Int',
-   pcts:[74,77,78,70],
-   sp:[[108,146],[146,190],[159,204],[176,251]],
-   s192:{planned:70,donePct:11,note:'20 SP done (176/251 AI SP)'},
-   epics:{ai:29,total:50,aiPct:58,closed:16,closedPct:32,spAiPct:70},
+   pcts:[74,77,78,81],
+   sp:[[108,146],[146,190],[159,204],[207,256]],
+   s192:{planned:81,donePct:23,note:'48 SP done (207/256 AI SP)'},
+   epics:{ai:31,total:50,aiPct:62,closed:17,closedPct:34,spAiPct:71},
    verdict:'good', verdictLabel:'Steadily Rising', r:0.96,
-   note:'56%→74%→77%→78% (incl. S188) — steady climb (r=0.96, strongest product trend). Sinhagad r=0.94 best individual team. Rajgad extreme back-loading. Sinhagad 36% S192 done early — first mover.'
+   note:'56%→74%→77%→78%→81% (incl. S188) — steady climb (r=0.96, strongest product trend). S192 planned jumps to 81% with 48 SP done (23%). Sinhagad r=0.94 best team; Devgiri+Sinhagad lead S192 delivery (15 SP each).'
   },
   {id:'eem', name:'EEM', color:'#d97706', shortName:'EEM',
    pcts:[79,89,88,76],
@@ -405,23 +471,32 @@ function vcClass(v){return v==='good'?'v-good':v==='mod'?'v-mod':v==='bad'?'v-ba
 })();
 
 // ═══════════════════════════════════════════════════════════
-// CORRELATION MATRIX
+// SPRINT HEATMAP
 // ═══════════════════════════════════════════════════════════
 (function(){
-  const prods=PRODUCTS.filter(p=>p.id!=='pm');
-  const head=document.getElementById('corrHead');
-  const body=document.getElementById('corrBody');
-  head.innerHTML='<tr><th></th>'+prods.map(p=>`<th>${p.shortName}</th>`).join('')+'</tr>';
-  prods.forEach((p1,i)=>{
-    let row=`<tr><th>${p1.shortName}</th>`;
-    prods.forEach((p2,j)=>{
-      if(i===j){row+=`<td class="rc-self">—</td>`;return;}
-      const x=p1.pcts.slice(0,3);
-      const y=p2.pcts.slice(0,3);
-      const r=pearsonR(x,y);
-      if(r===null){row+=`<td><span class="na-chip">N/A</span></td>`;return;}
-      const cl=r>=0.7?'rc-pos':r<=-0.3?'rc-neg':'rc-neu';
-      row+=`<td><span class="${cl}">${r.toFixed(2)}</span></td>`;
+  const body=document.getElementById('heatmapBody');
+  function hmBg(v){
+    if(v===null) return '#f1f5f9';
+    if(v>=90) return '#16a34a';
+    if(v>=80) return '#86efac';
+    if(v>=70) return '#bef264';
+    if(v>=60) return '#fde047';
+    if(v>=50) return '#fdba74';
+    return '#fca5a5';
+  }
+  function hmTx(v){
+    if(v===null) return '#94a3b8';
+    return v>=90?'#fff':'#1e293b';
+  }
+  PRODUCTS.forEach(p=>{
+    let row=`<tr><td style="font-weight:600;color:${p.color}">${p.shortName}</td>`;
+    p.pcts.forEach((v,i)=>{
+      const isS192=i===3;
+      const bg=hmBg(v);
+      const tx=hmTx(v);
+      const brd=isS192?'2px dashed #7c3aed':'1px solid '+bg;
+      const val=v!==null?v+'%':'—';
+      row+=`<td style="background:${bg};color:${tx};font-weight:600;border-radius:5px;border:${brd};text-align:center">${val}</td>`;
     });
     row+='</tr>';
     body.innerHTML+=row;

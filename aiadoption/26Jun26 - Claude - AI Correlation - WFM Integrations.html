@@ -38,6 +38,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .tbl{width:100%;border-collapse:collapse;font-size:13px}
 .tbl th{background:#f8fafc;padding:7px 10px;text-align:left;border:1px solid var(--gb);font-size:12px;font-weight:600;white-space:nowrap}
 .tbl td{padding:7px 10px;border:1px solid var(--gb);white-space:nowrap}
+.tbl td.summary{white-space:normal;word-wrap:break-word;min-width:200px;max-width:320px}
 .tbl tr:nth-child(even) td{background:#fafbfc}
 .tbl td.r{text-align:right}
 .delta-pp{font-weight:700;font-size:12px}
@@ -75,9 +76,62 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .synth-card{border-radius:10px;padding:16px 18px;border:1px solid}
 .synth-title{font-size:13px;font-weight:700;margin-bottom:6px}
 .synth-body{font-size:13px;color:#374151;line-height:1.6}
+.info-icon{display:inline-flex;align-items:center;justify-content:center;width:15px;height:15px;border-radius:50%;background:#dbeafe;color:#2563eb;font-size:10px;font-weight:700;cursor:pointer;margin-left:4px;vertical-align:middle;line-height:1;transition:background .15s}
+.info-icon:hover{background:#bfdbfe}
+.lb-overlay{position:fixed;inset:0;background:rgba(15,23,42,.55);z-index:9999;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .2s}
+.lb-overlay.show{opacity:1;pointer-events:auto}
+.lb-box{background:#fff;border-radius:12px;padding:24px 28px;max-width:480px;width:90%;box-shadow:0 8px 30px rgba(0,0,0,.18);position:relative;max-height:80vh;overflow-y:auto}
+.lb-close{position:absolute;top:12px;right:16px;background:none;border:none;font-size:20px;color:#64748b;cursor:pointer;line-height:1}
+.lb-close:hover{color:#1e293b}
+.lb-title{font-size:15px;font-weight:700;color:#1e293b;margin-bottom:10px;padding-right:28px}
+.lb-body{font-size:13px;color:#475569;line-height:1.7}
+.lb-body strong{color:#1e293b}
+.lb-body code{background:#f1f5f9;padding:1px 5px;border-radius:3px;font-size:12px}
 </style>
 </head>
 <body>
+
+<div class="lb-overlay" id="lbOverlay" onclick="if(event.target===this)closeLb()">
+  <div class="lb-box">
+    <button class="lb-close" onclick="closeLb()">&times;</button>
+    <div class="lb-title" id="lbTitle"></div>
+    <div class="lb-body" id="lbBody"></div>
+  </div>
+</div>
+
+<script>
+function openLb(col){
+  var d=colDefs[col];if(!d)return;
+  document.getElementById('lbTitle').textContent=d.title;
+  document.getElementById('lbBody').innerHTML=d.body;
+  document.getElementById('lbOverlay').classList.add('show');
+}
+function closeLb(){document.getElementById('lbOverlay').classList.remove('show')}
+document.addEventListener('keydown',function(e){if(e.key==='Escape')closeLb()});
+
+var colDefs={
+  team:{title:'Team',body:'<strong>Purpose:</strong> The scrum team name within WFM Integrations.<br><br><strong>Teams:</strong> Torna, Devgiri, Integrations, Sinhagad, Rajgad, Shivneri. The <em>Total</em> row aggregates all teams.'},
+  s188:{title:'S188 — Sprint CX.26.3.188',body:'<strong>Purpose:</strong> % AI Story Points delivered in Sprint 188.<br><br><strong>Calculation:</strong><br><code>AI SP Delivered ÷ Total SP Delivered × 100</code><br><br>Story points are counted only for completed stories. AI stories are those tagged with the <code>AGENTIC_AI_CODE</code> label.'},
+  s189:{title:'S189 — Sprint CX.26.3.189',body:'<strong>Purpose:</strong> % AI Story Points delivered in Sprint 189.<br><br><strong>Calculation:</strong><br><code>AI SP Delivered ÷ Total SP Delivered × 100</code>'},
+  d189:{title:'Δ (S188→S189)',body:'<strong>Purpose:</strong> Change in AI adoption % from S188 to S189, measured in percentage points (pp).<br><br><strong>Calculation:</strong><br><code>S189% − S188%</code><br><br><strong>Colour coding:</strong><br>🟢 Green = positive change (adoption rising)<br>🔴 Red = negative change (adoption falling)<br>⚫ Gray = no change'},
+  s190:{title:'S190 — Sprint CX.26.3.190',body:'<strong>Purpose:</strong> % AI Story Points delivered in Sprint 190.<br><br><strong>Calculation:</strong><br><code>AI SP Delivered ÷ Total SP Delivered × 100</code>'},
+  d190:{title:'Δ (S189→S190)',body:'<strong>Purpose:</strong> Sprint-over-sprint change in AI% from S189 to S190 in percentage points.<br><br><strong>Calculation:</strong><br><code>S190% − S189%</code>'},
+  s191:{title:'S191 — Sprint CX.26.3.191',body:'<strong>Purpose:</strong> % AI Story Points delivered in Sprint 191.<br><br><strong>Calculation:</strong><br><code>AI SP Delivered ÷ Total SP Delivered × 100</code>'},
+  d191:{title:'Δ (S190→S191)',body:'<strong>Purpose:</strong> Sprint-over-sprint change in AI% from S190 to S191 in percentage points.<br><br><strong>Calculation:</strong><br><code>S191% − S190%</code>'},
+  s192:{title:'S192★ — Sprint CX.26.3.192 (In-Progress)',body:'<strong>Purpose:</strong> <em>Planned</em> % AI Story Points for the current in-progress sprint.<br><br><strong>Calculation:</strong><br><code>Planned AI SP ÷ Total Planned SP × 100</code><br><br>★ indicates this sprint is still active. The value reflects committed scope, not completed work. Final delivery % may differ.'},
+  done:{title:'Done (S192★ Progress)',body:'<strong>Purpose:</strong> Percentage of S192 planned AI SP that has already been completed.<br><br><strong>Calculation:</strong><br><code>S192 Completed AI SP ÷ S192 Total Planned SP × 100</code><br><br>Tracks early-sprint momentum — a higher value mid-sprint signals the team is on track.'},
+  trendr:{title:'Trend r (Pearson Correlation)',body:'<strong>Purpose:</strong> Measures how consistently a team\'s AI adoption % trends upward (or downward) across sprints S188–S191.<br><br><strong>Calculation:</strong> Pearson correlation coefficient between sprint index (1,2,3,4) and AI% values.<br><br><code>r = Σ(x−x̄)(y−ȳ) ÷ √[Σ(x−x̄)² × Σ(y−ȳ)²]</code><br><br><strong>Interpretation:</strong><br>• <strong style="color:#16a34a">r ≥ 0.70</strong> — Consistent upward trend (structural adoption)<br>• <strong style="color:#4ade80">r 0.30–0.69</strong> — Gradual rise but inconsistent<br>• <strong style="color:#94a3b8">r −0.29 to +0.29</strong> — No net trend (volatile or flat)<br>• <strong style="color:#dc2626">r ≤ −0.30</strong> — Declining trend, needs intervention'},
+  summary_sprint:{title:'Summary (Sprint)',body:'<strong>Purpose:</strong> Auto-generated insight for each team based on their Trend r value.<br><br><strong>How it works:</strong> The system classifies each team\'s trajectory by r value range and generates a one-line interpretation describing whether adoption is structurally rising, inconsistent, flat, or declining — and what that means for sustainability.'},
+  epic_team:{title:'Team',body:'<strong>Purpose:</strong> The scrum team name within WFM Integrations.<br><br>The <em>Total</em> row aggregates all teams across PI2 26.3.'},
+  ai_epics:{title:'AI Epics',body:'<strong>Purpose:</strong> Count of epics tagged with the AI label in the PI2 26.3 planning increment.<br><br><strong>Source:</strong> Jira epic-level issues with the <code>AGENTIC_AI_CODE</code> label within the team\'s board.'},
+  total_issues:{title:'Total Issues',body:'<strong>Purpose:</strong> Total number of epic-level issues (AI + non-AI) in PI2 26.3 for this team.<br><br>This is the denominator for calculating % AI Planned.'},
+  ai_planned:{title:'% AI Planned',body:'<strong>Purpose:</strong> What proportion of the team\'s epic portfolio is AI-committed.<br><br><strong>Calculation:</strong><br><code>AI Epics ÷ Total Issues × 100</code><br><br>Higher values indicate the team is structurally committing to AI at the planning level, not just at sprint execution.'},
+  closed:{title:'Closed',body:'<strong>Purpose:</strong> Number of AI-tagged epics that have been completed (status = Closed/Done).<br><br>Tracks epic-level delivery progress within the PI.'},
+  delivered:{title:'% Delivered',body:'<strong>Purpose:</strong> Proportion of total epic issues that have been closed.<br><br><strong>Calculation:</strong><br><code>Closed ÷ Total Issues × 100</code><br><br>Measures execution velocity at the epic level — how much of the planned portfolio has shipped.'},
+  sp_ai_pct:{title:'Epic SP AI%',body:'<strong>Purpose:</strong> Percentage of story points <em>within AI-tagged epics</em> that are themselves AI story points.<br><br><strong>Calculation:</strong><br><code>AI SP inside AI Epics ÷ Total SP inside AI Epics × 100</code><br><br><strong>Example:</strong> If Sinhagad has AI epics totalling 100 SP and 90 of those SP are AI-tagged stories → Epic SP AI% = 90%.<br><br>This reveals whether "AI epics" truly contain AI work or are just labelled as AI with mostly non-AI stories inside.'},
+  summary_epic:{title:'Summary (Epic Coverage)',body:'<strong>Purpose:</strong> Auto-generated assessment of each team\'s epic-level AI commitment and delivery.<br><br><strong>How it works:</strong> Evaluates the combination of % AI Planned, % Delivered, and Epic SP AI% to classify each team\'s posture — from "Fully AI-committed" to "No AI epics" — with a brief rationale.'}
+};
+</script>
 
 <div class="hdr">
   <h1>WFM Integrations · AI Adoption Deep-Dive · 26 Jun 2026</h1>
@@ -87,8 +141,8 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
     <span class="badge">5 Sprints S188–S192★</span>
     <span class="badge top">Best Trend: Sinhagad r=0.94</span>
     <span class="badge">S191 Total: 78%</span>
-    <span class="badge">S192★ Planned: 70%</span>
-    <span class="badge">Biggest Ramp: Devgiri 0%→90%</span>
+    <span class="badge">S192★ Planned: 81%</span>
+    <span class="badge">Biggest Ramp: Devgiri 0%→91%</span>
   </div>
 </div>
 
@@ -109,17 +163,35 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 
 <div class="section">
   <div class="section-title">Sprint Delivery Table</div>
+  <div style="background:#eff6ff;border:1px solid #bfdbfe;border-radius:8px;padding:14px 18px;margin-bottom:12px;font-size:12px;color:#1e3a5f;line-height:1.7">
+    <strong style="font-size:13px">How is Trend r calculated?</strong><br>
+    <strong>Trend r</strong> (Pearson correlation coefficient) measures how consistently a team's AI adoption % moves in one direction over sprints. It ranges from <strong>−1</strong> (perfect downward line) through <strong>0</strong> (no pattern) to <strong>+1</strong> (perfect upward line).<br><br>
+    <strong>Worked example — Sinhagad (r = 0.94):</strong><br>
+    We correlate sprint index (x = 1, 2, 3, 4) against AI% (y = 29, 63, 79, 83):<br>
+    <span style="font-family:monospace;font-size:11px">
+    &nbsp;&nbsp;Means: x̄ = 2.5, ȳ = 63.5<br>
+    &nbsp;&nbsp;For each sprint, multiply (x−x̄) × (y−ȳ) → sum = +81<br>
+    &nbsp;&nbsp;Normalize: r = 81 / √5 × √1877 = 81 / 86.06 ≈ <strong>+0.94</strong>
+    </span><br>
+    Because AI% rose almost every sprint, the deviations multiply to large positive values → r near +1.<br><br>
+    <strong>What does r tell us?</strong><br>
+    <span style="display:inline-block;width:90px;font-weight:600;color:#16a34a">r ≥ 0.70</span> Consistent upward trend — structural adoption, likely to sustain<br>
+    <span style="display:inline-block;width:90px;font-weight:600;color:#4ade80">r 0.30–0.69</span> Gradual rise — positive but inconsistent, needs reinforcement<br>
+    <span style="display:inline-block;width:90px;font-weight:600;color:#94a3b8">r −0.29 to +0.29</span> No net trend — spikes cancel drops, volatile or flat<br>
+    <span style="display:inline-block;width:90px;font-weight:600;color:#dc2626">r ≤ −0.30</span> Declining — adoption peaking and falling back, needs intervention
+  </div>
   <div class="card">
     <table class="tbl">
       <thead>
         <tr>
-          <th>Team</th>
-          <th class="r">S188</th><th class="r">S189</th><th class="r">Δ</th>
-          <th class="r">S190</th><th class="r">Δ</th>
-          <th class="r">S191</th><th class="r">Δ</th>
-          <th class="r" style="color:#7c3aed">S192★</th>
-          <th class="r" style="color:#7c3aed">Done</th>
-          <th class="r">Trend r</th>
+          <th>Team <span class="info-icon" onclick="openLb('team')">i</span></th>
+          <th class="r">S188 <span class="info-icon" onclick="openLb('s188')">i</span></th><th class="r">S189 <span class="info-icon" onclick="openLb('s189')">i</span></th><th class="r">Δ <span class="info-icon" onclick="openLb('d189')">i</span></th>
+          <th class="r">S190 <span class="info-icon" onclick="openLb('s190')">i</span></th><th class="r">Δ <span class="info-icon" onclick="openLb('d190')">i</span></th>
+          <th class="r">S191 <span class="info-icon" onclick="openLb('s191')">i</span></th><th class="r">Δ <span class="info-icon" onclick="openLb('d191')">i</span></th>
+          <th class="r" style="color:#7c3aed">S192★ <span class="info-icon" onclick="openLb('s192')">i</span></th>
+          <th class="r" style="color:#7c3aed">Done <span class="info-icon" onclick="openLb('done')">i</span></th>
+          <th class="r">Trend r <span class="info-icon" onclick="openLb('trendr')">i</span></th>
+          <th style="min-width:160px">Summary <span class="info-icon" onclick="openLb('summary_sprint')">i</span></th>
         </tr>
       </thead>
       <tbody id="sprintTbl"></tbody>
@@ -133,13 +205,14 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
     <table class="tbl">
       <thead>
         <tr>
-          <th>Team</th>
-          <th class="r">AI Epics</th>
-          <th class="r">Total Issues</th>
-          <th>% AI Planned</th>
-          <th class="r">Closed</th>
-          <th>% Delivered</th>
-          <th class="r">Epic SP AI%</th>
+          <th>Team <span class="info-icon" onclick="openLb('epic_team')">i</span></th>
+          <th class="r">AI Epics <span class="info-icon" onclick="openLb('ai_epics')">i</span></th>
+          <th class="r">Total Issues <span class="info-icon" onclick="openLb('total_issues')">i</span></th>
+          <th>% AI Planned <span class="info-icon" onclick="openLb('ai_planned')">i</span></th>
+          <th class="r">Closed <span class="info-icon" onclick="openLb('closed')">i</span></th>
+          <th>% Delivered <span class="info-icon" onclick="openLb('delivered')">i</span></th>
+          <th class="r">Epic SP AI% <span class="info-icon" onclick="openLb('sp_ai_pct')">i</span></th>
+          <th style="min-width:160px">Summary <span class="info-icon" onclick="openLb('summary_epic')">i</span></th>
         </tr>
       </thead>
       <tbody id="epicTbl"></tbody>
@@ -148,13 +221,34 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 </div>
 
 <div class="section">
-  <div class="section-title">Team-to-Team Correlation Matrix (Pearson r · S188–S191)</div>
+  <div class="section-title">Sprint-over-Sprint Heatmap — AI% by Team</div>
   <div class="card">
-    <table class="tbl" style="text-align:center">
-      <thead id="corrHead"></thead>
-      <tbody id="corrBody"></tbody>
+    <table class="tbl" id="heatmapTbl" style="border-collapse:separate;border-spacing:3px">
+      <thead>
+        <tr>
+          <th>Team</th>
+          <th class="r">S188</th>
+          <th class="r">S189</th>
+          <th class="r">S190</th>
+          <th class="r">S191</th>
+          <th class="r" style="color:#7c3aed">S192★</th>
+        </tr>
+      </thead>
+      <tbody id="heatmapBody"></tbody>
     </table>
-    <p style="font-size:11px;color:var(--gray);margin-top:8px">Green ≥ 0.70 (move together) · Red ≤ −0.30 (move opposite) · Gray = weak correlation</p>
+    <div style="display:flex;align-items:center;gap:8px;margin-top:10px;font-size:11px;color:var(--gray)">
+      <span>Low AI%</span>
+      <div style="display:flex;height:8px;border-radius:4px;overflow:hidden;width:160px">
+        <div style="flex:1;background:#fca5a5"></div>
+        <div style="flex:1;background:#fdba74"></div>
+        <div style="flex:1;background:#fde047"></div>
+        <div style="flex:1;background:#bef264"></div>
+        <div style="flex:1;background:#86efac"></div>
+        <div style="flex:1;background:#16a34a"></div>
+      </div>
+      <span>High AI%</span>
+      <span style="margin-left:8px">· Dashed border = in-progress sprint</span>
+    </div>
   </div>
 </div>
 
@@ -168,19 +262,19 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
   <div class="synth-grid">
     <div class="synth-card" style="background:var(--good-bg);border-color:var(--good-b)">
       <div class="synth-title" style="color:var(--good)">Rising Stars — Structural AI Adoption</div>
-      <div class="synth-body"><strong>Devgiri</strong> (r=0.84): Most dramatic ramp in cohort — 0%→90% across PI2, from worst to leader. <strong>Sinhagad</strong> (r=0.94): Near-perfect linear growth 29%→83%, highest trend r in team. Both show deliberate, consistent AI integration sprint over sprint. Sinhagad already leads S192 delivery (12 SP = 36% of sprint done). These two teams define what durable AI adoption looks like for WFM Integrations.</div>
+      <div class="synth-body"><strong>Devgiri</strong> (r=0.84): Most dramatic ramp in cohort — 0%→91% across PI2, from worst to leader. S192: 15 SP done (31%). <strong>Sinhagad</strong> (r=0.94): Near-perfect linear growth 29%→83%, highest trend r in team. S192: 15 SP done (44%) — best in-sprint delivery. Both teams define what durable AI adoption looks like for WFM Integrations.</div>
     </div>
     <div class="synth-card" style="background:var(--good-bg);border-color:var(--good-b)">
       <div class="synth-title" style="color:var(--good)">Torna — High but Plateauing</div>
-      <div class="synth-body"><strong>Torna</strong> (r=0.30): Reached 100% in S189–S190 — peak adoption achieved. S191 dip to 81% and S192=68% planned signals a pullback, possibly scope change or non-AI work entering backlog. Foundation is strong (100% epic AI planned, 100% epic SP AI%). Needs attention to prevent slide continuing into S193. 0 SP done so far in S192 — sprint cadence is slower than Sinhagad.</div>
+      <div class="synth-body"><strong>Torna</strong> (r=0.30): Reached 100% in S189–S190 — peak adoption achieved. S191 dipped to 81% but S192 rebounds to 91% planned (31/34 SP). 3 SP done (10%). Foundation remains strongest in team (100% epic AI planned, 100% SP AI%). Recovery trajectory is encouraging — pullback was temporary.</div>
     </div>
     <div class="synth-card" style="background:var(--watch-bg);border-color:var(--watch-b)">
       <div class="synth-title" style="color:var(--watch)">Rajgad — Back-Loading Risk</div>
-      <div class="synth-body"><strong>Rajgad</strong> (r=−0.46): Despite strong S188 start (83%), has been in a declining trend through PI2 (83→65→71→72). History of extreme back-loading — 0 SP mid-sprint ballooning to 23 SP at sprint end — masks real delivery risk. S192=82% planned suggests possible reversal, but only 1 SP done so far. Epic commitment is strong (100% SP AI%), but sprint-level execution needs front-loading process review.</div>
+      <div class="synth-body"><strong>Rajgad</strong> (r=−0.46): Despite strong S188 start (83%), declining trend through PI2 (83→65→71→72). S192=82% planned (37/45 SP) suggests reversal — 6 SP done (16%), improved from prior mid-sprint readings. Epic commitment is strong (100% SP AI%), but sprint-level front-loading still needed to sustain the recovery signal.</div>
     </div>
     <div class="synth-card" style="background:var(--watch-bg);border-color:var(--watch-b)">
       <div class="synth-title" style="color:var(--watch)">Integrations &amp; Shivneri — Volatility Management</div>
-      <div class="synth-body"><strong>Integrations</strong> (r=−0.12): Environment-dependent work creates sprint swings (63%→43%→52%). Lowest epic AI commitment in team (45% planned, 49% SP). S192=62% — recovery possible. <strong>Shivneri</strong> (r=0.38): High variance 64→50→100→68%. Zero AI epics — AI work at story level only, no epic-level AI strategy. S192=76% planned, 3 SP done. Both teams need epic-level AI commitment to match their story-level intentions.</div>
+      <div class="synth-body"><strong>Integrations</strong> (r=−0.12): Environment-dependent work creates sprint swings (63→43→52%). S192=73% planned (19/26 SP) — best planned AI% ever for this team, 3 SP done (16%). <strong>Shivneri</strong> (r=0.38): High variance 64→50→100→68%. S192=88% planned (37/42 SP) with a velocity jump to 42 SP. 6 SP done (16%). Zero AI epics — still needs epic-level AI strategy. Both teams showing improved S192 signals despite volatile histories.</div>
     </div>
   </div>
 </div>
@@ -195,46 +289,46 @@ const SPRINTS5 = ['S188','S189','S190','S191','S192★'];
 
 const TEAMS = [
   {id:'torna', name:'Torna', color:'#1e40af', shortName:'Torna',
-   pcts:[69,100,100,81,68], r:0.30, s192done:0, s192donePct:0,
-   sprintSP:[[36,52],[34,34],[27,27],[29,36],[23,34]],
+   pcts:[69,100,100,81,91], r:0.30, s192done:3, s192donePct:10,
+   sprintSP:[[36,52],[34,34],[27,27],[29,36],[31,34]],
    verdict:'good', verdictLabel:'Stable High',
    epics:{ai:6,total:6,aiPct:100,closed:4,closedPct:67,spAiPct:100},
-   note:'S189–S190 at 100% — peak adoption reached. S191 dip to 81% and S192 planned 68% signals slight pullback, possibly non-AI scope entering backlog. Epic foundation is best-in-team: 100% AI planned, 100% SP AI%. 0 SP done in S192 so far.'},
+   note:'S189–S190 at 100% — peak adoption reached. S191 dip to 81% but S192 rebounds to 91% planned (31/34 SP). 3 SP done (10%). Epic foundation is best-in-team: 100% AI planned, 100% SP AI%. Recovery trend signals sustained commitment.'},
   {id:'devgiri', name:'Devgiri', color:'#16a34a', shortName:'Devgiri',
-   pcts:[0,78,80,90,70], r:0.84, s192done:3, s192donePct:null,
-   sprintSP:[[0,null],[18,23],[44,55],[47,52],[42,60]],
+   pcts:[0,78,80,90,91], r:0.84, s192done:15, s192donePct:31,
+   sprintSP:[[0,null],[18,23],[44,55],[47,52],[49,54]],
    verdict:'good', verdictLabel:'Strongest Ramp',
    epics:{ai:6,total:11,aiPct:55,closed:2,closedPct:18,spAiPct:59},
-   note:'Steepest AI adoption ramp in cohort — 0% to 90% across 4 sprints. Model team for what deliberate AI adoption looks like. S191 best-ever at 90%. 3 SP delivered early in S192. Epic AI commitment at 55% has room to grow to match sprint-level performance.'},
+   note:'Steepest AI adoption ramp in cohort — 0% to 91% across PI2. S192=91% planned (49/54 SP), 15 SP done (31%). Strongest S192 delivery alongside Sinhagad. Model team for deliberate AI adoption. Epic AI commitment at 55% has room to grow.'},
   {id:'integrations', name:'Integrations', color:'#dc2626', shortName:'Integ',
-   pcts:[48,63,43,52,62], r:-0.12, s192done:1, s192donePct:null,
-   sprintSP:[[13,27],[15,24],[10,23],[12,23],[16,26]],
+   pcts:[48,63,43,52,73], r:-0.12, s192done:3, s192donePct:16,
+   sprintSP:[[13,27],[15,24],[10,23],[12,23],[19,26]],
    verdict:'watch', verdictLabel:'Volatile',
-   epics:{ai:5,total:11,aiPct:45,closed:2,closedPct:18,spAiPct:49},
-   note:'Environment-dependent work causes sprint-to-sprint swings — S190 dip to 43% then partial S191 recovery (52%). S192=62% planned, 1 SP done. Lowest epic AI commitment in team (45% planned, 49% SP AI%). Focus area: raise epic-level AI strategy to match peer teams.'},
+   epics:{ai:4,total:11,aiPct:36,closed:2,closedPct:18,spAiPct:45},
+   note:'Environment-dependent work causes sprint swings (63→43→52%). S192=73% planned (19/26 SP) — best planned AI% in this team\'s history. 3 SP done (16%). Lowest epic AI commitment in team (36% planned, 45% SP AI%). Upward S192 signal encouraging but trend r remains negative.'},
   {id:'sinhagad', name:'Sinhagad', color:'#7c3aed', shortName:'Sinhagad',
-   pcts:[29,63,79,83,62], r:0.94, s192done:12, s192donePct:36,
-   sprintSP:[[9,31],[20,32],[31,39],[35,42],[33,53]],
+   pcts:[29,63,79,83,62], r:0.94, s192done:15, s192donePct:44,
+   sprintSP:[[9,31],[20,32],[31,39],[35,42],[34,55]],
    verdict:'good', verdictLabel:'Best Trend',
-   epics:{ai:11,total:17,aiPct:65,closed:6,closedPct:35,spAiPct:84},
-   note:'Near-perfect linear AI adoption growth 29%→83% — highest trend r in team (0.94). Best early-sprint S192 delivery: 12 SP done = 36% of sprint already completed. Epic SP AI% at 84% reflects commitment at all delivery levels. Team to watch as the model for consistent growth.'},
+   epics:{ai:12,total:17,aiPct:71,closed:7,closedPct:41,spAiPct:90},
+   note:'Near-perfect linear growth 29→83% (r=0.94). S192 planned dips to 62% as sprint scope expanded to 55 SP (largest ever). 15 SP done = 44% delivery — best in-sprint progress in cohort. Volume scaling may be diluting AI%, not reducing actual AI work.'},
   {id:'rajgad', name:'Rajgad', color:'#d97706', shortName:'Rajgad',
-   pcts:[83,65,71,72,82], r:-0.46, s192done:1, s192donePct:null,
+   pcts:[83,65,71,72,82], r:-0.46, s192done:6, s192donePct:16,
    sprintSP:[[5,6],[20,31],[30,42],[23,32],[37,45]],
    verdict:'watch', verdictLabel:'Back-Loader',
-   epics:{ai:3,total:6,aiPct:50,closed:2,closedPct:33,spAiPct:100},
-   note:'Declining trend across PI2 despite strong S188 start (83%). Back-loading pattern documented: 0 SP mid-sprint then 23 SP delivered at end. S192=82% planned — potential reversal — only 1 SP done. Epic SP AI%=100% shows commitment exists; sprint process front-loading is the fix needed.'},
+   epics:{ai:4,total:6,aiPct:67,closed:2,closedPct:33,spAiPct:100},
+   note:'Declining trend across PI2 despite strong S188 start (83%). S192=82% planned (37/45 SP) — potential reversal. 6 SP done (16%), improved from prior mid-sprint readings. Epic SP AI%=100% shows commitment; sprint front-loading still needed.'},
   {id:'shivneri', name:'Shivneri', color:'#0891b2', shortName:'Shivneri',
-   pcts:[64,50,100,68,76], r:0.38, s192done:3, s192donePct:null,
-   sprintSP:[[18,28],[1,2],[4,4],[13,19],[25,33]],
+   pcts:[64,50,100,68,88], r:0.38, s192done:6, s192donePct:16,
+   sprintSP:[[18,28],[1,2],[4,4],[13,19],[37,42]],
    verdict:'mod', verdictLabel:'Volatile',
    epics:{ai:0,total:1,aiPct:0,closed:0,closedPct:0,spAiPct:0},
-   note:'High variance sprint-to-sprint: 64→50→100→68%. S192=76% planned, 3 SP done. Zero AI epics — AI work happening at story level only, no epic-level AI commitment. Capacity constraints likely limiting consistency. Key action: create at least one AI epic to anchor AI strategy at the planning level.'},
+   note:'High variance: 64→50→100→68%. S192=88% planned (37/42 SP) — second highest planned AI% in team. 6 SP done (16%). Velocity jump (42 SP vs 19 last sprint) shows capacity growth. Zero AI epics remains the gap — AI work at story level only.'},
 ];
 
 const TOTAL = {
-  pcts:[56,74,77,78,70], r:0.86, s192done:20, s192doneSP:176, s192totalSP:251,
-  sprintSP:[[81,144],[108,146],[146,190],[159,204],[176,251]]
+  pcts:[56,74,77,78,81], r:0.86, s192done:48, s192doneSP:207, s192totalSP:256,
+  sprintSP:[[81,144],[108,146],[146,190],[159,204],[207,256]]
 };
 
 // ═══════════════════════════════════════════════════════════
@@ -359,6 +453,22 @@ function fmtDelta(a,b){
 (function(){
   const tbody=document.getElementById('sprintTbl');
   const rows=[...TEAMS,{name:'Total',color:'#059669',pcts:TOTAL.pcts,r:TOTAL.r,s192done:TOTAL.s192done,s192donePct:null}];
+  function sprintSummary(t){
+    const p=t.pcts,r=t.r;
+    if(t.name==='Total'){
+      return`r=${r.toFixed(2)} confirms structural adoption — ${p[0]}%→${p[3]}% is a sustained, near-linear climb. S192 at ${p[4]}% extends the trend. High r means this growth is predictable, not accidental.`;
+    }
+    const closed=p.slice(0,4).filter(v=>v!==null);
+    const last=closed[closed.length-1],first=closed[0];
+    const s192=p[4];
+    if(r>=0.7)return`r=${r.toFixed(2)} — near-linear upward trend (${first}%→${last}%). AI adoption is structurally embedded, not sprint-dependent. S192 at ${s192}% — high r predicts this will sustain.`;
+    if(r>=0.3){
+      if(s192>last)return`r=${r.toFixed(2)} — positive but inconsistent rise (${closed.join('→')}%). Adoption is growing but sprint variance weakens predictability. S192 at ${s192}% is encouraging — needs 2+ more sprints to confirm.`;
+      return`r=${r.toFixed(2)} — moderate positive trend (${closed.join('→')}%) but S192 dips to ${s192}%. The r value suggests growth capability exists; current dip may be scope-driven, not adoption loss.`;
+    }
+    if(r>=-0.3)return`r=${r.toFixed(2)} — no consistent direction (${closed.join('→')}%). Sprints swing independently — gains in one sprint don't carry to the next. S192 at ${s192}% — without trend momentum, this is a single-sprint target, not a trajectory.`;
+    return`r=${r.toFixed(2)} — declining trend (${first}%→${last}%). Each sprint trends lower than the last. S192 at ${s192}% ${s192>last?'signals a potential reversal — but negative r means the burden of proof is on this sprint to break the pattern.':'continues the downward pattern — intervention needed.'}`;
+  }
   rows.forEach(t=>{
     const p=t.pcts;
     const doneStr=t.s192donePct!==null?t.s192donePct+'%':t.s192done+' SP';
@@ -376,6 +486,7 @@ function fmtDelta(a,b){
       <td class="r" style="color:#7c3aed;font-weight:700">${p[4]!==null?p[4]+'%':'—'}</td>
       <td class="r" style="color:#7c3aed">${doneStr}</td>
       <td class="r"><span class="r-chip" style="background:${rColor(t.r)}">${rVal}</span></td>
+      <td class="summary" style="font-size:11px;color:#475569;line-height:1.4">${sprintSummary(t)}</td>
     </tr>`;
   });
 })();
@@ -385,7 +496,17 @@ function fmtDelta(a,b){
 // ═══════════════════════════════════════════════════════════
 (function(){
   const tbody=document.getElementById('epicTbl');
-  const ETOTAL={ai:29,total:50,aiPct:58,closed:16,closedPct:32,spAiPct:70};
+  const ETOTAL={ai:31,total:50,aiPct:62,closed:17,closedPct:34,spAiPct:71};
+  function epicSummary(e,name){
+    if(name==='Total')return`${e.ai}/${e.total} epics AI-tagged (${e.aiPct}%); ${e.closed} closed (${e.closedPct}%); SP AI% at ${e.spAiPct}%`;
+    if(e.aiPct===0)return'No AI epics — AI work at story level only, no epic-level strategy';
+    const plan=e.aiPct>=80?'Strong':'Moderate';
+    const del=e.closedPct>=50?'healthy delivery':'delivery ramping';
+    const sp=e.spAiPct>=80?'high SP density':'SP density growing';
+    if(e.aiPct===100&&e.spAiPct===100)return'Fully AI-committed — 100% planned and executed at SP level';
+    if(e.aiPct>=70)return`${plan} AI coverage (${e.aiPct}%); ${del} (${e.closedPct}%); ${sp} (${e.spAiPct}%)`;
+    return`${e.ai}/${e.total} epics AI-tagged (${e.aiPct}%); ${del} (${e.closedPct}%); ${sp} (${e.spAiPct}%)`;
+  }
   TEAMS.forEach(t=>{
     const e=t.epics;
     const c1=pctColor(e.aiPct);
@@ -398,6 +519,7 @@ function fmtDelta(a,b){
       <td class="r"><strong>${e.closed}</strong></td>
       <td><div class="prog-bar"><div class="pb-bg"><div class="pb-fg" style="width:${Math.min(e.closedPct,100)}%;background:${c2}"></div></div><span class="pb-pct" style="color:${c2}">${e.closedPct}%</span></div></td>
       <td class="r"><span style="font-weight:700;color:${pctColor(e.spAiPct)}">${e.spAiPct}%</span></td>
+      <td class="summary" style="font-size:11px;color:#475569;line-height:1.4">${epicSummary(e,t.name)}</td>
     </tr>`;
   });
   const e=ETOTAL;
@@ -410,26 +532,33 @@ function fmtDelta(a,b){
     <td class="r"><strong>${e.closed}</strong></td>
     <td><div class="prog-bar"><div class="pb-bg"><div class="pb-fg" style="width:${Math.min(e.closedPct,100)}%;background:${c2}"></div></div><span class="pb-pct" style="color:${c2}">${e.closedPct}%</span></div></td>
     <td class="r"><span style="font-weight:700;color:${pctColor(e.spAiPct)}">${e.spAiPct}%</span></td>
+    <td style="font-size:11px;color:#475569;line-height:1.4">${epicSummary(e,'Total')}</td>
   </tr>`;
 })();
 
 // ═══════════════════════════════════════════════════════════
-// CORRELATION MATRIX
+// SPRINT HEATMAP
 // ═══════════════════════════════════════════════════════════
 (function(){
-  const head=document.getElementById('corrHead');
-  const body=document.getElementById('corrBody');
-  head.innerHTML='<tr><th></th>'+TEAMS.map(t=>`<th>${t.shortName}</th>`).join('')+'</tr>';
-  TEAMS.forEach((t1,i)=>{
-    let row=`<tr><th>${t1.shortName}</th>`;
-    TEAMS.forEach((t2,j)=>{
-      if(i===j){row+=`<td class="rc-self">—</td>`;return;}
-      const x=t1.pcts.slice(0,4);
-      const y=t2.pcts.slice(0,4);
-      const r=pearsonR(x,y);
-      if(r===null){row+=`<td><span class="na-chip">N/A</span></td>`;return;}
-      const cl=r>=0.7?'rc-pos':r<=-0.3?'rc-neg':'rc-neu';
-      row+=`<td><span class="${cl}">${r.toFixed(2)}</span></td>`;
+  const body=document.getElementById('heatmapBody');
+  function hmBg(v){
+    if(v>=90) return '#16a34a';
+    if(v>=80) return '#86efac';
+    if(v>=70) return '#bef264';
+    if(v>=60) return '#fde047';
+    if(v>=50) return '#fdba74';
+    return '#fca5a5';
+  }
+  function hmTx(v){return v>=90?'#fff':'#1e293b';}
+  const all=TEAMS.concat([Object.assign({name:'Total'},TOTAL)]);
+  all.forEach(t=>{
+    const isTotal=t.name==='Total';
+    let row=`<tr><td style="font-weight:${isTotal?'700':'400'}">${t.name}</td>`;
+    t.pcts.forEach((v,i)=>{
+      const bg=hmBg(v);
+      const tx=hmTx(v);
+      const brd=i===4?'2px dashed #7c3aed':'1px solid '+bg;
+      row+=`<td class="r" style="background:${bg};color:${tx};font-weight:600;border-radius:5px;border:${brd};text-align:center">${v}%</td>`;
     });
     row+='</tr>';
     body.innerHTML+=row;
