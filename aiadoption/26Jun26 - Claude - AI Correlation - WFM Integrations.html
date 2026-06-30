@@ -167,13 +167,28 @@ var colDefs={
     <strong style="font-size:13px">How is Trend r calculated?</strong><br>
     <strong>Trend r</strong> (Pearson correlation coefficient) measures how consistently a team's AI adoption % moves in one direction over sprints. It ranges from <strong>−1</strong> (perfect downward line) through <strong>0</strong> (no pattern) to <strong>+1</strong> (perfect upward line).<br><br>
     <strong>Worked example — Sinhagad (r = 0.94):</strong><br>
-    We correlate sprint index (x = 1, 2, 3, 4) against AI% (y = 29, 63, 79, 83):<br>
+    We correlate sprint index (x = 1, 2, 3, 4) against AI% (y = 29, 63, 79, 83):<br><br>
+    <strong>Step 1 — Compute means:</strong><br>
     <span style="font-family:monospace;font-size:11px">
-    &nbsp;&nbsp;Means: x̄ = 2.5, ȳ = 63.5<br>
-    &nbsp;&nbsp;For each sprint, multiply (x−x̄) × (y−ȳ) → sum = +81<br>
-    &nbsp;&nbsp;Normalize: r = 81 / √5 × √1877 = 81 / 86.06 ≈ <strong>+0.94</strong>
-    </span><br>
-    Because AI% rose almost every sprint, the deviations multiply to large positive values → r near +1.<br><br>
+    &nbsp;&nbsp;x̄ = (1 + 2 + 3 + 4) ÷ 4 = <strong>2.5</strong><br>
+    &nbsp;&nbsp;ȳ = (29 + 63 + 79 + 83) ÷ 4 = <strong>63.5</strong>
+    </span><br><br>
+    <strong>Step 2 — For each sprint, compute deviations and multiply:</strong><br>
+    <table style="font-family:monospace;font-size:11px;border-collapse:collapse;margin:4px 0 6px">
+      <tr style="font-weight:600;border-bottom:1px solid #bfdbfe"><td style="padding:2px 8px">Sprint</td><td style="padding:2px 8px">x</td><td style="padding:2px 8px">y</td><td style="padding:2px 8px">x−x̄</td><td style="padding:2px 8px">y−ȳ</td><td style="padding:2px 8px">(x−x̄)(y−ȳ)</td></tr>
+      <tr><td style="padding:2px 8px">S188</td><td style="padding:2px 8px">1</td><td style="padding:2px 8px">29%</td><td style="padding:2px 8px">−1.5</td><td style="padding:2px 8px">−34.5</td><td style="padding:2px 8px;font-weight:600">+51.75</td></tr>
+      <tr><td style="padding:2px 8px">S189</td><td style="padding:2px 8px">2</td><td style="padding:2px 8px">63%</td><td style="padding:2px 8px">−0.5</td><td style="padding:2px 8px">−0.5</td><td style="padding:2px 8px;font-weight:600">+0.25</td></tr>
+      <tr><td style="padding:2px 8px">S190</td><td style="padding:2px 8px">3</td><td style="padding:2px 8px">79%</td><td style="padding:2px 8px">+0.5</td><td style="padding:2px 8px">+15.5</td><td style="padding:2px 8px;font-weight:600">+7.75</td></tr>
+      <tr style="border-bottom:1px solid #bfdbfe"><td style="padding:2px 8px">S191</td><td style="padding:2px 8px">4</td><td style="padding:2px 8px">83%</td><td style="padding:2px 8px">+1.5</td><td style="padding:2px 8px">+19.5</td><td style="padding:2px 8px;font-weight:600">+29.25</td></tr>
+      <tr><td colspan="5" style="padding:2px 8px;text-align:right;font-weight:600">Numerator Σ =</td><td style="padding:2px 8px;font-weight:700">+89</td></tr>
+    </table>
+    <strong>Step 3 — Normalize:</strong><br>
+    <span style="font-family:monospace;font-size:11px">
+    &nbsp;&nbsp;Σ(x−x̄)² = 2.25 + 0.25 + 0.25 + 2.25 = 5 → √5 = 2.236<br>
+    &nbsp;&nbsp;Σ(y−ȳ)² = 1190.25 + 0.25 + 240.25 + 380.25 = 1811 → √1811 = 42.56<br>
+    &nbsp;&nbsp;r = 89 ÷ (2.236 × 42.56) = 89 ÷ 95.16 ≈ <strong>+0.94</strong>
+    </span><br><br>
+    <strong>Why +0.94?</strong> When AI% rises, both (x−x̄) and (y−ȳ) are positive together or negative together → their products are always positive → the sum is large → r is near +1.<br><br>
     <strong>What does r tell us?</strong><br>
     <span style="display:inline-block;width:90px;font-weight:600;color:#16a34a">r ≥ 0.70</span> Consistent upward trend — structural adoption, likely to sustain<br>
     <span style="display:inline-block;width:90px;font-weight:600;color:#4ade80">r 0.30–0.69</span> Gradual rise — positive but inconsistent, needs reinforcement<br>
