@@ -1,4 +1,9 @@
-IMPORTANT: This task has exactly four phases. You must complete them in order. Phase 4 requires you to call the `view` tool to read /mnt/skills/user/daily-email-brief/template.html and then call `show_widget`. Do NOT generate any HTML yourself. Do NOT produce a dashboard from memory. The ONLY valid output is a single show_widget call using the template file.
+---
+name: daily-email-brief
+description: Generate a daily email briefing every morning at 9 AM covering Outlook inbox, Teams, Calendar, and Jira
+---
+
+IMPORTANT: This task has exactly four phases. You must complete them in order. Phase 4 requires you to call the `Read` tool to read /sessions/intelligent-magical-edison/mnt/daily-email-brief/template.html and then call `show_widget`. Do NOT generate any HTML yourself. Do NOT produce a dashboard from memory. The ONLY valid output is a single show_widget call using the template file.
 
 Generate a daily email briefing for Rahul Walunj (rahul.walunj@nice.com). Follow all four phases below precisely.
 
@@ -100,7 +105,7 @@ Field rules:
 
 You MUST follow these three steps exactly. Do not skip any step. Do not generate HTML yourself.
 
-Step 1: Call the `view` tool with path 'C:/Users/rwalunj/OneDrive - Nice Systems Ltd/Rahul/INT/Notes/daily-email-brief/template.html' to read the template file. Wait for the file contents before proceeding.
+Step 1: Call the `Read` tool with path `/sessions/intelligent-magical-edison/mnt/daily-email-brief/template.html` to read the template file. Wait for the file contents before proceeding.
 
 Step 2: In the template source you just read, find the exact token `__BRIEFING_JSON__` and replace it with the JSON object you built in Phase 3, minified onto a single line.
 
@@ -111,7 +116,7 @@ Step 3: Call `show_widget` with:
 
 CRITICAL — violation of any of these rules makes the output invalid:
 - Do NOT generate your own HTML, CSS, or JS under any circumstances.
-- Do NOT skip reading the template file. The view tool call in Step 1 is mandatory.
+- Do NOT skip reading the template file. The Read tool call in Step 1 is mandatory.
 - Do NOT output the briefing as markdown or plain text.
 - Do NOT wrap any text in XML or HTML tags of any kind — especially not <run-summary>, <summary>, or similar.
 - The show_widget call in Step 3 is the ONLY output. Nothing else.

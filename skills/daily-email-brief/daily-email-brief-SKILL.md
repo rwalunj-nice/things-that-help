@@ -17,8 +17,8 @@ Call all four sources **simultaneously** in a single round of tool calls:
 
 | Source | Tool | Parameters |
 |---|---|---|
-| Outlook inbox | `outlook_email_search` | `afterDateTime`: 3 days ago, `folderName`: Inbox, `limit`: 25 |
-| Teams chat | `chat_message_search` | `query`: *, `afterDateTime`: 3 days ago, `limit`: 25 |
+| Outlook inbox | `outlook_email_search` | `afterDateTime`: yesterday, `folderName`: Inbox, `limit`: 25 |
+| Teams chat | `chat_message_search` | `query`: *, `afterDateTime`: yesterday, `limit`: 25 |
 | Calendar | `outlook_calendar_search` | `query`: *, `afterDateTime`: today, `beforeDateTime`: tomorrow, `limit`: 25 |
 | Jira | `searchJiraIssuesUsingJql` | JQL: `assignee = currentUser() AND updatedDate >= -7d ORDER BY updated DESC`, `maxResults`: 15, cloudId: `nice-ce-cxone-prod.atlassian.net` |
 
@@ -139,26 +139,23 @@ required (use empty arrays `[]` where no items exist):
 
 ---
 
-## Phase 4 — Render (MANDATORY: use show_widget with template only)
+## Phase 4 — Render
 
-You MUST follow these three steps exactly. Do not skip any step. Do not generate HTML yourself.
-
-Step 1: Call the `view` tool with path `C:/Users/rwalunj/OneDrive - Nice Systems Ltd/Rahul/INT/Notes/daily-email-brief/template.html` to read the template file. Wait for the file contents before proceeding.
-
-Step 2: In the template source you just read, find the exact token `__BRIEFING_JSON__` and replace it with the JSON object you built in Phase 3, minified onto a single line.
-
-Step 3: Call `show_widget` with:
+1. Read the template file using the `Read` tool with path:
+   `/sessions/intelligent-magical-edison/mnt/daily-email-brief/template.html`
+2. In the template source, find the token `__BRIEFING_JSON__` and replace it
+   with the JSON object from Phase 3 (valid JS object literal, on one line).
+3. Call `show_widget` with:
    - `title`: `daily_briefing_YYYY_MM_DD` (today's date)
-   - `widget_code`: the full template HTML with `__BRIEFING_JSON__` replaced by your JSON
+   - `widget_code`: the template HTML with data injected
    - `loading_messages`: `["Scanning four sources…", "Filtering signal from noise…", "Assembling your dashboard…"]`
 
-CRITICAL — violation of any of these rules makes the output invalid:
-- Do NOT generate your own HTML, CSS, or JS under any circumstances.
-- Do NOT skip reading the template file. The view tool call in Step 1 is mandatory.
-- Do NOT output the briefing as markdown or plain text.
-- Do NOT wrap any text in XML or HTML tags of any kind — especially not `<run-summary>`, `<summary>`, or similar.
-- The show_widget call in Step 3 is the ONLY output. Nothing else.
-- If all sources return empty, output a plain text message instead of an empty dashboard.
+**Critical rules:**
+- Do NOT modify the template HTML/CSS/JS in any way. Only replace the data
+  placeholder.
+- Do NOT output the briefing as markdown text. The widget IS the output.
+- Do NOT wrap any text in XML tags like `<run-summary>`.
+- If all sources return empty, output a plain text message instead.
 
 ---
 
