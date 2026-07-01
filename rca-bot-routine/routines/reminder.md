@@ -3,20 +3,16 @@
 **Trigger:** Weekly, Monday 08:00 local time  
 **Type:** Remote  
 **Model:** Claude Haiku 4.5 (`claude-haiku-4-5`) — mechanical task, no judgment required  
-**Connectors:** Atlassian + Microsoft 365  
-**Environment:** none — all auth handled by connectors (Atlassian OAuth + Microsoft 365 OAuth)
+**Connectors:** Atlassian  
+**Environment:** None
 
 ---
 
-## How Teams Posting Works
+## How Posting Works
 
-The Microsoft 365 connector provides Claude with authenticated access to Microsoft Graph API during each run. No Power Automate, no webhook URL, no stored tokens required. Claude posts directly to the recurring meeting chat using the chat thread ID below.
+This Routine outputs the formatted message to the run log. You copy it and paste into the Teams meeting chat each Monday morning — takes ~20 seconds.
 
-**Teams meeting chat thread ID:**
-```
-19:meeting_OWJjZWExZmQtNDdiNy00ZjQ3LWIyZDItMDk3YTE3OTdhNTgx@thread.v2
-```
-Update this ID if the recurring meeting series is ever recreated.
+The run log is visible at `claude.ai/code/routines` → click the run entry → expand output.
 
 ---
 
@@ -32,15 +28,20 @@ Search Jira with JQL: filter=97314
 Extract from each issue: key, summary, assignee display name.
 
 STEP 2 — Build the message text:
-If bugs exist:
-  "📋 RCA Forum tonight — bugs to present:\n• [KEY] Summary — Assignee Name\n(one bullet per bug)"
-If no bugs:
-  "📋 RCA Forum tonight — no bugs currently flagged for review."
+If bugs exist, format as:
+📋 RCA Forum tonight — bugs to present:
+• [KEY] Summary — Assignee Name
+(one bullet per bug, sorted by key)
 
-STEP 3 — Post to Teams meeting chat:
-Use the Microsoft 365 connector to send a message to Teams chat:
-  Chat ID: 19:meeting_OWJjZWExZmQtNDdiNy00ZjQ3LWIyZDItMDk3YTE3OTdhNTgx@thread.v2
-  Message: the text built in STEP 2
+If no bugs in the filter:
+📋 RCA Forum tonight — no bugs currently flagged for review.
 
-STEP 4 — Log: "Reminder posted for N bugs" or any errors.
+STEP 3 — Output:
+Print the following to the run log, clearly separated:
+
+---COPY THIS MESSAGE INTO TEAMS CHAT---
+<the message from STEP 2>
+---END MESSAGE---
+
+Then print: "Total bugs: N. Copy the message above and paste it into the RCA Forum Teams meeting chat."
 ```

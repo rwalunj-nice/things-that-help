@@ -1,0 +1,350 @@
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --card:rgba(255,255,255,0.06);--card2:rgba(255,255,255,0.03);
+  --hover:rgba(255,255,255,0.10);--tx1:#E8E4DE;--tx2:#A8A4A0;--tx3:#706C68;
+  --brd:rgba(255,255,255,0.10);--blue:#5B9BD5;--amber:#E8A838;--red:#D64545;
+  --green:#3B6D11;--coral:#E8967A;
+  --bar-conf:#B5D4F4;--bar-tent:#D3D1C7;--bar-oof:#C0DD97;
+  --bar-conflict-bg:#FAECE7;--bar-conflict-brd:#E8967A;
+}
+
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;color:var(--tx1);background:#16161a;line-height:1.5;font-size:14px}
+.hdr{text-align:center;padding:10px 0 14px;font-size:13px;color:var(--tx2);letter-spacing:0.5px}
+.hdr strong{color:var(--tx1)}
+
+/* Stat cards */
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:6px}
+.sc{border-radius:8px;padding:14px 16px;border-left:3px solid var(--brd);background:var(--card)}
+.sc.bl{border-left-color:var(--blue)}.sc.am{border-left-color:var(--amber)}
+.sc.rd{border-left-color:var(--red)}.sc.nt{border-left-color:var(--tx3)}
+.sc .num{font-size:28px;font-weight:700;line-height:1.1}
+.sc .lbl{font-size:11px;text-transform:uppercase;letter-spacing:0.8px;color:var(--tx2);margin-top:2px}
+.sc .sub{font-size:11px;color:var(--tx3);margin-top:1px}
+
+/* Progress bar */
+.pbar-wrap{display:flex;align-items:center;gap:10px;margin:4px 0 18px;padding:0 2px}
+.pbar{flex:1;height:4px;border-radius:2px;background:var(--brd);overflow:hidden}
+.pbar-fill{height:100%;border-radius:2px;background:var(--amber);transition:width 0.35s ease;width:0%}
+.pbar-lbl{font-size:12px;color:var(--tx3);white-space:nowrap}
+
+/* Timeline */
+.tl-wrap{margin-bottom:20px}
+.tl-title{font-size:13px;font-weight:600;margin-bottom:8px;display:flex;align-items:center;gap:6px}
+.tl-title svg{width:16px;height:16px}
+.legend{display:flex;gap:14px;font-size:11px;color:var(--tx2);margin-bottom:8px;flex-wrap:wrap}
+.legend-dot{display:inline-block;width:10px;height:10px;border-radius:2px;vertical-align:middle;margin-right:4px}
+.tl-scroll{overflow-x:auto;border:1px solid var(--brd);border-radius:8px;background:var(--card2);padding:8px 10px 10px}
+.tl-inner{min-width:700px;position:relative}
+.tl-axis{display:flex;justify-content:space-between;font-size:10px;color:var(--tx3);margin-bottom:6px;padding:0 1px}
+.tl-row{display:flex;align-items:center;height:28px;margin-bottom:3px}
+.tl-label{width:140px;min-width:140px;font-size:11px;color:var(--tx2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;padding-right:8px}
+.tl-track{flex:1;position:relative;height:22px}
+.tl-bar{position:absolute;height:20px;border-radius:3px;top:1px;font-size:10px;color:#333;display:flex;align-items:center;padding:0 4px;overflow:hidden;white-space:nowrap;cursor:default}
+.tl-bar.conf{background:var(--bar-conf)}.tl-bar.tent{background:var(--bar-tent)}
+.tl-bar.oof{background:var(--bar-oof)}.tl-bar.cncl{background:var(--bar-tent);opacity:0.5}
+.tl-bar.conflict{background:var(--bar-conflict-bg);border:1.5px solid var(--bar-conflict-brd)}
+.tl-conflicts{margin-top:8px;padding:8px 10px;background:rgba(232,150,122,0.1);border:1px solid rgba(232,150,122,0.25);border-radius:6px;font-size:12px;color:var(--coral)}
+.tl-conflicts strong{font-size:11px;text-transform:uppercase;letter-spacing:0.5px}
+
+/* Action items */
+.act-section{margin-bottom:18px}
+.act-title{font-size:13px;font-weight:600;margin-bottom:8px;display:flex;align-items:center;gap:6px}
+.pri-group{margin-bottom:6px}
+.pri-hdr{display:flex;align-items:center;gap:6px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.8px;color:var(--tx2);padding:6px 0 4px}
+.pri-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.pri-dot.urgent{background:var(--red)}.pri-dot.medium{background:var(--amber)}.pri-dot.low{background:var(--tx3)}
+.act-row{display:flex;align-items:flex-start;padding:8px 10px;border-radius:6px;cursor:pointer;transition:background 0.15s;border:1px solid transparent;margin-bottom:2px}
+.act-row:hover{background:var(--hover)}
+.act-left{display:flex;align-items:center;gap:8px;flex-shrink:0;padding-top:2px}
+.src-badge{width:22px;height:22px;border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:#fff;flex-shrink:0}
+.src-badge.O{background:#0078D4}.src-badge.T{background:#6264A7}
+.src-badge.J{background:#0052CC}.src-badge.C{background:#1868DB}
+.act-center{flex:1;min-width:0;padding:0 10px}
+.act-center .act-text{white-space:normal;overflow:visible;word-break:break-word;font-size:13px;color:var(--tx1);line-height:1.4}
+.act-center .act-detail{display:none;margin-top:8px;padding:8px 0;font-size:12px;color:var(--tx2);line-height:1.5;border-top:1px solid var(--brd)}
+.act-center .act-detail a{color:var(--blue);text-decoration:none;font-size:12px}
+.act-center .act-detail a:hover{text-decoration:underline}
+.act-right{display:flex;align-items:center;gap:6px;flex-shrink:0;align-self:flex-start;padding-top:2px}
+.act-btn{background:none;border:none;cursor:pointer;opacity:0.35;transition:opacity 0.15s;padding:2px;display:flex;align-items:center}
+.act-row:hover .act-btn{opacity:0.7}.act-btn:hover{opacity:1!important}
+.act-btn.done-btn svg circle{transition:fill 0.15s}
+.copied-flash{position:absolute;font-size:10px;color:var(--green);opacity:0;transition:opacity 0.3s;pointer-events:none;white-space:nowrap;right:0;top:-14px}
+
+/* Completed section */
+.completed-toggle{font-size:12px;color:var(--tx3);cursor:pointer;padding:8px 0;user-select:none}
+.completed-toggle:hover{color:var(--tx2)}
+.completed-list{display:none}
+.completed-list.show{display:block}
+.act-row.completed{opacity:0.45}.act-row.completed .act-text{text-decoration:line-through}
+
+/* Security alerts */
+.sec-section{margin-bottom:18px}
+.sec-card{background:var(--card);border-radius:8px;padding:12px 14px;margin-bottom:8px;border-left:3px solid var(--red)}
+.sec-cvss{font-size:22px;font-weight:700;color:var(--red)}
+.sec-bar-wrap{height:6px;border-radius:3px;background:var(--brd);margin:6px 0 8px;overflow:hidden}
+.sec-bar-fill{height:100%;border-radius:3px;background:var(--red)}
+.sec-meta{font-size:11px;color:var(--tx3)}
+
+/* FYI */
+.fyi-section{margin-bottom:18px}
+.fyi-title{font-size:13px;font-weight:600;margin-bottom:8px;display:flex;align-items:center;gap:6px;color:var(--tx2)}
+.fyi-box{background:var(--card2);border:1px solid var(--brd);border-radius:8px;padding:10px 14px}
+.fyi-row{padding:5px 0;font-size:12px;color:var(--tx2);display:flex;gap:8px;line-height:1.4}
+.fyi-row+.fyi-row{border-top:1px solid var(--brd)}
+.fyi-icon{flex-shrink:0;font-size:14px}
+
+/* Footer */
+.footer{text-align:center;font-size:12px;color:var(--tx3);padding:10px 0 4px;border-top:1px solid var(--brd);margin-top:4px}
+.summary{padding:0 4px;margin-top:12px;font-size:13px;color:var(--tx2);line-height:1.6}
+</style>
+<div id="root"></div>
+<script>
+(function(){
+/* ===== STORAGE ===== */
+const S=(()=>{try{localStorage.setItem('__t','1');localStorage.removeItem('__t');return localStorage}catch(e){const m={};return{getItem:k=>m[k]||null,setItem:(k,v)=>{m[k]=v},removeItem:k=>{delete m[k]}}}})();
+
+/* ===== DATA — replaced at runtime ===== */
+const D=__BRIEFING_JSON__;
+
+const KEY='daily-brief-done-'+D.meta.dateKey;
+let doneIds=[];
+try{doneIds=JSON.parse(S.getItem(KEY)||'[]')}catch(e){doneIds=[]}
+
+/* ===== HELPERS ===== */
+const esc=s=>{const d=document.createElement('div');d.textContent=s;return d.innerHTML};
+const fh=h=>{const hr=Math.floor(h);const mn=Math.round((h-hr)*60);const ampm=hr>=12?'PM':'AM';const h12=hr>12?hr-12:(hr===0?12:hr);return h12+(mn>0?':'+String(mn).padStart(2,'0'):'')+' '+ampm};
+
+/* ===== RENDERERS ===== */
+function renderHeader(){
+  return `<div class="hdr">${esc(D.meta.date)} · <strong>Daily Briefing for ${esc(D.meta.user)}</strong></div>`;
+}
+
+function renderStats(){
+  const ai=D.stats.actionItems-doneIds.filter(id=>D.actions.some(a=>a.id===id)).length;
+  return `<div class="stats">
+    <div class="sc bl"><div class="num" id="s-meet">${D.stats.meetings}</div><div class="lbl">Meetings Today</div><div class="sub">timed events</div></div>
+    <div class="sc am"><div class="num" id="s-act">${ai}</div><div class="lbl">Action Items</div><div class="sub">requiring response</div></div>
+    <div class="sc rd"><div class="num">${D.stats.securityAlerts}</div><div class="lbl">Security Alerts</div><div class="sub">${D.stats.securityAlerts===0?'no alerts today':D.stats.securityAlerts+' active'}</div></div>
+    <div class="sc nt"><div class="num">${D.stats.emailsTotal}</div><div class="lbl">Inbox Emails</div><div class="sub">~${D.stats.emailsUnread} unread</div></div>
+  </div>`;
+}
+
+function renderProgress(){
+  const total=D.actions.length;const done=doneIds.filter(id=>D.actions.some(a=>a.id===id)).length;
+  const pct=total?Math.round((done/total)*100):0;
+  return `<div class="pbar-wrap"><div class="pbar"><div class="pbar-fill" id="pbar-fill" style="width:${pct}%"></div></div><span class="pbar-lbl" id="pbar-lbl">${done} of ${total} done</span></div>`;
+}
+
+function renderTimeline(){
+  if(!D.meetings.length) return '';
+  const minH=9,maxH=21.5,span=maxH-minH;
+  const ticks=[];for(let h=minH;h<=maxH;h+=1){ticks.push(fh(h))}
+
+  let rows='';
+  D.meetings.forEach(m=>{
+    const s=Math.max(m.start,minH),e=Math.min(m.end,maxH);
+    const left=((s-minH)/span)*100,width=((e-s)/span)*100;
+    let cls='tl-bar ';
+    if(m.conflict) cls+='conflict';
+    else if(m.type==='oof') cls+='oof';
+    else if(m.type==='tentative') cls+='tent';
+    else if(m.type==='cancelled') cls+='cncl';
+    else cls+='conf';
+    const label=width>8?esc(m.subject):'';
+    const tip=esc(m.subject+' · '+fh(m.start)+'–'+fh(m.end));
+    rows+=`<div class="tl-row"><div class="tl-label" title="${esc(m.subject)}">${esc(m.subject)}</div><div class="tl-track"><div class="${cls}" style="left:${left.toFixed(1)}%;width:${Math.max(width,1.2).toFixed(1)}%" title="${tip}">${label}</div></div></div>`;
+  });
+
+  let conflictHtml='';
+  if(D.conflicts.length){
+    conflictHtml=`<div class="tl-conflicts"><strong>⚠ Schedule conflicts:</strong> ${D.conflicts.map(esc).join(' — ')}</div>`;
+  }
+
+  return `<div class="tl-wrap">
+    <div class="tl-title"><svg viewBox="0 0 16 16" fill="none"><rect x="1" y="3" width="14" height="11" rx="2" stroke="currentColor" stroke-width="1.3"/><path d="M4 1v4M12 1v4M1 7h14" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>Meeting Timeline — IST (${fh(minH)} – ${fh(maxH)})</div>
+    <div class="legend">
+      <span><span class="legend-dot" style="background:var(--bar-conf)"></span>Confirmed / Busy</span>
+      <span><span class="legend-dot" style="background:var(--bar-tent)"></span>Tentative</span>
+      <span><span class="legend-dot" style="background:var(--bar-oof)"></span>Out of Office</span>
+      <span><span class="legend-dot" style="background:var(--bar-conflict-bg);border:1px solid var(--bar-conflict-brd)"></span>Conflict ⚠</span>
+    </div>
+    <div class="tl-scroll"><div class="tl-inner">
+      <div class="tl-axis">${ticks.map(t=>`<span>${t}</span>`).join('')}</div>
+      ${rows}
+    </div></div>
+    ${conflictHtml}
+  </div>`;
+}
+
+function renderActions(){
+  if(!D.actions.length) return '';
+  const groups={urgent:[],medium:[],low:[]};
+  D.actions.forEach(a=>{if(groups[a.pri]) groups[a.pri].push(a); else groups.low.push(a)});
+
+  const chkSvg=`<svg width="20" height="20" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="9" stroke="#3B6D11" stroke-width="1.5"/><path d="M6 10.5l2.5 2.5 5-5" stroke="#3B6D11" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+  const chkDoneSvg=`<svg width="20" height="20" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="9" fill="#3B6D11"/><path d="M6 10.5l2.5 2.5 5-5" stroke="#fff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+  const copySvg=`<svg width="18" height="18" viewBox="0 0 18 18" fill="none"><rect x="5" y="4" width="10" height="12" rx="1.5" stroke="#185FA5" stroke-width="1.5"/><path d="M5 6H4a1 1 0 00-1 1v8a1 1 0 001 1h8a1 1 0 001-1v-1" stroke="#185FA5" stroke-width="1.5" stroke-linecap="round"/><path d="M8 4V3a1 1 0 011-1h1a1 1 0 011 1v1" stroke="#185FA5" stroke-width="1.5" stroke-linecap="round"/></svg>`;
+
+  function row(a,completed){
+    const isDone=completed||doneIds.includes(a.id);
+    const detail=a.detail?`<div class="act-detail"><p>${esc(a.detail)}</p>${a.link?`<a href="${esc(a.link)}" target="_blank" rel="noopener">View Source →</a>`:''}</div>`:'';
+    return `<div class="act-row${isDone?' completed':''}" data-id="${esc(a.id)}" data-search-text="${esc(a.search||a.title)}" data-pri="${a.pri}">
+      <div class="act-left"><span class="pri-dot ${a.pri}"></span><span class="src-badge ${a.src}">${esc(a.src)}</span></div>
+      <div class="act-center"><div class="act-text">${esc(a.title)}</div>${detail}</div>
+      <div class="act-right" style="position:relative">
+        <button class="act-btn done-btn" title="${isDone?'Undo':'Mark done'}">${isDone?chkDoneSvg:chkSvg}</button>
+        <button class="act-btn copy-btn" title="Copy search text">${copySvg}</button>
+        <span class="copied-flash">Copied!</span>
+      </div>
+    </div>`;
+  }
+
+  let activeHtml='',completedHtml='';
+  const priLabels={urgent:'URGENT',medium:'MEDIUM',low:'LOW'};
+  const priIcons={urgent:'🔴',medium:'🟡',low:'⚫'};
+
+  ['urgent','medium','low'].forEach(pri=>{
+    const items=groups[pri];if(!items.length) return;
+    const active=items.filter(a=>!doneIds.includes(a.id));
+    const done=items.filter(a=>doneIds.includes(a.id));
+    if(active.length){
+      activeHtml+=`<div class="pri-group"><div class="pri-hdr"><span class="pri-dot ${pri}"></span>${priLabels[pri]}</div>${active.map(a=>row(a,false)).join('')}</div>`;
+    }
+    done.forEach(a=>{completedHtml+=row(a,true)});
+  });
+
+  const completedCount=doneIds.filter(id=>D.actions.some(a=>a.id===id)).length;
+
+  return `<div class="act-section">
+    <div class="act-title"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 8.5l3 3 7-7" stroke="var(--amber)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>Action Items</div>
+    <div id="active-list">${activeHtml}</div>
+    <div class="completed-toggle" id="comp-toggle" style="${completedCount?'':'display:none'}">▸ Show ${completedCount} completed</div>
+    <div class="completed-list" id="comp-list">${completedHtml}</div>
+  </div>`;
+}
+
+function renderAlerts(){
+  if(!D.alerts.length) return '';
+  return `<div class="sec-section">
+    <div class="act-title"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M8 1l7 13H1L8 1z" stroke="var(--red)" stroke-width="1.3" fill="none"/><path d="M8 6v3M8 11v1" stroke="var(--red)" stroke-width="1.5" stroke-linecap="round"/></svg>Security Alerts</div>
+    ${D.alerts.map(a=>`<div class="sec-card">
+      <div style="display:flex;justify-content:space-between;align-items:baseline"><span style="font-weight:600">${esc(a.title)}</span><span class="sec-cvss">CVSS ${a.cvss}</span></div>
+      <div class="sec-bar-wrap"><div class="sec-bar-fill" style="width:${(a.cvss/10)*100}%"></div></div>
+      <div class="sec-meta">${[a.cat,a.tool,a.date].filter(Boolean).map(esc).join(' · ')}</div>
+    </div>`).join('')}
+  </div>`;
+}
+
+function renderFyi(){
+  if(!D.fyi.length) return '';
+  return `<div class="fyi-section">
+    <div class="fyi-title"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="7" stroke="currentColor" stroke-width="1.3"/><path d="M8 5v1M8 8v4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>FYI — No Action Needed</div>
+    <div class="fyi-box">${D.fyi.map(f=>`<div class="fyi-row"><span class="fyi-icon">${f.icon||'ℹ️'}</span><span>${esc(f.text)}</span></div>`).join('')}</div>
+  </div>`;
+}
+
+function renderFooter(){
+  const parts=[
+    `⚡ ${D.stats.actionItems} action items`,
+    `🔒 ${D.stats.securityAlerts} security alerts`,
+    `📅 ${D.stats.meetings} meetings`,
+    `📬 ${D.stats.emailsTotal} emails scanned`,
+    `Outlook + Teams + Calendar + Jira`,
+    D.meta.date
+  ];
+  let html=`<div class="footer">${parts.join(' · ')}</div>`;
+  if(D.summary) html+=`<div class="summary">${esc(D.summary)}</div>`;
+  return html;
+}
+
+/* ===== INIT ===== */
+const root=document.getElementById('root');
+root.innerHTML=renderHeader()+renderStats()+renderProgress()+renderTimeline()+renderActions()+renderAlerts()+renderFyi()+renderFooter();
+
+/* ===== INTERACTIVITY ===== */
+function updateCounts(){
+  const done=doneIds.filter(id=>D.actions.some(a=>a.id===id)).length;
+  const total=D.actions.length;const remaining=total-done;
+  const pct=total?Math.round((done/total)*100):0;
+  const el=document.getElementById('s-act');if(el)el.textContent=remaining;
+  const bar=document.getElementById('pbar-fill');if(bar)bar.style.width=pct+'%';
+  const lbl=document.getElementById('pbar-lbl');if(lbl)lbl.textContent=done+' of '+total+' done';
+  const tog=document.getElementById('comp-toggle');if(tog){tog.style.display=done?'':'none';tog.textContent='▸ Show '+done+' completed';}
+}
+
+function saveDone(){try{S.setItem(KEY,JSON.stringify(doneIds))}catch(e){}}
+
+function markDone(row){
+  const id=row.dataset.id;if(doneIds.includes(id)) return;
+  doneIds.push(id);saveDone();
+  row.style.transition='opacity 0.3s,max-height 0.3s';row.style.opacity='0';row.style.maxHeight='0';
+  setTimeout(()=>{
+    row.classList.add('completed');row.style.opacity='';row.style.maxHeight='';row.style.transition='';
+    row.querySelector('.done-btn').innerHTML=`<svg width="20" height="20" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="9" fill="#3B6D11"/><path d="M6 10.5l2.5 2.5 5-5" stroke="#fff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+    row.querySelector('.done-btn').title='Undo';
+    document.getElementById('comp-list').appendChild(row);
+    const det=row.querySelector('.act-detail');if(det)det.style.display='none';
+    updateCounts();
+  },300);
+}
+
+function undoDone(row){
+  const id=row.dataset.id;doneIds=doneIds.filter(i=>i!==id);saveDone();
+  row.classList.remove('completed');
+  row.querySelector('.done-btn').innerHTML=`<svg width="20" height="20" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="9" stroke="#3B6D11" stroke-width="1.5"/><path d="M6 10.5l2.5 2.5 5-5" stroke="#3B6D11" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+  row.querySelector('.done-btn').title='Mark done';
+  const pri=row.dataset.pri;
+  const target=document.getElementById('active-list');
+  const groups=target.querySelectorAll('.pri-group');
+  let placed=false;
+  groups.forEach(g=>{
+    const hdr=g.querySelector('.pri-hdr');
+    if(hdr&&hdr.textContent.trim().toLowerCase()===pri.toUpperCase()&&!placed){g.appendChild(row);placed=true}
+  });
+  if(!placed) target.appendChild(row);
+  updateCounts();
+}
+
+/* Accordion toggle */
+root.addEventListener('click',function(e){
+  const row=e.target.closest('.act-row');if(!row) return;
+  if(e.target.closest('.act-btn')) return;
+  const detail=row.querySelector('.act-detail');if(!detail) return;
+  const open=detail.style.display==='block';
+  root.querySelectorAll('.act-detail').forEach(d=>{d.style.display='none'});
+  if(!open) detail.style.display='block';
+});
+
+/* Done button */
+root.addEventListener('click',function(e){
+  const btn=e.target.closest('.done-btn');if(!btn) return;
+  e.stopPropagation();
+  const row=btn.closest('.act-row');
+  if(row.classList.contains('completed')) undoDone(row); else markDone(row);
+});
+
+/* Copy button */
+root.addEventListener('click',function(e){
+  const btn=e.target.closest('.copy-btn');if(!btn) return;
+  e.stopPropagation();
+  const row=btn.closest('.act-row');
+  const txt=row.dataset.searchText||'';
+  try{navigator.clipboard.writeText(txt)}catch(ex){}
+  const flash=row.querySelector('.copied-flash');
+  if(flash){flash.style.opacity='1';setTimeout(()=>{flash.style.opacity='0'},1200)}
+});
+
+/* Completed toggle */
+const compToggle=document.getElementById('comp-toggle');
+const compList=document.getElementById('comp-list');
+if(compToggle&&compList){compToggle.addEventListener('click',function(){
+  const show=!compList.classList.contains('show');
+  compList.classList.toggle('show',show);
+  const n=doneIds.filter(id=>D.actions.some(a=>a.id===id)).length;
+  compToggle.textContent=(show?'▾ Hide ':'▸ Show ')+n+' completed';
+})}
+
+updateCounts();
+})();
+</script>

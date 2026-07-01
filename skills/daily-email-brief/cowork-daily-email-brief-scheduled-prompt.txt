@@ -1,0 +1,118 @@
+IMPORTANT: This task has exactly four phases. You must complete them in order. Phase 4 requires you to call the `view` tool to read /mnt/skills/user/daily-email-brief/template.html and then call `show_widget`. Do NOT generate any HTML yourself. Do NOT produce a dashboard from memory. The ONLY valid output is a single show_widget call using the template file.
+
+Generate a daily email briefing for Rahul Walunj (rahul.walunj@nice.com). Follow all four phases below precisely.
+
+## Phase 1 — Fetch data (parallel)
+
+Call all four sources simultaneously in a single round of tool calls:
+
+| Source | Tool | Parameters |
+|---|---|---|
+| Outlook inbox | `outlook_email_search` | `afterDateTime`: 3 days ago, `folderName`: Inbox, `limit`: 25 |
+| Teams chat | `chat_message_search` | `query`: *, `afterDateTime`: 3 days ago, `limit`: 25 |
+| Calendar | `outlook_calendar_search` | `query`: *, `afterDateTime`: today, `beforeDateTime`: tomorrow, `limit`: 25 |
+| Jira | `searchJiraIssuesUsingJql` | JQL: `assignee = currentUser() AND updatedDate >= -7d ORDER BY updated DESC`, `maxResults`: 15, cloudId: `nice-ce-cxone-prod.atlassian.net` |
+
+If a source errors, note it and continue. A partial briefing is better than none.
+
+## Phase 2 — Process
+
+Apply in order:
+
+**Noise filtering** — Remove: automated/noreply senders, booking confirmations, marketing emails, Confluence daily digests, calendar accept/decline with no body, one-word Teams acknowledgements not directed at the user.
+
+**Signal extraction** — Classify surviving items into:
+- Action items: direct requests, approvals, @mentions with a question, open incident threads, assigned tasks
+- Security alerts: emails from Synack/CSOC/security tooling with CVSS scores or incident IDs
+- Meeting facts: all calendar events for today
+- FYI updates: awareness items needing no action
+
+**Priority scoring** — Score each action item:
+- Urgent: explicit EOD deadline, direct @mention with ask, approval request with count, active incident with recent back-and-forth
+- Medium: open incident active today but no deadline, setup tasks before a scheduled event, permission requests
+- Low: tasks with no due date, Confluence tasks without deadline
+
+**Conflict detection** — Compare calendar start/end times. Flag overlapping events.
+
+**IST conversion** — Convert all calendar UTC timestamps to IST (UTC+5:30). Compute decimal hours: e.g. 2:30 PM IST = 14.5.
+
+## Phase 3 — Build JSON
+
+Construct a single JSON object matching this exact schema:
+
+{
+  "meta": {
+    "date": "Wednesday, July 1 2026",
+    "dateKey": "2026-07-01",
+    "user": "Rahul Walunj"
+  },
+  "stats": {
+    "meetings": 16,
+    "actionItems": 9,
+    "securityAlerts": 0,
+    "emailsTotal": 52,
+    "emailsUnread": 15
+  },
+  "meetings": [
+    {
+      "subject": "Devgiri Daily Scrum",
+      "start": 9.5,
+      "end": 10.0,
+      "type": "confirmed",
+      "conflict": false
+    }
+  ],
+  "conflicts": [
+    "1-1:SM vs Torna Scrum · 11:00–11:15 IST"
+  ],
+  "actions": [
+    {
+      "id": "o-approve-q2-headcount",
+      "pri": "urgent",
+      "src": "O",
+      "title": "Approve Q2 headcount request by EOD",
+      "detail": "2-3 sentence executive summary of the email content.",
+      "search": "RE: Q2 Headcount Request - Platform Team",
+      "link": "https://outlook.office.com/..."
+    }
+  ],
+  "alerts": [],
+  "fyi": [
+    { "icon": "✅", "text": "Description text here" }
+  ],
+  "summary": "Daily briefing for [date]. Key signals: ..."
+}
+
+Field rules:
+- meetings[].start / .end — decimal hours in IST (9.5 = 9:30 AM)
+- meetings[].type — one of: confirmed, tentative, oof, cancelled
+- meetings[].conflict — true if this event overlaps another
+- actions[].id — stable slug: lowercase source letter + hyphenated subject (e.g. o-approve-q2-headcount)
+- actions[].pri — one of: urgent, medium, low
+- actions[].src — one of: O (Outlook), T (Teams), J (Jira), C (Confluence)
+- actions[].search — raw subject/summary from API (used for clipboard copy)
+- actions[].link — webLink from source API response
+- actions[].detail — 2-3 sentence executive summary
+- fyi[].icon — one emoji that fits
+- summary — 2-4 sentence plain text summary of the day's key signals. Do NOT wrap in any XML or HTML tags such as <run-summary>. Output the summary text and nothing else.
+
+## Phase 4 — Render (MANDATORY: use show_widget with template only)
+
+You MUST follow these three steps exactly. Do not skip any step. Do not generate HTML yourself.
+
+Step 1: Call the `view` tool with path `/mnt/skills/user/daily-email-brief/template.html` to read the template file. Wait for the file contents before proceeding.
+
+Step 2: In the template source you just read, find the exact token `__BRIEFING_JSON__` and replace it with the JSON object you built in Phase 3, minified onto a single line.
+
+Step 3: Call `show_widget` with:
+   - title: daily_briefing_YYYY_MM_DD (today's date)
+   - widget_code: the full template HTML with __BRIEFING_JSON__ replaced by your JSON
+   - loading_messages: ["Scanning four sources…", "Filtering signal from noise…", "Assembling your dashboard…"]
+
+CRITICAL — violation of any of these rules makes the output invalid:
+- Do NOT generate your own HTML, CSS, or JS under any circumstances.
+- Do NOT skip reading the template file. The view tool call in Step 1 is mandatory.
+- Do NOT output the briefing as markdown or plain text.
+- Do NOT wrap any text in XML or HTML tags of any kind — especially not <run-summary>, <summary>, or similar.
+- The show_widget call in Step 3 is the ONLY output. Nothing else.
+- If all sources return empty, output a plain text message instead of an empty dashboard.
